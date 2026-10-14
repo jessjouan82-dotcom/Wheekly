@@ -4,326 +4,181 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Wheekly — Guinea Pig Care & Food Guide</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Quicksand:wght@500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Nunito', 'sans-serif'],
-            display: ['Bubblegum Sans', 'cursive'],
-            body: ['Quicksand', 'sans-serif']
-          },
+          fontFamily: { sans: ['Nunito', 'sans-serif'], body: ['Quicksand', 'sans-serif'] },
           colors: {
-            blush: { 50: '#FFF0F3', 100: '#FFD6E0', 200: '#FFB3C6', 300: '#FF8FA3', 500: '#FF758F', 600: '#E05772' },
-            matcha: { 50: '#F2FBF5', 100: '#E8F7ED', 200: '#D8F3DC', 300: '#B7E4C7', 500: '#52B788', 600: '#2D6A4F' },
-            lavender: { 50: '#FBF8FE', 100: '#F4EEFC', 200: '#E8DFF5', 500: '#A370F7', 700: '#6B3FA0' },
-            butter: { 50: '#FFFDF0', 100: '#FCF6BD', 200: '#F9E79F', 500: '#D4AC0D', 700: '#9A7D0A' },
-            sky: { 50: '#F0F9FF', 100: '#E0F2FE', 200: '#BAE6FD', 500: '#0284C7', 700: '#0369A1' },
-            warmBg: '#FAF6F0',
-            cocoa: { 800: '#4A403A', 600: '#7A6E65', 400: '#A89F91', 200: '#DDD5CA', 50: '#F9F6F2' }
+            blush: { 100: '#FFD6E0', 500: '#FF758F', 600: '#E05772' },
+            matcha: { 100: '#E8F7ED', 500: '#52B788', 600: '#2D6A4F' },
+            butter: { 100: '#FCF6BD', 700: '#9A7D0A' },
+            sky: { 100: '#E0F2FE', 700: '#0369A1' },
+            cocoa: { 800: '#4A403A', 600: '#7A6E65', 200: '#DDD5CA', 50: '#F9F6F2' }
           },
-          boxShadow: {
-            'squish-pink': '0 4px 0 #E05772',
-            'squish-matcha': '0 4px 0 #2D6A4F',
-            'squish-butter': '0 4px 0 #B7950B',
-            'squish-card': '0 6px 0 #DDD5CA'
-          },
-          borderRadius: {
-            'squish': '24px',
-            'squish-lg': '32px'
-          }
+          borderRadius: { squish: '24px', 'squish-lg': '32px' }
         }
       }
     }
   </script>
-
   <style>
-    body {
-      background-color: #FAF6F0;
-      background-image: radial-gradient(#E8DFD8 1.2px, transparent 1.2px);
-      background-size: 20px 20px;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .squish-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 rgba(0,0,0,0.15) !important;
-    }
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    body { background-color: #FAF6F0; -webkit-tap-highlight-color: transparent; }
+    .squish-btn:active { transform: translateY(3px); }
   </style>
 </head>
-
 <body class="text-cocoa-800 min-h-screen flex flex-col font-body antialiased">
-
-  <!-- Header -->
-  <header class="bg-white/95 backdrop-blur-md border-b-2 border-cocoa-200/50 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3">
-    <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2 min-w-0">
-        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-blush-100 border-2 border-blush-200 flex items-center justify-center text-lg sm:text-xl shrink-0">🐹</div>
-        <div class="min-w-0">
-          <h1 class="text-lg sm:text-xl font-display text-cocoa-800 leading-tight truncate">Wheekly</h1>
-          <p class="text-[10px] sm:text-[11px] text-cocoa-600 truncate font-semibold">Guinea Pig Care & Food Guide</p>
-        </div>
+  <header class="bg-white/95 border-b-2 border-cocoa-200 sticky top-0 z-40 px-3 py-2.5 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <div class="w-9 h-9 rounded-2xl bg-blush-100 border-2 border-blush-500 flex items-center justify-center text-lg">🐹</div>
+      <div>
+        <h1 class="text-lg font-black leading-tight">Wheekly</h1>
+        <p class="text-[10px] text-cocoa-600 font-bold">Guinea Pig Care & Food Guide</p>
       </div>
-      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <button onclick="handleShareApp()" class="squish-btn inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-extrabold bg-sky-100 text-sky-700 border-2 border-sky-200 transition">
-          <i class="fa-solid fa-share-nodes text-xs"></i> <span>Share</span>
-        </button>
-        <button onclick="openProfileModal()" class="squish-btn inline-flex items-center gap-1 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-extrabold bg-blush-500 text-white shadow-squish-pink border-2 border-blush-600 transition">
-          <i class="fa-solid fa-plus text-[10px]"></i> <span>Add Piggy</span>
-        </button>
-      </div>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="handleShareApp()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-sky-100 text-sky-700 border-2 border-sky-700">Share</button>
+      <button onclick="openProfileModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-blush-500 text-white border-2 border-blush-600">+ Add Piggy</button>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-grow max-w-5xl mx-auto px-3 sm:px-4 py-5 w-full">
-
-    <!-- Zero State -->
-    <div id="zero-state-view" class="my-6 max-w-lg mx-auto bg-white p-6 sm:p-8 rounded-squish-lg border-2 border-cocoa-200 shadow-squish-card text-center">
-      <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-butter-100 border-2 border-butter-200 flex items-center justify-center text-3xl sm:text-4xl mb-4 shadow-sm">🐹</div>
-      <h2 class="text-2xl font-display text-cocoa-800 mb-2">Welcome to Wheekly!</h2>
-      <p class="text-cocoa-600 text-xs sm:text-sm leading-relaxed mb-6 font-medium">
-        Add your guinea pig profile below to start tracking weights, meal plans, and checkups!
-      </p>
-      <button onclick="openProfileModal()" class="squish-btn w-full py-3 px-4 rounded-2xl bg-blush-500 text-white font-black text-xs sm:text-sm shadow-squish-pink border-2 border-blush-600 flex items-center justify-center gap-2">
-        <i class="fa-solid fa-heart"></i> Add Your First Guinea Pig
-      </button>
+  <main class="flex-grow max-w-5xl mx-auto px-3 py-5 w-full">
+    <div id="zero-state-view" class="my-6 max-w-lg mx-auto bg-white p-6 rounded-squish-lg border-2 border-cocoa-200 text-center shadow-sm">
+      <div class="w-16 h-16 mx-auto rounded-3xl bg-butter-100 border-2 border-cocoa-200 flex items-center justify-center text-3xl mb-4">🐹</div>
+      <h2 class="text-xl font-black mb-2">Welcome to Wheekly!</h2>
+      <p class="text-cocoa-600 text-xs mb-6">Add your guinea pig profile below to track weights, foods, and checkups!</p>
+      <button onclick="openProfileModal()" class="w-full py-3 rounded-2xl bg-blush-500 text-white font-black text-xs border-2 border-blush-600">Add Your First Guinea Pig</button>
     </div>
 
-    <!-- Active Profile Header -->
     <div id="profile-section" class="hidden space-y-4 mb-5">
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
-        <span class="text-[11px] font-black uppercase text-cocoa-400 pl-1 shrink-0">Piggies:</span>
-        <div id="piggy-chips-container" class="flex items-center gap-2"></div>
-      </div>
-
-      <div class="bg-white rounded-squish-lg p-4 sm:p-5 border-2 border-cocoa-200 shadow-squish-card">
-        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-          <div class="flex-grow text-center sm:text-left min-w-0">
-            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
-              <h2 id="hero-name" class="text-2xl font-display text-cocoa-800">--</h2>
-              <span id="hero-gender" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-lavender-100 text-lavender-700 border border-lavender-200">--</span>
-              <span id="hero-breed" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-200">--</span>
-            </div>
-            <p class="text-xs text-cocoa-600 mb-2">
-              DOB: <strong id="hero-dob-val">--</strong> • Age: <strong id="hero-age-val">--</strong>
-            </p>
-            <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-[11px] text-cocoa-600">
-              <span>Baseline: <strong id="hero-baseline" class="text-cocoa-800">-- g</strong></span>
-              <span>Exotic Vet: <strong id="hero-vet" class="text-cocoa-800">--</strong></span>
-            </div>
-          </div>
-          <button onclick="editCurrentProfile()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-cocoa-50 text-cocoa-800 border-2 border-cocoa-200 hover:bg-cocoa-100 transition">
-            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Profile
-          </button>
+      <div id="piggy-chips-container" class="flex items-center gap-2 overflow-x-auto pb-1"></div>
+      <div class="bg-white rounded-squish-lg p-4 border-2 border-cocoa-200 flex items-center gap-4">
+        <div id="hero-avatar-container" class="w-16 h-16 rounded-2xl bg-blush-100 border-2 border-cocoa-200 flex items-center justify-center text-2xl overflow-hidden shrink-0">🐹</div>
+        <div class="flex-grow min-w-0">
+          <h2 id="hero-name" class="text-xl font-black truncate">--</h2>
+          <p class="text-xs text-cocoa-600">DOB: <strong id="hero-dob-val">--</strong> • Baseline: <strong id="hero-baseline">-- g</strong></p>
         </div>
+        <button onclick="openProfileModal(true)" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-cocoa-50 border-2 border-cocoa-200">Edit</button>
       </div>
     </div>
 
+    <div id="nav-tabs-container" class="hidden flex border-b-2 border-cocoa-200 gap-4 overflow-x-auto text-xs font-black mb-4">
+      <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-2 text-matcha-600 border-b-2 border-matcha-600 shrink-0">⚖️ Weight Log</button>
+      <button onclick="switchTab('foods')" id="tab-btn-foods" class="tab-btn pb-2 text-cocoa-400 border-b-2 border-transparent shrink-0">🍎 Food Directory</button>
+      <button onclick="switchTab('exams')" id="tab-btn-exams" class="tab-btn pb-2 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 8-Point Check</button>
+    </div>
+
+    <div id="tab-content-weights" class="tab-pane space-y-4">
+      <div class="bg-white p-4 rounded-squish border-2 border-cocoa-200">
+        <h3 class="text-sm font-black mb-2">Record Weigh-In</h3>
+        <form onsubmit="handleWeightSubmit(event)" class="grid grid-cols-2 gap-2 text-xs">
+          <div><label class="block font-bold mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl p-2"></div>
+          <div><label class="block font-bold mb-1">Weight (g)</label><input type="number" id="w-val" required placeholder="1000" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl p-2"></div>
+          <div class="col-span-2"><button type="submit" class="w-full py-2 rounded-xl bg-matcha-500 text-white font-bold border-2 border-matcha-600">+ Save Weight</button></div>
+        </form>
+      </div>
+      <div class="bg-white rounded-squish border-2 border-cocoa-200 p-4 text-xs">
+        <h4 class="font-black mb-2">History</h4>
+        <div id="weight-list-area">No weigh-ins yet.</div>
+      </div>
+    </div>
+
+    <div id="tab-content-foods" class="tab-pane hidden space-y-3 text-xs">
+      <div class="bg-white p-4 rounded-squish border-2 border-cocoa-200 space-y-2">
+        <h3 class="font-black text-sm">Food Safety Quick List</h3>
+        <div class="p-2.5 rounded-xl bg-matcha-50 border border-matcha-200"><strong>✅ Safe:</strong> Timothy hay, bell peppers, green leaf lettuce, cilantro.</div>
+        <div class="p-2.5 rounded-xl bg-blush-50 border border-blush-200"><strong>🚫 Toxic:</strong> Iceberg lettuce, alliums (onions/garlic), potato sprouts.</div>
+      </div>
+    </div>
+
+    <div id="tab-content-exams" class="tab-pane hidden space-y-3 text-xs">
+      <div class="bg-white p-4 rounded-squish border-2 border-cocoa-200 space-y-2">
+        <h3 class="font-black text-sm">Weekly 8-Point Physical Check</h3>
+        <label class="p-2.5 rounded-xl bg-cocoa-50 border flex gap-2"><input type="checkbox"> <strong>1. Incisors & Dry Chin:</strong> Teeth meet evenly, no drooling.</label>
+        <label class="p-2.5 rounded-xl bg-cocoa-50 border flex gap-2"><input type="checkbox"> <strong>2. Breathing:</strong> Silent, no wheezing or clicking.</label>
+        <label class="p-2.5 rounded-xl bg-cocoa-50 border flex gap-2"><input type="checkbox"> <strong>3. Droppings:</strong> Firm, uniform oval poops.</label>
+      </div>
+    </div>
   </main>
 
-  <!-- PROFILE MODAL WITH ALL FIELDS -->
-  <div id="profile-modal" class="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-squish-lg max-w-sm w-full p-5 border-2 border-cocoa-200 shadow-2xl relative">
-      <div class="flex items-center justify-between pb-3 border-b-2 border-cocoa-200/60 mb-4">
-        <h3 id="profile-modal-title" class="font-display text-lg text-cocoa-800">Add Guinea Pig</h3>
-        <button onclick="closeProfileModal()" class="w-7 h-7 rounded-full bg-cocoa-100 text-cocoa-600 flex items-center justify-center text-xs font-bold">✕</button>
-      </div>
-
+  <div id="profile-modal" class="fixed inset-0 bg-stone-900/50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-squish-lg max-w-sm w-full p-5 border-2 border-cocoa-200">
+      <h3 class="font-black text-base mb-3">Guinea Pig Profile</h3>
       <form onsubmit="handleProfileSubmit(event)" class="space-y-3 text-xs">
         <input type="hidden" id="p-id">
-        <div>
-          <label class="block font-bold text-cocoa-600 mb-1">Name</label>
-          <input type="text" id="p-name" required placeholder="e.g. Stilton" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2">
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-bold text-cocoa-600 mb-1">Sex</label>
-            <select id="p-gender" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-2 py-2">
-              <option value="Boar (Male)">Boar (Male)</option>
-              <option value="Sow (Female)">Sow (Female)</option>
-              <option value="Neutered Boar">Neutered Boar</option>
-              <option value="Spayed Sow">Spayed Sow</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-bold text-cocoa-600 mb-1">Date of Birth</label>
-            <input type="date" id="p-dob" required class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-2 py-2">
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-bold text-cocoa-600 mb-1">Breed</label>
-            <input type="text" id="p-breed" placeholder="e.g. Abyssinian" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2">
-          </div>
-          <div>
-            <label class="block font-bold text-cocoa-600 mb-1">Baseline Weight (g)</label>
-            <input type="number" id="p-baseline" required placeholder="1000" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2">
-          </div>
-        </div>
-        <div>
-          <label class="block font-bold text-cocoa-600 mb-1">Exotic Vet Clinic & Phone</label>
-          <input type="text" id="p-vet" placeholder="e.g. Vet Clinic Name" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2">
-        </div>
-        <div class="pt-2">
-          <button type="submit" class="squish-btn w-full py-2.5 rounded-xl bg-blush-500 text-white font-black text-xs shadow-squish-pink border-2 border-blush-600">
-            Save Piggy Profile
-          </button>
-        </div>
+        <div><label class="block font-bold mb-1">Name</label><input type="text" id="p-name" required class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl p-2"></div>
+        <div><label class="block font-bold mb-1">Date of Birth</label><input type="date" id="p-dob" required class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl p-2"></div>
+        <div><label class="block font-bold mb-1">Baseline Weight (g)</label><input type="number" id="p-baseline" required value="1000" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl p-2"></div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-blush-500 text-white font-black border-2 border-blush-600">Save Profile</button>
       </form>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'WHEEKLY_APP_V1';
+    const STORAGE_KEY = 'WHEEKLY_APP_MOBILE';
     let appData = { piggies: [], activePiggyId: null };
-
     function loadData() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) appData = JSON.parse(raw);
-      } catch (e) {}
+      try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) appData = JSON.parse(raw); } catch (e) {}
       if (!appData.piggies) appData.piggies = [];
-      if (!appData.activePiggyId && appData.piggies.length > 0) {
-        appData.activePiggyId = appData.piggies[0].id;
-      }
+      if (!appData.activePiggyId && appData.piggies.length > 0) appData.activePiggyId = appData.piggies[0].id;
     }
-
-    function saveData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-    }
-
-    function getActivePiggy() {
-      return appData.piggies.find(p => p.id === appData.activePiggyId) || null;
-    }
-
-    function computeAge(dobStr) {
-      if (!dobStr) return '--';
-      const dob = new Date(dobStr);
-      const now = new Date();
-      if (isNaN(dob)) return '--';
-      let years = now.getFullYear() - dob.getFullYear();
-      let months = now.getMonth() - dob.getMonth();
-      if (months < 0) { years--; months += 12; }
-      if (years === 0) return `${months} mos`;
-      return `${years} yr ${months} mos`;
-    }
-
+    function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); }
+    function getActivePiggy() { return appData.piggies.find(p => p.id === appData.activePiggyId) || null; }
     function renderApp() {
-      const hasPiggies = appData.piggies && appData.piggies.length > 0;
-      document.getElementById('zero-state-view').classList.toggle('hidden', hasPiggies);
-      document.getElementById('profile-section').classList.toggle('hidden', !hasPiggies);
-
-      if (hasPiggies) {
-        renderPiggyChips();
-        renderHero();
-      }
+      const has = appData.piggies.length > 0;
+      document.getElementById('zero-state-view').classList.toggle('hidden', has);
+      document.getElementById('profile-section').classList.toggle('hidden', !has);
+      document.getElementById('nav-tabs-container').classList.toggle('hidden', !has);
+      if (has) { renderChips(); renderHero(); renderWeights(); }
     }
-
-    function renderPiggyChips() {
-      const c = document.getElementById('piggy-chips-container');
-      c.innerHTML = '';
+    function renderChips() {
+      const c = document.getElementById('piggy-chips-container'); c.innerHTML = '';
       appData.piggies.forEach(p => {
         const btn = document.createElement('button');
-        const active = p.id === appData.activePiggyId;
         btn.onclick = () => { appData.activePiggyId = p.id; saveData(); renderApp(); };
-        btn.className = `px-3 py-1 rounded-full text-xs font-bold transition ${active ? 'bg-matcha-500 text-white' : 'bg-white text-cocoa-600 border border-cocoa-200'}`;
-        btn.textContent = p.name;
-        c.appendChild(btn);
+        btn.className = `px-3 py-1 rounded-full text-xs font-bold ${p.id === appData.activePiggyId ? 'bg-matcha-500 text-white' : 'bg-white border border-cocoa-200'}`;
+        btn.textContent = p.name; c.appendChild(btn);
       });
     }
-
     function renderHero() {
-      const p = getActivePiggy();
-      if (!p) return;
+      const p = getActivePiggy(); if (!p) return;
       document.getElementById('hero-name').textContent = p.name;
-      document.getElementById('hero-gender').textContent = p.gender;
-      document.getElementById('hero-breed').textContent = p.breed || 'Cavy';
-      document.getElementById('hero-dob-val').textContent = p.dob || '--';
-      document.getElementById('hero-age-val').textContent = computeAge(p.dob);
-      document.getElementById('hero-baseline').textContent = `${p.baselineWeight} g`;
-      document.getElementById('hero-vet').textContent = p.vet || 'None';
+      document.getElementById('hero-dob-val').textContent = p.dob;
+      document.getElementById('hero-baseline').textContent = p.baselineWeight + ' g';
     }
-
+    function renderWeights() {
+      const p = getActivePiggy(); if (!p || !p.weights || p.weights.length === 0) {
+        document.getElementById('weight-list-area').textContent = 'No weigh-ins yet.'; return;
+      }
+      let html = '<div class="space-y-1">';
+      p.weights.forEach(w => { html += `<div class="flex justify-between p-2 bg-cocoa-50 rounded-xl"><span>${w.date}</span><strong>${w.weight} g</strong></div>`; });
+      document.getElementById('weight-list-area').innerHTML = html + '</div>';
+    }
+    function handleWeightSubmit(e) {
+      e.preventDefault(); const p = getActivePiggy(); if (!p) return;
+      if (!p.weights) p.weights = [];
+      p.weights.push({ date: document.getElementById('w-date').value, weight: parseFloat(document.getElementById('w-val').value) });
+      saveData(); renderApp(); e.target.reset(); document.getElementById('w-date').valueAsDate = new Date();
+    }
     function handleProfileSubmit(e) {
       e.preventDefault();
-      const id = document.getElementById('p-id').value;
-      const data = {
-        name: document.getElementById('p-name').value.trim(),
-        gender: document.getElementById('p-gender').value,
-        dob: document.getElementById('p-dob').value,
-        breed: document.getElementById('p-breed').value.trim(),
-        baselineWeight: parseFloat(document.getElementById('p-baseline').value) || 1000,
-        vet: document.getElementById('p-vet').value.trim()
-      };
-
-      if (id) {
-        const idx = appData.piggies.findIndex(p => p.id === id);
-        if (idx !== -1) appData.piggies[idx] = { ...appData.piggies[idx], ...data };
-      } else {
-        const newPig = { id: 'p_' + Date.now(), ...data, weights: [] };
-        appData.piggies.push(newPig);
-        appData.activePiggyId = newPig.id;
-      }
-      saveData();
-      closeProfileModal();
-      renderApp();
+      const newPig = { id: 'p_' + Date.now(), name: document.getElementById('p-name').value, dob: document.getElementById('p-dob').value, baselineWeight: parseFloat(document.getElementById('p-baseline').value), weights: [] };
+      appData.piggies.push(newPig); appData.activePiggyId = newPig.id;
+      saveData(); closeProfileModal(); renderApp();
     }
-
-    function openProfileModal(edit = false) {
-      const modal = document.getElementById('profile-modal');
-      const p = getActivePiggy();
-      if (edit && p) {
-        document.getElementById('p-id').value = p.id;
-        document.getElementById('p-name').value = p.name;
-        document.getElementById('p-dob').value = p.dob;
-        document.getElementById('p-breed').value = p.breed;
-        document.getElementById('p-baseline').value = p.baselineWeight;
-        document.getElementById('p-vet').value = p.vet;
-      } else {
-        document.getElementById('p-id').value = '';
-        document.getElementById('p-name').value = '';
-        document.getElementById('p-dob').value = '';
-        document.getElementById('p-breed').value = '';
-        document.getElementById('p-baseline').value = '';
-        document.getElementById('p-vet').value = '';
-      }
-      modal.classList.remove('hidden');
+    function openProfileModal() { document.getElementById('profile-modal').classList.remove('hidden'); }
+    function closeProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); }
+    function switchTab(t) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn pb-2 text-cocoa-400 border-b-2 border-transparent shrink-0');
+      document.getElementById(`tab-content-${t}`).classList.remove('hidden');
+      document.getElementById(`tab-btn-${t}`).className = 'tab-btn pb-2 text-matcha-600 border-b-2 border-matcha-600 shrink-0';
     }
-
-    function closeProfileModal() {
-      document.getElementById('profile-modal').classList.add('hidden');
-    }
-
-    function editCurrentProfile() {
-      openProfileModal(true);
-    }
-
-    async function handleShareApp() {
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: 'Wheekly', url: window.location.href });
-          return;
-        } catch(e) {}
-      }
-      alert(window.location.href);
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      loadData();
-      renderApp();
-    });
+    async function handleShareApp() { if (navigator.share) navigator.share({title: 'Wheekly', url: window.location.href}); else alert(window.location.href); }
+    window.addEventListener('DOMContentLoaded', () => { document.getElementById('w-date').valueAsDate = new Date(); loadData(); renderApp(); });
   </script>
 </body>
-  </html>
-  
+</html>
