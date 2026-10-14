@@ -143,7 +143,7 @@
             </p>
             <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-[11px] text-cocoa-600 dark:text-stone-300">
               <span>Baseline: <strong id="hero-baseline" class="text-cocoa-800 dark:text-white">-- g</strong></span>
-              <span>Exotic Vet: <strong id="hero-vet" class="text-cocoa-800 dark:text-white">--</strong></span>
+              <span class="cursor-pointer underline decoration-dotted" onclick="openExoticVetModal()" title="Click to learn what an exotic vet is">Exotic Vet: <strong id="hero-vet" class="text-cocoa-800 dark:text-white">--</strong> ℹ️</span>
             </div>
           </div>
 
@@ -376,14 +376,42 @@
           <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Breed</label><input type="text" id="p-breed" placeholder="American / English" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
           <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Baseline Weight (g)</label><input type="number" id="p-baseline" required value="1000" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
         </div>
-        <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Exotic Vet</label><input type="text" id="p-vet" placeholder="Clinic Name" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+        <div>
+          <label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1 flex justify-between items-center">
+            <span>Exotic Vet Clinic</span>
+            <button type="button" onclick="openExoticVetModal()" class="text-sky-600 dark:text-sky-400 font-bold underline text-[10px]">What is this?</button>
+          </label>
+          <input type="text" id="p-vet" placeholder="Clinic Name" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2">
+        </div>
         <div class="pt-2"><button type="submit" class="squish-btn w-full py-2.5 rounded-xl bg-blush-500 text-white font-black text-xs shadow-squish-pink border-2 border-blush-600">Save Piggy Profile</button></div>
       </form>
     </div>
   </div>
 
+  <!-- EXOTIC VET EXPLANATION MODAL -->
+  <div id="exotic-vet-modal" class="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-stone-900 rounded-squish-lg max-w-md w-full p-6 border-2 border-cocoa-200 dark:border-stone-800 shadow-2xl relative space-y-3 text-xs">
+      <div class="flex items-center justify-between pb-2 border-b-2 border-cocoa-200/60 dark:border-stone-800">
+        <h3 class="font-display text-base text-cocoa-800 dark:text-white font-bold">What is an Exotic Vet?</h3>
+        <button onclick="closeExoticVetModal()" class="w-6 h-6 rounded-full bg-cocoa-100 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 flex items-center justify-center font-bold">✕</button>
+      </div>
+      <p class="text-cocoa-600 dark:text-stone-300 leading-relaxed">
+        An <strong>exotic vet</strong> is a specialist veterinary surgeon with advanced training in treating non-traditional pets like guinea pigs, rabbits, and small mammals, rather than just standard cats and dogs.
+      </p>
+      <div class="p-3 rounded-xl bg-matcha-50 dark:bg-stone-800 border border-matcha-200 dark:border-stone-700 space-y-1.5">
+        <strong class="text-matcha-600 dark:text-matcha-400 block">Why guinea pigs specifically need one:</strong>
+        <ul class="list-disc pl-4 space-y-1 text-cocoa-800 dark:text-stone-200">
+          <li><strong>Specialised Dental Care:</strong> Guinea pig teeth grow continuously. Standard vets often lack the specific tools needed to properly inspect and burr back molar spurs or malocclusion.</li>
+          <li><strong>Fatal Drug Sensitivities:</strong> Many standard antibiotics prescribed to dogs and cats (like penicillin-based drugs) are completely <strong>fatal</strong> to guinea pigs. Exotic vets know safe alternatives like Baytril or Septrin.</li>
+          <li><strong>Masking Illness:</strong> As prey animals, guinea pigs hide pain until they are very sick. Exotic specialists are trained to spot subtle clinical signs that standard vets might miss.</li>
+        </ul>
+      </div>
+      <button onclick="closeExoticVetModal()" class="w-full py-2.5 rounded-xl bg-matcha-500 text-white font-black">Got it!</button>
+    </div>
+  </div>
+
   <script>
-    const STORAGE_KEY = 'WHEEKLY_APP_V6_UK';
+    const STORAGE_KEY = 'WHEEKLY_APP_V7_UK';
     let appData = { piggies: [], activePiggyId: null, darkMode: false };
     let weightChartInstance = null;
     let currentFoodFilter = 'ALL';
@@ -440,6 +468,14 @@
       saveData();
     }
 
+    function openExoticVetModal() {
+      document.getElementById('exotic-vet-modal').classList.remove('hidden');
+    }
+
+    function closeExoticVetModal() {
+      document.getElementById('exotic-vet-modal').classList.add('hidden');
+    }
+
     function getActivePiggy() {
       return appData.piggies.find(p => p.id === appData.activePiggyId) || null;
     }
@@ -493,7 +529,7 @@
       document.getElementById('hero-dob-val').textContent = p.dob || '--';
       document.getElementById('hero-age-val').textContent = computeAge(p.dob);
       document.getElementById('hero-baseline').textContent = `${p.baselineWeight} g`;
-      document.getElementById('hero-vet').textContent = p.vet || 'None';
+      document.getElementById('hero-vet').textContent = p.vet || 'None Specified';
       
       const fitMode = p.photoFit || 'cover';
       document.getElementById('photo-fit-btn').textContent = `Fit: ${fitMode === 'contain' ? 'Full' : 'Fill'}`;
