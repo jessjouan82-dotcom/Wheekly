@@ -178,6 +178,10 @@
           <label class="p-3 rounded-xl bg-cocoa-50 border flex items-start gap-2.5 cursor-pointer"><input type="checkbox" class="mt-0.5 accent-matcha-500"><div><strong class="text-cocoa-800 block">2. Silent Breathing</strong>Zero clicking, rattling, or wheezing.</div></label>
           <label class="p-3 rounded-xl bg-cocoa-50 border flex items-start gap-2.5 cursor-pointer"><input type="checkbox" class="mt-0.5 accent-matcha-500"><div><strong class="text-cocoa-800 block">3. Eyes & Nose Clear</strong>Bright and free of discharge.</div></label>
           <label class="p-3 rounded-xl bg-cocoa-50 border flex items-start gap-2.5 cursor-pointer"><input type="checkbox" class="mt-0.5 accent-matcha-500"><div><strong class="text-cocoa-800 block">4. Plentiful Droppings</strong>Uniform, firm oval poops.</div></label>
+          <label class="p-3 rounded-xl bg-cocoa-50 border flex items-start gap-2.5 cursor-pointer"><input type="checkbox" class="mt-0.5 accent-matcha-500"><div><strong class="text-cocoa-800 block">5. Clean Footpads</strong>Smooth skin, free of bumblefoot sores.</div></label>
+          <label class="p-3 rounded-xl bg-cocoa-50 border flex items-start gap-2.5 cursor-pointer"><input type="checkbox" class="mt-0.5 accent-matcha-500"><div><strong class="text-cocoa-800 block">6. Coat & Skin</strong>Glossy fur, no flakes, scabs, or mites.</div></label>
+          <label class="p-3 rounded-xl bg-cocoa-50 border flex items-start gap-2.5 cursor-pointer"><input type="checkbox" class="mt-0.5 accent-matcha-500"><div><strong class="text-cocoa-800 block">7. Dry Bottom / Urine</strong>Clean rear end, no sludge or staining.</div></label>
+          <label class="p-3 rounded-xl bg-cocoa-50 border flex items-start gap-2.5 cursor-pointer"><input type="checkbox" class="mt-0.5 accent-matcha-500"><div><strong class="text-cocoa-800 block">8. Grease Gland Clean</strong>Checked and cleaned if waxy buildup is present.</div></label>
         </div>
       </div>
     </div>
@@ -195,7 +199,7 @@
         <input type="hidden" id="p-id">
         <div><label class="block font-bold text-cocoa-600 mb-1">Name</label><input type="text" id="p-name" required class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2"></div>
         <div class="grid grid-cols-2 gap-2">
-          <div><label class="block font-bold text-cocoa-600 mb-1">Sex</label><select id="p-gender" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-2 py-2"><option value="Boar (Male)">Boar (Male)</option><option value="Sow (Female)">Sow (Female)</option></select></div>
+          <div><label class="block font-bold text-cocoa-600 mb-1">Sex</label><select id="p-gender" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-2 py-2"><option value="Boar (Male)">Boar (Male)</option><option value="Sow (Female)">Sow (Female)</option><option value="Neutered Boar">Neutered Boar</option><option value="Spayed Sow">Spayed Sow</option></select></div>
           <div><label class="block font-bold text-cocoa-600 mb-1">Date of Birth</label><input type="date" id="p-dob" required class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-2 py-2"></div>
         </div>
         <div class="grid grid-cols-2 gap-2">
@@ -350,4 +354,49 @@
       } else {
         document.getElementById('p-id').value = '';
         document.getElementById('p-name').value = '';
-        document.getElementById('p
+        document.getElementById('p-dob').value = '';
+        document.getElementById('p-breed').value = '';
+        document.getElementById('p-baseline').value = '1000';
+        document.getElementById('p-vet').value = '';
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profile-modal').classList.add('hidden');
+    }
+
+    function editCurrentProfile() {
+      openProfileModal(true);
+    }
+
+    function switchTab(t) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('border-matcha-600', 'text-matcha-600');
+        b.classList.add('border-transparent', 'text-cocoa-400');
+      });
+      document.getElementById(`tab-content-${t}`).classList.remove('hidden');
+      const btn = document.getElementById(`tab-btn-${t}`);
+      btn.classList.remove('border-transparent', 'text-cocoa-400');
+      btn.classList.add('border-matcha-600', 'text-matcha-600');
+    }
+
+    async function handleShareApp() {
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'Wheekly', url: window.location.href });
+          return;
+        } catch(e) {}
+      }
+      alert(window.location.href);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('w-date').valueAsDate = new Date();
+      loadData();
+      renderApp();
+    });
+  </script>
+</body>
+</html>
