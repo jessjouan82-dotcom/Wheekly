@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Wheekly — Guinea Pig Care & Food Guide</title>
+  <title>Wheekly — Guinea Pig Care & Food Guide (UK Edition)</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,7 +77,7 @@
         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-blush-100 border-2 border-blush-200 flex items-center justify-center text-lg sm:text-xl shrink-0">🐹</div>
         <div class="min-w-0">
           <h1 class="text-lg sm:text-xl font-display text-cocoa-800 leading-tight truncate">Wheekly</h1>
-          <p class="text-[10px] sm:text-[11px] text-cocoa-600 truncate font-semibold">Guinea Pig Care & Food Guide (UK Edition)</p>
+          <p class="text-[10px] sm:text-[11px] text-cocoa-600 truncate font-semibold">UK Guinea Pig Care & Food Guide</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
@@ -155,8 +155,8 @@
       <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-2.5 text-matcha-600 border-b-2 border-matcha-600 shrink-0">⚖️ Weight Log</button>
       <button onclick="switchTab('meals')" id="tab-btn-meals" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🥗 7-Day Meal Plan</button>
       <button onclick="switchTab('foods')" id="tab-btn-foods" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🍎 Food Directory</button>
-      <button onclick="switchTab('guide')" id="tab-btn-guide" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">📚 Care Guide</button>
-      <button onclick="switchTab('exams')" id="tab-btn-exams" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 Health Check</button>
+      <button onclick="switchTab('guide')" id="tab-btn-guide" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">📚 New Owner Guide</button>
+      <button onclick="switchTab('exams')" id="tab-btn-exams" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 8-Point Health Check</button>
       <button onclick="switchTab('meds')" id="tab-btn-meds" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">💊 Safe Meds & Triage</button>
     </div>
 
@@ -208,7 +208,7 @@
     <!-- TAB 2: MEAL PLAN -->
     <div id="tab-content-meals" class="tab-pane hidden space-y-4">
       <div class="bg-white p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 shadow-sm text-xs space-y-3">
-        <h3 class="text-lg font-display text-cocoa-800">Balanced 7-Day Low-Calcium Meal Plan</h3>
+        <h3 class="text-lg font-display text-cocoa-800">Balanced 7-Day Low-Calcium UK Meal Plan</h3>
         <p class="text-cocoa-600">Approx. 1 cup (~100g) of fresh veggies per piggy daily + unlimited Timothy or Meadow hay.</p>
         <div id="meal-plan-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
       </div>
@@ -219,7 +219,7 @@
       <div class="bg-white p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 shadow-sm space-y-4 text-xs">
         <h3 class="text-lg font-display text-cocoa-800">Comprehensive Food Safety Directory</h3>
         <div class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food (e.g. iceberg, parsley, carrot)..." class="flex-grow bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3.5 py-2.5">
+          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food (e.g. iceberg, parsley, carrot, dandelion)..." class="flex-grow bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3.5 py-2.5">
           <div class="flex gap-1.5 overflow-x-auto pb-1">
             <button onclick="setFoodFilter('ALL')" id="flt-ALL" class="px-3 py-2 rounded-xl font-extrabold bg-cocoa-800 text-white shrink-0">All</button>
             <button onclick="setFoodFilter('SAFE')" id="flt-SAFE" class="px-3 py-2 rounded-xl font-extrabold bg-matcha-100 text-matcha-600 border shrink-0">✅ Safe</button>
@@ -231,56 +231,105 @@
       </div>
     </div>
 
-    <!-- TAB 4: CARE GUIDE -->
+    <!-- TAB 4: NEW OWNER GUIDE -->
     <div id="tab-content-guide" class="tab-pane hidden space-y-4 text-xs">
-      <div class="bg-white p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 shadow-sm space-y-3">
-        <h3 class="text-lg font-display text-cocoa-800">🎵 Vocalisation & Body Language Decoder</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="p-3 rounded-2xl bg-matcha-50 border"><strong class="text-matcha-600 block">📢 Wheeking</strong>High-pitched squeal showing excitement and food anticipation.</div>
-          <div class="p-3 rounded-2xl bg-butter-50 border"><strong class="text-butter-700 block">🍿 Popcorning</strong>Jumping vertically in the air out of pure joy and happiness.</div>
-          <div class="p-3 rounded-2xl bg-sky-50 border"><strong class="text-sky-700 block">💧 Purring (Deep vs Tense)</strong>Low relaxed purr means contentment; high-vibrato tense purr means annoyance.</div>
-          <div class="p-3 rounded-2xl bg-lavender-50 border"><strong class="text-lavender-700 block">💃 Rumblestrutting</strong>Swaying hips and vibrating motor sound used for dominance or courting.</div>
+      <div class="bg-white p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 shadow-sm space-y-4">
+        <h3 class="text-lg font-display text-cocoa-800">New Owner Comprehensive Guide</h3>
+        <div class="space-y-3">
+          <div class="p-3.5 rounded-2xl bg-cocoa-50 border">
+            <strong class="text-cocoa-800 block mb-1">🏡 Housing & C&C Enclosures</strong>
+            <p class="text-cocoa-600">Guinea pigs require ample floor space. A minimum of 10.5 sq ft (such as a 2x4 C&C grid cage) is recommended for a pair. Avoid pet shop cages which are often too small. Use fleece liners or dust-extracted wood shavings/paper bedding.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-cocoa-50 border">
+            <strong class="text-cocoa-800 block mb-1">🤝 Companionship & Behaviour</strong>
+            <p class="text-cocoa-600">Guinea pigs are highly social herd animals and can suffer from severe depression if kept alone. Always keep them in harmonious pairs or groups (e.g. neutered boar + sow, or bonded sows).</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-cocoa-50 border">
+            <strong class="text-cocoa-800 block mb-1">🎵 Vocalisation Decoder</strong>
+            <ul class="list-disc pl-4 space-y-1 text-cocoa-600 mt-1">
+              <li><strong>Wheeking:</strong> High-pitched squeal showing intense excitement and food anticipation.</li>
+              <li><strong>Popcorning:</strong> Vertical jumping and twitching indicating pure joy and happiness.</li>
+              <li><strong>Purring:</strong> Low vibration means contentment; high-frequency vibrating purr with tense body means annoyance or fear.</li>
+              <li><strong>Rumblestrutting:</strong> Swaying hips and deep purring sound associated with dominance and courting.</li>
+            </ul>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-cocoa-50 border">
+            <strong class="text-cocoa-800 block mb-1">💩 Poop & Pee Health Decoder</strong>
+            <p class="text-cocoa-600">Healthy droppings are firm, uniform, and oval. Guinea pigs also produce softer caecotrophs (night poops) directly from their bottom which they re-ingest for vital B-vitamins. Milky or chalky white urine drying on fleece is normal calcium excess excretion, but gritty sludge or blood requires immediate vet investigation.</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 5: BODY CHECKUP (8 POINT) -->
+    <!-- TAB 5: 8-POINT HEALTH CHECK -->
     <div id="tab-content-exams" class="tab-pane hidden space-y-4 text-xs">
       <div class="bg-white p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 shadow-sm space-y-3">
-        <h3 class="text-lg font-display text-cocoa-800">Weekly 8-Point Physical Check-Up</h3>
-        <p class="text-cocoa-600 mb-2">Perform this routine weekly to detect early signs of illness or discomfort.</p>
+        <h3 class="text-lg font-display text-cocoa-800">Weekly 8-Point Physical Health Check-Up</h3>
+        <p class="text-cocoa-600 mb-2">Perform this structured check weekly. Click each point to read detailed assessment guidance and troubleshooting tips.</p>
+        
         <div class="space-y-2.5">
           <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
             <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>1. Incisors & Dry Chin</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <p class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200">Check that top and bottom teeth meet evenly without overgrowth or spurs. Ensure the chin is dry—wet fur or drooling indicates dental malocclusion or mouth pain.</p>
+            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+              <p><strong>What to check:</strong> Front incisors should meet evenly without overlapping, misalingment, or sharp spurs. The chin must be completely dry.</p>
+              <p><strong>Troubleshooting:</strong> Wet chin or drooling indicates dental malocclusion ( overgrown back molars) or mouth pain making swallowing difficult. Book an exotic vet appointment immediately.</p>
+            </div>
           </details>
+
           <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
             <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>2. Silent Breathing</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <p class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200">Hold your piggy near your ear. Breathing should be completely silent. Clicking, rattling, or wheezing indicates an upper respiratory infection (URI) requiring urgent vet attention.</p>
+            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+              <p><strong>What to check:</strong> Hold your piggy gently near your ear. Respiration should be effortless and completely silent.</p>
+              <p><strong>Troubleshooting:</strong> Clicking, rattling, wheezing, or wet sounding breaths indicate an Upper Respiratory Infection (URI) or pneumonia, which can deteriorate rapidly in guinea pigs.</p>
+            </div>
           </details>
+
           <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
             <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>3. Clear Eyes & Nose</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <p class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200">Eyes should be bright and clear with no cloudiness or milky discharge. The nose must be free of crusting, wetness, or sneezing.</p>
+            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+              <p><strong>What to check:</strong> Eyes must be bright, bold, and clear with zero cloudiness or milky discharge. Nose must be clean and free of crust.</p>
+              <p><strong>Troubleshooting:</strong> Milky eye discharge can signal eye injuries or respiratory flare-ups. Crusty nostrils point toward infection or allergies to dusty hay.</p>
+            </div>
           </details>
+
           <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
             <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>4. Plentiful Droppings</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <p class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200">Droppings should be uniform, firm, and oval-shaped. Sudden changes in size, shape, or soft consistency mean gut stasis or dietary upsets.</p>
+            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+              <p><strong>What to check:</strong> Normal poops are consistent, firm, oval-shaped pellets produced in high volume throughout the day.</p>
+              <p><strong>Troubleshooting:</strong> Small, misshapen, or clustered poops indicate gut stasis or lack of fibre intake. Watery diarrhoea is an emergency requiring vet intervention.</p>
+            </div>
           </details>
+
           <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
             <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>5. Clean Footpads</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <p class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200">Check bottoms of feet for redness, swelling, or open sores (pododermatitis / bumblefoot). Ensure bedding stays dry and clean.</p>
+            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+              <p><strong>What to check:</strong> Inspect footpads for smooth skin and absence of swelling, redness, or scabs (pododermatitis / bumblefoot).</p>
+              <p><strong>Troubleshooting:</strong> Bumblefoot is caused by damp bedding or abrasive wire flooring. Switch to clean fleece liners or absorbant paper bedding and consult a vet if sores appear.</p>
+            </div>
           </details>
+
           <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
             <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>6. Coat & Skin Check</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <p class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200">Part the fur to inspect skin for dandruff, scabs, bald patches, or microscopic parasites like fur mites or lice.</p>
+            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+              <p><strong>What to check:</strong> Part the fur to inspect skin health. Look for dry flakes, scabs, bald spots, or excessive scratching.</p>
+              <p><strong>Troubleshooting:</strong> Flaking skin, hair loss in a V-shape, or intense scratching often point towards burrowing mites (mange mites) or fungal ringworm, which require vet-prescribed treatments like Ivermectin.</p>
+            </div>
           </details>
+
           <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
             <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>7. Dry Bottom & Urine</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <p class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200">The rear end should be clean and dry. Watch for urine scalding, wet fur, or chalky white calcium sludge buildup.</p>
+            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+              <p><strong>What to check:</strong> Rear end must be completely dry and clean. Boars require checks for impaction (blockage in anal sac).</p>
+              <p><strong>Troubleshooting:</strong> Wet fur around the tail can mean urinary tract infections, sludge, or impaction in older boars. Clean gently and seek vet advice if odor or pain occurs.</p>
+            </div>
           </details>
+
           <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
             <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>8. Grease Gland Maintenance</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <p class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200">Located just above the tail base. Boars especially can build up waxy oils requiring gentle cleaning with coconut oil or mild pet shampoo.</p>
+            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+              <p><strong>What to check:</strong> Located on the rump just above the tail. Boars in particular secrete waxy oils that can accumulate.</p>
+              <p><strong>Troubleshooting:</strong> Clean periodically with a tiny dab of coconut oil or mild pet shampoo to dissolve waxy buildup, then rinse thoroughly to prevent skin irritation.</p>
+            </div>
           </details>
         </div>
       </div>
@@ -290,7 +339,7 @@
     <div id="tab-content-meds" class="tab-pane hidden space-y-4 text-xs">
       <div class="bg-blush-50 p-4 rounded-squish border-2 border-blush-200 space-y-2">
         <h3 class="font-display text-blush-600 font-bold text-sm">🚫 FATAL ANTIBIOTIC WARNING</h3>
-        <p class="text-cocoa-800 leading-relaxed">Penicillin, Amoxicillin, Clavamox, Ampicillin, and Erythromycin wipe out essential gut flora and are <strong>fatal</strong> to guinea pigs. Safe options prescribed by exotic vets include Baytril (Enrofloxacin) and Septrin / Bactrim.</p>
+        <p class="text-cocoa-800 leading-relaxed">Penicillin, Amoxicillin, Clavamox, Ampicillin, and Erythromycin wipe out essential caecal flora and are <strong>fatal</strong> to guinea pigs. Safe options prescribed by exotic vets include Baytril (Enrofloxacin) and Septrin / Bactrim.</p>
       </div>
     </div>
 
@@ -332,29 +381,37 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'WHEEKLY_APP_V3_UK';
+    const STORAGE_KEY = 'WHEEKLY_APP_V4_UK';
     let appData = { piggies: [], activePiggyId: null };
     let weightChartInstance = null;
     let currentFoodFilter = 'ALL';
 
     const FOOD_DATABASE = [
-      // SAFE
-      { name: "Timothy, Orchard & Meadow Hay", cat: "SAFE", badge: "Unlimited 24/7", desc: "Must make up 80%+ of diet. Essential long-strand fibre keeps the gut moving and teeth worn down correctly." },
-      { name: "Bell Peppers (Red, Yellow, Orange)", cat: "SAFE", badge: "1/4 Daily", desc: "Outstanding natural source of daily Vitamin C with low calcium levels." },
+      // SAFE DAILY STAPLES
+      { name: "Timothy, Orchard & Meadow Hay", cat: "SAFE", badge: "Unlimited 24/7", desc: "Must make up 85%+ of total diet. Essential long-strand fibre keeps the gut moving and teeth worn down correctly." },
+      { name: "Bell Peppers (Red, Yellow, Orange)", cat: "SAFE", badge: "1/4 Daily", desc: "Outstanding natural source of daily Vitamin C with low calcium levels. Red and yellow varieties have the highest vitamin content." },
       { name: "Green & Red Leaf Lettuce", cat: "SAFE", badge: "Daily", desc: "Gentle, low-calcium leafy greens suitable for daily feeding." },
-      { name: "Coriander (Cilantro)", cat: "SAFE", badge: "Few sprigs", desc: "Highly palatable herb rich in vitamins, though feed in moderation due to moderate calcium." },
+      { name: "Romaine & Gem Lettuce", cat: "SAFE", badge: "Daily", desc: "Crunchy and nutritious leafy greens loved by cavies and safe for everyday rotation." },
+      { name: "Coriander (Cilantro)", cat: "SAFE", badge: "Daily", desc: "Highly palatable herb rich in vitamins, though feed in moderation due to moderate calcium content." },
       { name: "Cucumber", cat: "SAFE", badge: "2-3 slices daily", desc: "Hydrating and refreshing, though mostly water with little nutritional density." },
       { name: "Zucchini (Courgette)", cat: "SAFE", badge: "1-2 slices", desc: "Safe, mild watery vegetable enjoyed by most guinea pigs." },
-      { name: "Spring Greens", cat: "SAFE", badge: "2-3 leaves", desc: "Great brassica option providing vitamins and fibre." },
-      { name: "Dill & Parsley", cat: "LIMIT", badge: "Occasional treat", desc: "Extremely rich in calcium; overfeeding can contribute to bladder stones or sludge." },
+      { name: "Spring Greens", cat: "SAFE", badge: "2-3 leaves", desc: "Great brassica option providing vitamins and dietary fibre." },
+      { name: "Dandelion Leaves & Roots", cat: "SAFE", badge: "Forage treat", desc: "Excellent natural forage, though acts as a mild diuretic so feed in moderate portions." },
+      
+      // MODERATION / LIMIT
+      { name: "Parsley & Dill", cat: "LIMIT", badge: "Occasional treat", desc: "Extremely rich in calcium; overfeeding can contribute to bladder stones or chalky sludge." },
+      { name: "Spinach & Kale", cat: "LIMIT", badge: "1-2 times weekly", desc: "High in oxalates and calcium; feed sparingly to prevent urinary tract issues." },
       { name: "Carrot", cat: "LIMIT", badge: "1 small slice weekly", desc: "High in natural sugars and starch; treat as a sugary sweet." },
-      { name: "Apple (no seeds)", cat: "LIMIT", badge: "Tiny piece weekly", desc: "High sugar content. Pips/seeds are toxic and must be removed." },
+      { name: "Apple (no pips)", cat: "LIMIT", badge: "Tiny piece weekly", desc: "High sugar content. Pips/seeds contain cyanide compounds and must be removed." },
+      { name: "Strawberries & Blueberries", cat: "LIMIT", badge: "Occasional treat", desc: "Good vitamin C content but high sugar levels mean they should only be given rarely." },
+
       // TOXIC / DANGEROUS
       { name: "Iceberg Lettuce", cat: "TOXIC", badge: "NEVER", desc: "Contains lactucarium and excessive water content which causes severe, watery diarrhoea." },
       { name: "Onions, Garlic, Chives & Leeks", cat: "TOXIC", badge: "FATAL", desc: "Contains organosulfoxides that rupture red blood cells, causing fatal haemolytic anaemia." },
-      { name: "Potato & Potato Sprouts", cat: "TOXIC", badge: "FATAL", desc: "Contains solanine (a dangerous glycoalkaloid poison)." },
+      { name: "Potato & Potato Sprouts", cat: "TOXIC", badge: "FATAL", desc: "Contains solanine, a dangerous glycoalkaloid poison." },
       { name: "Avocado", cat: "TOXIC", badge: "FATAL", desc: "Extremely high fat content and contains persin, which is toxic to small herbivores." },
-      { name: "Muesli / Seed Mixes", cat: "TOXIC", badge: "AVOID", desc: "Commercial mixes encourage selective feeding, leading to obesity, dental disease, and nutritional deficiencies." }
+      { name: "Muesli / Seed Mixes", cat: "TOXIC", badge: "AVOID", desc: "Commercial mixes encourage selective feeding, leading to obesity, severe dental disease, and nutritional deficiencies." },
+      { name: "Lawnmower Clippings", cat: "TOXIC", badge: "NEVER", desc: "Mown grass ferments rapidly in a guinea pig's stomach, producing dangerous gas and fatal bloat." }
     ];
 
     const DEFAULT_MEALS = [
