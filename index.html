@@ -63,19 +63,13 @@
     }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    @media print {
-      body * { visibility: hidden; }
-      #printable-summary, #printable-summary * { visibility: visible; }
-      #printable-summary { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
-      header, .no-print { display: none !important; }
-    }
   </style>
 </head>
 
 <body class="text-cocoa-800 dark:text-cocoa-50 min-h-screen flex flex-col font-body antialiased transition-colors">
 
   <!-- Header -->
-  <header class="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b-2 border-cocoa-200/50 dark:border-stone-800 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3 no-print">
+  <header class="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b-2 border-cocoa-200/50 dark:border-stone-800 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3">
     <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
       <div class="flex items-center gap-2 min-w-0">
         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-blush-100 border-2 border-blush-200 flex items-center justify-center text-lg sm:text-xl shrink-0">🐹</div>
@@ -97,7 +91,7 @@
   </header>
 
   <!-- Main Content -->
-  <main class="flex-grow max-w-5xl mx-auto px-3 sm:px-4 py-5 w-full no-print">
+  <main class="flex-grow max-w-5xl mx-auto px-3 sm:px-4 py-5 w-full">
 
     <!-- Zero State -->
     <div id="zero-state-view" class="my-6 max-w-lg mx-auto bg-white dark:bg-stone-900 p-6 sm:p-8 rounded-squish-lg border-2 border-cocoa-200 dark:border-stone-800 shadow-squish-card text-center">
@@ -119,7 +113,7 @@
           <div id="piggy-chips-container" class="flex items-center gap-2"></div>
         </div>
         <div class="flex gap-2 text-xs">
-          <button onclick="exportDataBackup()" class="px-2.5 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold">Export Backup</button>
+          <button onclick="exportDataBackup()" class="px-2.5 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold">Export</button>
           <label class="px-2.5 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold cursor-pointer">
             Import <input type="file" accept=".json" class="hidden" onchange="importDataBackup(event)">
           </label>
@@ -128,12 +122,14 @@
 
       <div class="bg-white dark:bg-stone-900 rounded-squish-lg p-4 sm:p-5 border-2 border-cocoa-200 dark:border-stone-800 shadow-squish-card">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-          <div class="relative shrink-0">
+          <div class="relative shrink-0 flex flex-col items-center gap-1.5">
             <div id="hero-avatar-container" class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-blush-100 border-2 border-cocoa-200 dark:border-stone-700 shadow-inner overflow-hidden flex items-center justify-center text-3xl font-bold">🐹</div>
-            <label class="absolute -bottom-1 -right-1 w-8 h-8 rounded-xl bg-white dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 border-2 border-cocoa-200 dark:border-stone-700 shadow-sm flex items-center justify-center cursor-pointer">
-              <i class="fa-solid fa-camera text-xs"></i>
-              <input type="file" accept="image/*" class="hidden" onchange="handleHeroPhotoUpload(event)">
-            </label>
+            <div class="flex items-center gap-1">
+              <label class="px-2 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 text-[10px] font-bold border border-cocoa-200 dark:border-stone-700 cursor-pointer">
+                📷 Change <input type="file" accept="image/*" class="hidden" onchange="handleHeroPhotoUpload(event)">
+              </label>
+              <button onclick="togglePhotoFit()" id="photo-fit-btn" class="px-2 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 text-[10px] font-bold border border-cocoa-200 dark:border-stone-700">Fit: Fill</button>
+            </div>
           </div>
 
           <div class="flex-grow text-center sm:text-left min-w-0">
@@ -155,9 +151,6 @@
             <button onclick="editCurrentProfile()" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold bg-cocoa-50 dark:bg-stone-800 text-cocoa-800 dark:text-white border-2 border-cocoa-200 dark:border-stone-700 transition">
               <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
             </button>
-            <button onclick="printVetSummary()" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold bg-matcha-500 text-white border-2 border-matcha-600 shadow-squish-matcha squish-btn transition">
-              <i class="fa-solid fa-print mr-1"></i> Vet Sheet
-            </button>
           </div>
         </div>
       </div>
@@ -167,10 +160,10 @@
     <div id="nav-tabs-container" class="hidden flex border-b-2 border-cocoa-200/60 dark:border-stone-800 gap-3 sm:gap-5 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-black mb-5">
       <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-2.5 text-matcha-600 border-b-2 border-matcha-600 shrink-0">⚖️ Weight Log</button>
       <button onclick="switchTab('calculators')" id="tab-btn-calculators" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🧮 Calculators</button>
-      <button onclick="switchTab('grooming')" id="tab-btn-grooming" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">✂️ Grooming & Cleaning</button>
-      <button onclick="switchTab('meals')" id="tab-btn-meals" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🥗 Meal Plan</button>
-      <button onclick="switchTab('foods')" id="tab-btn-foods" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🍎 Food Directory</button>
-      <button onclick="switchTab('exams')" id="tab-btn-exams" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 8-Point Health Check</button>
+      <button onclick="switchTab('grooming')" id="tab-btn-grooming" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">✂️ Grooming</button>
+      <button onclick="switchTab('meals')" id="tab-btn-meals" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🥗 Meals</button>
+      <button onclick="switchTab('foods')" id="tab-btn-foods" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🍎 Foods</button>
+      <button onclick="switchTab('exams')" id="tab-btn-exams" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 Health Check</button>
     </div>
 
     <!-- TAB 1: WEIGHT LOG -->
@@ -239,7 +232,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: GROOMING & CLEANING -->
+    <!-- TAB 3: GROOMING -->
     <div id="tab-content-grooming" class="tab-pane hidden space-y-4 text-xs">
       <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
         <h3 class="text-lg font-display text-cocoa-800 dark:text-white">✂️ Grooming & Cage Maintenance Tracker</h3>
@@ -263,7 +256,7 @@
       </div>
     </div>
 
-    <!-- TAB 4: MEAL PLAN -->
+    <!-- TAB 4: MEALS -->
     <div id="tab-content-meals" class="tab-pane hidden space-y-4">
       <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm text-xs space-y-3">
         <h3 class="text-lg font-display text-cocoa-800 dark:text-white">Balanced 7-Day Low-Calcium UK Meal Plan</h3>
@@ -272,7 +265,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: FOOD DIRECTORY -->
+    <!-- TAB 5: FOODS -->
     <div id="tab-content-foods" class="tab-pane hidden space-y-4">
       <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-4 text-xs">
         <h3 class="text-lg font-display text-cocoa-800 dark:text-white">Comprehensive Food Safety Directory</h3>
@@ -289,7 +282,7 @@
       </div>
     </div>
 
-    <!-- TAB 6: 8-POINT HEALTH CHECK -->
+    <!-- TAB 6: HEALTH CHECK -->
     <div id="tab-content-exams" class="tab-pane hidden space-y-4 text-xs">
       <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
         <h3 class="text-lg font-display text-cocoa-800 dark:text-white">Weekly 8-Point Physical Health Check-Up</h3>
@@ -389,19 +382,8 @@
     </div>
   </div>
 
-  <!-- PRINTABLE VET SUMMARY -->
-  <div id="printable-summary" class="hidden p-8 font-sans">
-    <h1 class="text-2xl font-bold">WHEEKLY CLINICAL SUMMARY</h1>
-    <div class="border p-4 rounded my-4 text-xs space-y-1">
-      <p><strong>Name:</strong> <span id="print-name"></span></p>
-      <p><strong>Sex:</strong> <span id="print-gender"></span></p>
-      <p><strong>DOB:</strong> <span id="print-dob"></span></p>
-      <p><strong>Baseline Weight:</strong> <span id="print-baseline"></span> g</p>
-    </div>
-  </div>
-
   <script>
-    const STORAGE_KEY = 'WHEEKLY_APP_V5_UK';
+    const STORAGE_KEY = 'WHEEKLY_APP_V6_UK';
     let appData = { piggies: [], activePiggyId: null, darkMode: false };
     let weightChartInstance = null;
     let currentFoodFilter = 'ALL';
@@ -512,7 +494,21 @@
       document.getElementById('hero-age-val').textContent = computeAge(p.dob);
       document.getElementById('hero-baseline').textContent = `${p.baselineWeight} g`;
       document.getElementById('hero-vet').textContent = p.vet || 'None';
-      document.getElementById('hero-avatar-container').innerHTML = p.photo ? `<img src="${p.photo}" class="w-full h-full object-cover">` : '🐹';
+      
+      const fitMode = p.photoFit || 'cover';
+      document.getElementById('photo-fit-btn').textContent = `Fit: ${fitMode === 'contain' ? 'Full' : 'Fill'}`;
+      
+      document.getElementById('hero-avatar-container').innerHTML = p.photo 
+        ? `<img src="${p.photo}" class="w-full h-full object-${fitMode}">` 
+        : '🐹';
+    }
+
+    function togglePhotoFit() {
+      const p = getActivePiggy();
+      if (!p) return;
+      p.photoFit = p.photoFit === 'contain' ? 'cover' : 'contain';
+      saveData();
+      renderHero();
     }
 
     function renderCalculators() {
@@ -702,7 +698,7 @@
         const idx = appData.piggies.findIndex(p => p.id === id);
         if (idx !== -1) appData.piggies[idx] = { ...appData.piggies[idx], ...data };
       } else {
-        const newPig = { id: 'p_' + Date.now(), ...data, weights: [], grooming: {} };
+        const newPig = { id: 'p_' + Date.now(), ...data, weights: [], grooming: {}, photoFit: 'cover' };
         appData.piggies.push(newPig);
         appData.activePiggyId = newPig.id;
       }
@@ -760,16 +756,6 @@
         try { await navigator.share({ title: 'Wheekly', url: window.location.href }); return; } catch(e) {}
       }
       alert(window.location.href);
-    }
-
-    function printVetSummary() {
-      const p = getActivePiggy();
-      if (!p) return;
-      document.getElementById('print-name').textContent = p.name;
-      document.getElementById('print-gender').textContent = p.gender;
-      document.getElementById('print-dob').textContent = p.dob;
-      document.getElementById('print-baseline').textContent = p.baselineWeight;
-      window.print();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
