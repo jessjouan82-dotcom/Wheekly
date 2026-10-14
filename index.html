@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Wheekly — Guinea Pig Care & Food Guide (UK Edition)</title>
+  <title>Wheekly — UK Guinea Pig Care & Health Suite</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +15,7 @@
 
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
@@ -28,13 +29,11 @@
             lavender: { 50: '#FBF8FE', 100: '#F4EEFC', 200: '#E8DFF5', 500: '#A370F7', 700: '#6B3FA0' },
             butter: { 50: '#FFFDF0', 100: '#FCF6BD', 200: '#F9E79F', 500: '#D4AC0D', 700: '#9A7D0A' },
             sky: { 50: '#F0F9FF', 100: '#E0F2FE', 200: '#BAE6FD', 500: '#0284C7', 700: '#0369A1' },
-            warmBg: '#FAF6F0',
             cocoa: { 800: '#4A403A', 600: '#7A6E65', 400: '#A89F91', 200: '#DDD5CA', 50: '#F9F6F2' }
           },
           boxShadow: {
             'squish-pink': '0 4px 0 #E05772',
             'squish-matcha': '0 4px 0 #2D6A4F',
-            'squish-butter': '0 4px 0 #B7950B',
             'squish-card': '0 6px 0 #DDD5CA'
           },
           borderRadius: {
@@ -53,6 +52,11 @@
       background-size: 20px 20px;
       -webkit-tap-highlight-color: transparent;
     }
+    .dark body {
+      background-color: #1E1B18;
+      background-image: radial-gradient(#2D2925 1.2px, transparent 1.2px);
+      color: #E7E2DD;
+    }
     .squish-btn:active {
       transform: translateY(3px);
       box-shadow: 0 1px 0 rgba(0,0,0,0.15) !important;
@@ -68,20 +72,21 @@
   </style>
 </head>
 
-<body class="text-cocoa-800 min-h-screen flex flex-col font-body antialiased">
+<body class="text-cocoa-800 dark:text-cocoa-50 min-h-screen flex flex-col font-body antialiased transition-colors">
 
   <!-- Header -->
-  <header class="bg-white/95 backdrop-blur-md border-b-2 border-cocoa-200/50 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3 no-print">
+  <header class="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b-2 border-cocoa-200/50 dark:border-stone-800 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3 no-print">
     <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
       <div class="flex items-center gap-2 min-w-0">
         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-blush-100 border-2 border-blush-200 flex items-center justify-center text-lg sm:text-xl shrink-0">🐹</div>
         <div class="min-w-0">
-          <h1 class="text-lg sm:text-xl font-display text-cocoa-800 leading-tight truncate">Wheekly</h1>
-          <p class="text-[10px] sm:text-[11px] text-cocoa-600 truncate font-semibold">UK Guinea Pig Care & Food Guide</p>
+          <h1 class="text-lg sm:text-xl font-display text-cocoa-800 dark:text-white leading-tight truncate">Wheekly</h1>
+          <p class="text-[10px] sm:text-[11px] text-cocoa-600 dark:text-stone-400 truncate font-semibold">UK Health Suite</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <button onclick="handleShareApp()" class="squish-btn inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-extrabold bg-sky-100 text-sky-700 border-2 border-sky-200 transition">
+        <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-xl bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 flex items-center justify-center text-xs font-bold transition">🌙</button>
+        <button onclick="handleShareApp()" class="squish-btn inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-extrabold bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 border-2 border-sky-200 dark:border-sky-800 transition">
           <i class="fa-solid fa-share-nodes text-xs"></i> <span>Share</span>
         </button>
         <button onclick="openProfileModal()" class="squish-btn inline-flex items-center gap-1 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-extrabold bg-blush-500 text-white shadow-squish-pink border-2 border-blush-600 transition">
@@ -95,11 +100,11 @@
   <main class="flex-grow max-w-5xl mx-auto px-3 sm:px-4 py-5 w-full no-print">
 
     <!-- Zero State -->
-    <div id="zero-state-view" class="my-6 max-w-lg mx-auto bg-white p-6 sm:p-8 rounded-squish-lg border-2 border-cocoa-200 shadow-squish-card text-center">
+    <div id="zero-state-view" class="my-6 max-w-lg mx-auto bg-white dark:bg-stone-900 p-6 sm:p-8 rounded-squish-lg border-2 border-cocoa-200 dark:border-stone-800 shadow-squish-card text-center">
       <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-butter-100 border-2 border-butter-200 flex items-center justify-center text-3xl sm:text-4xl mb-4 shadow-sm">🐹</div>
-      <h2 class="text-2xl font-display text-cocoa-800 mb-2">Welcome to Wheekly!</h2>
-      <p class="text-cocoa-600 text-xs sm:text-sm leading-relaxed mb-6 font-medium">
-        Add your guinea pig profile below to start tracking weights, meal plans, and health check-ups!
+      <h2 class="text-2xl font-display text-cocoa-800 dark:text-white mb-2">Welcome to Wheekly!</h2>
+      <p class="text-cocoa-600 dark:text-stone-300 text-xs sm:text-sm leading-relaxed mb-6 font-medium">
+        Add your guinea pig profile below to start tracking weights, meal plans, health check-ups, and grooming logs!
       </p>
       <button onclick="openProfileModal()" class="squish-btn w-full py-3 px-4 rounded-2xl bg-blush-500 text-white font-black text-xs sm:text-sm shadow-squish-pink border-2 border-blush-600 flex items-center justify-center gap-2">
         <i class="fa-solid fa-heart"></i> Add Your First Guinea Pig
@@ -108,16 +113,24 @@
 
     <!-- Active Profile Header -->
     <div id="profile-section" class="hidden space-y-4 mb-5">
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
-        <span class="text-[11px] font-black uppercase text-cocoa-400 pl-1 shrink-0">Piggies:</span>
-        <div id="piggy-chips-container" class="flex items-center gap-2"></div>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
+          <span class="text-[11px] font-black uppercase text-cocoa-400 pl-1 shrink-0">Piggies:</span>
+          <div id="piggy-chips-container" class="flex items-center gap-2"></div>
+        </div>
+        <div class="flex gap-2 text-xs">
+          <button onclick="exportDataBackup()" class="px-2.5 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold">Export Backup</button>
+          <label class="px-2.5 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold cursor-pointer">
+            Import <input type="file" accept=".json" class="hidden" onchange="importDataBackup(event)">
+          </label>
+        </div>
       </div>
 
-      <div class="bg-white rounded-squish-lg p-4 sm:p-5 border-2 border-cocoa-200 shadow-squish-card">
+      <div class="bg-white dark:bg-stone-900 rounded-squish-lg p-4 sm:p-5 border-2 border-cocoa-200 dark:border-stone-800 shadow-squish-card">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
           <div class="relative shrink-0">
-            <div id="hero-avatar-container" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-blush-100 border-2 border-cocoa-200 shadow-inner overflow-hidden flex items-center justify-center text-3xl font-bold">🐹</div>
-            <label class="absolute -bottom-1 -right-1 w-8 h-8 rounded-xl bg-white text-cocoa-600 border-2 border-cocoa-200 shadow-sm flex items-center justify-center cursor-pointer">
+            <div id="hero-avatar-container" class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-blush-100 border-2 border-cocoa-200 dark:border-stone-700 shadow-inner overflow-hidden flex items-center justify-center text-3xl font-bold">🐹</div>
+            <label class="absolute -bottom-1 -right-1 w-8 h-8 rounded-xl bg-white dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 border-2 border-cocoa-200 dark:border-stone-700 shadow-sm flex items-center justify-center cursor-pointer">
               <i class="fa-solid fa-camera text-xs"></i>
               <input type="file" accept="image/*" class="hidden" onchange="handleHeroPhotoUpload(event)">
             </label>
@@ -125,21 +138,21 @@
 
           <div class="flex-grow text-center sm:text-left min-w-0">
             <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
-              <h2 id="hero-name" class="text-2xl font-display text-cocoa-800">--</h2>
+              <h2 id="hero-name" class="text-2xl font-display text-cocoa-800 dark:text-white">--</h2>
               <span id="hero-gender" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-lavender-100 text-lavender-700 border border-lavender-200">--</span>
               <span id="hero-breed" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-200">--</span>
             </div>
-            <p class="text-xs text-cocoa-600 mb-2">
+            <p class="text-xs text-cocoa-600 dark:text-stone-300 mb-2">
               DOB: <strong id="hero-dob-val">--</strong> • Age: <strong id="hero-age-val">--</strong>
             </p>
-            <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-[11px] text-cocoa-600">
-              <span>Baseline: <strong id="hero-baseline" class="text-cocoa-800">-- g</strong></span>
-              <span>Exotic Vet: <strong id="hero-vet" class="text-cocoa-800">--</strong></span>
+            <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-[11px] text-cocoa-600 dark:text-stone-300">
+              <span>Baseline: <strong id="hero-baseline" class="text-cocoa-800 dark:text-white">-- g</strong></span>
+              <span>Exotic Vet: <strong id="hero-vet" class="text-cocoa-800 dark:text-white">--</strong></span>
             </div>
           </div>
 
           <div class="flex items-center gap-2 w-full sm:w-auto">
-            <button onclick="editCurrentProfile()" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold bg-cocoa-50 text-cocoa-800 border-2 border-cocoa-200 hover:bg-cocoa-100 transition">
+            <button onclick="editCurrentProfile()" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold bg-cocoa-50 dark:bg-stone-800 text-cocoa-800 dark:text-white border-2 border-cocoa-200 dark:border-stone-700 transition">
               <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
             </button>
             <button onclick="printVetSummary()" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold bg-matcha-500 text-white border-2 border-matcha-600 shadow-squish-matcha squish-btn transition">
@@ -151,75 +164,120 @@
     </div>
 
     <!-- Main Navigation Tabs -->
-    <div id="nav-tabs-container" class="hidden flex border-b-2 border-cocoa-200/60 gap-3 sm:gap-5 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-black mb-5">
+    <div id="nav-tabs-container" class="hidden flex border-b-2 border-cocoa-200/60 dark:border-stone-800 gap-3 sm:gap-5 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-black mb-5">
       <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-2.5 text-matcha-600 border-b-2 border-matcha-600 shrink-0">⚖️ Weight Log</button>
-      <button onclick="switchTab('meals')" id="tab-btn-meals" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🥗 7-Day Meal Plan</button>
+      <button onclick="switchTab('calculators')" id="tab-btn-calculators" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🧮 Calculators</button>
+      <button onclick="switchTab('grooming')" id="tab-btn-grooming" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">✂️ Grooming & Cleaning</button>
+      <button onclick="switchTab('meals')" id="tab-btn-meals" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🥗 Meal Plan</button>
       <button onclick="switchTab('foods')" id="tab-btn-foods" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🍎 Food Directory</button>
-      <button onclick="switchTab('guide')" id="tab-btn-guide" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">📚 New Owner Guide</button>
       <button onclick="switchTab('exams')" id="tab-btn-exams" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 8-Point Health Check</button>
-      <button onclick="switchTab('meds')" id="tab-btn-meds" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">💊 Safe Meds & Triage</button>
     </div>
 
     <!-- TAB 1: WEIGHT LOG -->
     <div id="tab-content-weights" class="tab-pane space-y-4">
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div class="bg-white p-3.5 sm:p-4 rounded-2xl border-2 border-cocoa-200 shadow-sm">
+        <div class="bg-white dark:bg-stone-900 p-3.5 sm:p-4 rounded-2xl border-2 border-cocoa-200 dark:border-stone-800 shadow-sm">
           <span class="text-[10px] font-black uppercase text-cocoa-400">Latest Weight</span>
-          <div class="text-xl sm:text-2xl font-black text-cocoa-800 mt-0.5"><span id="metric-latest-weight">--</span> <span class="text-xs">g</span></div>
+          <div class="text-xl sm:text-2xl font-black text-cocoa-800 dark:text-white mt-0.5"><span id="metric-latest-weight">--</span> <span class="text-xs">g</span></div>
         </div>
-        <div class="bg-white p-3.5 sm:p-4 rounded-2xl border-2 border-cocoa-200 shadow-sm">
+        <div class="bg-white dark:bg-stone-900 p-3.5 sm:p-4 rounded-2xl border-2 border-cocoa-200 dark:border-stone-800 shadow-sm">
           <span class="text-[10px] font-black uppercase text-cocoa-400">Baseline Delta</span>
-          <div class="text-xl sm:text-2xl font-black text-cocoa-800 mt-0.5"><span id="metric-baseline-diff">--</span> <span class="text-xs">g</span></div>
+          <div class="text-xl sm:text-2xl font-black text-cocoa-800 dark:text-white mt-0.5"><span id="metric-baseline-diff">--</span> <span class="text-xs">g</span></div>
         </div>
-        <div class="col-span-2 sm:col-span-1 bg-matcha-100 p-3.5 sm:p-4 rounded-2xl border-2 border-matcha-200 flex flex-col justify-center">
-          <span class="text-[10px] font-black uppercase text-matcha-600">Clinical Status</span>
-          <p id="metric-health-verdict" class="text-xs font-black text-cocoa-800 mt-0.5">Ready for weigh-in</p>
+        <div class="col-span-2 sm:col-span-1 bg-matcha-100 dark:bg-matcha-900/40 p-3.5 sm:p-4 rounded-2xl border-2 border-matcha-200 dark:border-matcha-800 flex flex-col justify-center">
+          <span class="text-[10px] font-black uppercase text-matcha-600 dark:text-matcha-300">Clinical Status</span>
+          <p id="metric-health-verdict" class="text-xs font-black text-cocoa-800 dark:text-white mt-0.5">Ready for weigh-in</p>
         </div>
       </div>
 
-      <div class="bg-white p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 shadow-sm">
-        <h3 class="text-base font-display text-cocoa-800 mb-3">Record Scale Weigh-In</h3>
+      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm">
+        <h3 class="text-base font-display text-cocoa-800 dark:text-white mb-3">Record Scale Weigh-In</h3>
         <form onsubmit="handleWeightSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-          <div><label class="block font-bold text-cocoa-600 mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2"></div>
-          <div><label class="block font-bold text-cocoa-600 mb-1">Weight (Grams)</label><input type="number" id="w-val" required placeholder="e.g. 1040" min="100" max="2500" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2"></div>
-          <div><label class="block font-bold text-cocoa-600 mb-1">Notes</label><input type="text" id="w-notes" placeholder="e.g. Before veggies" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2"></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Weight (Grams)</label><input type="number" id="w-val" required placeholder="e.g. 1040" min="100" max="2500" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Notes</label><input type="text" id="w-notes" placeholder="e.g. Before veggies" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
           <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-xl bg-matcha-500 text-white font-extrabold shadow-squish-matcha border-2 border-matcha-600">+ Save Weight</button></div>
         </form>
       </div>
 
-      <div class="bg-white p-4 rounded-squish border-2 border-cocoa-200 shadow-sm text-xs">
-        <h4 class="font-bold text-cocoa-600 mb-2">Weight Progression Curve</h4>
+      <div class="bg-white dark:bg-stone-900 p-4 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm text-xs">
+        <h4 class="font-bold text-cocoa-600 dark:text-stone-300 mb-2">Weight Progression Curve</h4>
         <div class="h-48 sm:h-56 w-full"><canvas id="weightHistoryChart"></canvas></div>
       </div>
 
-      <div class="bg-white rounded-squish border-2 border-cocoa-200 shadow-sm overflow-hidden text-xs">
-        <div class="p-3.5 border-b border-cocoa-200 font-display text-sm text-cocoa-800">Weigh-In History</div>
+      <div class="bg-white dark:bg-stone-900 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm overflow-hidden text-xs">
+        <div class="p-3.5 border-b border-cocoa-200 dark:border-stone-800 font-display text-sm text-cocoa-800 dark:text-white">Weigh-In History</div>
         <div class="overflow-x-auto">
           <table class="w-full text-left">
-            <thead class="bg-cocoa-50 text-cocoa-600 font-bold border-b border-cocoa-200">
+            <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 font-bold border-b border-cocoa-200 dark:border-stone-700">
               <tr><th class="p-3">Date</th><th class="p-3">Weight</th><th class="p-3">Notes</th><th class="p-3 text-right">Delete</th></tr>
             </thead>
-            <tbody id="weight-table-body" class="divide-y divide-cocoa-200/50"></tbody>
+            <tbody id="weight-table-body" class="divide-y divide-cocoa-200/50 dark:divide-stone-800"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: MEAL PLAN -->
+    <!-- TAB 2: CALCULATORS -->
+    <div id="tab-content-calculators" class="tab-pane hidden space-y-4 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
+          <h3 class="text-base font-display text-cocoa-800 dark:text-white">🍋 Vitamin C Daily Dosage</h3>
+          <p class="text-cocoa-600 dark:text-stone-300">Calculates estimated requirement (~10-20mg per kg daily).</p>
+          <div class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border">
+            <strong id="calc-vitc-result" class="text-matcha-600 dark:text-matcha-400 text-sm block">--</strong>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
+          <h3 class="text-base font-display text-cocoa-800 dark:text-white">🥣 Critical Care Mixing Guide</h3>
+          <p class="text-cocoa-600 dark:text-stone-300">Standard recovery formula mix ratio.</p>
+          <div class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border space-y-1">
+            <p><strong>Powder to Warm Water:</strong> 1 part Oxbow Critical Care to 1.5 - 2 parts warm water.</p>
+            <p class="text-cocoa-400">Feed approx 10ml - 15ml per 100g of body weight split across 4-6 feedings daily if off food.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: GROOMING & CLEANING -->
+    <div id="tab-content-grooming" class="tab-pane hidden space-y-4 text-xs">
+      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
+        <h3 class="text-lg font-display text-cocoa-800 dark:text-white">✂️ Grooming & Cage Maintenance Tracker</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3.5 rounded-2xl bg-cocoa-50 dark:bg-stone-800 border space-y-2">
+            <strong class="text-cocoa-800 dark:text-white block">💅 Nail Clipping</strong>
+            <p id="groom-nail-status" class="text-cocoa-600 dark:text-stone-300">Not logged yet</p>
+            <button onclick="logGrooming('nail')" class="w-full py-1.5 rounded-lg bg-matcha-500 text-white font-bold">Mark Done Today</button>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-cocoa-50 dark:bg-stone-800 border space-y-2">
+            <strong class="text-cocoa-800 dark:text-white block">🛁 Bath / Hair Trim</strong>
+            <p id="groom-bath-status" class="text-cocoa-600 dark:text-stone-300">Not logged yet</p>
+            <button onclick="logGrooming('bath')" class="w-full py-1.5 rounded-lg bg-matcha-500 text-white font-bold">Mark Done Today</button>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-cocoa-50 dark:bg-stone-800 border space-y-2">
+            <strong class="text-cocoa-800 dark:text-white block">🏡 Cage Deep Clean</strong>
+            <p id="groom-cage-status" class="text-cocoa-600 dark:text-stone-300">Not logged yet</p>
+            <button onclick="logGrooming('cage')" class="w-full py-1.5 rounded-lg bg-matcha-500 text-white font-bold">Mark Done Today</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: MEAL PLAN -->
     <div id="tab-content-meals" class="tab-pane hidden space-y-4">
-      <div class="bg-white p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 shadow-sm text-xs space-y-3">
-        <h3 class="text-lg font-display text-cocoa-800">Balanced 7-Day Low-Calcium UK Meal Plan</h3>
-        <p class="text-cocoa-600">Approx. 1 cup (~100g) of fresh veggies per piggy daily + unlimited Timothy or Meadow hay.</p>
+      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm text-xs space-y-3">
+        <h3 class="text-lg font-display text-cocoa-800 dark:text-white">Balanced 7-Day Low-Calcium UK Meal Plan</h3>
+        <p class="text-cocoa-600 dark:text-stone-300">Approx. 1 cup (~100g) of fresh veggies per piggy daily + unlimited Timothy or Meadow hay.</p>
         <div id="meal-plan-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
       </div>
     </div>
 
-    <!-- TAB 3: FOOD DIRECTORY -->
+    <!-- TAB 5: FOOD DIRECTORY -->
     <div id="tab-content-foods" class="tab-pane hidden space-y-4">
-      <div class="bg-white p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 shadow-sm space-y-4 text-xs">
-        <h3 class="text-lg font-display text-cocoa-800">Comprehensive Food Safety Directory</h3>
+      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-4 text-xs">
+        <h3 class="text-lg font-display text-cocoa-800 dark:text-white">Comprehensive Food Safety Directory</h3>
         <div class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food (e.g. iceberg, parsley, carrot, dandelion)..." class="flex-grow bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3.5 py-2.5">
+          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food (e.g. iceberg, parsley, carrot, dandelion)..." class="flex-grow bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5">
           <div class="flex gap-1.5 overflow-x-auto pb-1">
             <button onclick="setFoodFilter('ALL')" id="flt-ALL" class="px-3 py-2 rounded-xl font-extrabold bg-cocoa-800 text-white shrink-0">All</button>
             <button onclick="setFoodFilter('SAFE')" id="flt-SAFE" class="px-3 py-2 rounded-xl font-extrabold bg-matcha-100 text-matcha-600 border shrink-0">✅ Safe</button>
@@ -231,102 +289,72 @@
       </div>
     </div>
 
-    <!-- TAB 4: NEW OWNER GUIDE -->
-    <div id="tab-content-guide" class="tab-pane hidden space-y-4 text-xs">
-      <div class="bg-white p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 shadow-sm space-y-4">
-        <h3 class="text-lg font-display text-cocoa-800">New Owner Comprehensive Guide</h3>
-        <div class="space-y-3">
-          <div class="p-3.5 rounded-2xl bg-cocoa-50 border">
-            <strong class="text-cocoa-800 block mb-1">🏡 Housing & C&C Enclosures</strong>
-            <p class="text-cocoa-600">Guinea pigs require ample floor space. A minimum of 10.5 sq ft (such as a 2x4 C&C grid cage) is recommended for a pair. Avoid pet shop cages which are often too small. Use fleece liners or dust-extracted wood shavings/paper bedding.</p>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-cocoa-50 border">
-            <strong class="text-cocoa-800 block mb-1">🤝 Companionship & Behaviour</strong>
-            <p class="text-cocoa-600">Guinea pigs are highly social herd animals and can suffer from severe depression if kept alone. Always keep them in harmonious pairs or groups (e.g. neutered boar + sow, or bonded sows).</p>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-cocoa-50 border">
-            <strong class="text-cocoa-800 block mb-1">🎵 Vocalisation Decoder</strong>
-            <ul class="list-disc pl-4 space-y-1 text-cocoa-600 mt-1">
-              <li><strong>Wheeking:</strong> High-pitched squeal showing intense excitement and food anticipation.</li>
-              <li><strong>Popcorning:</strong> Vertical jumping and twitching indicating pure joy and happiness.</li>
-              <li><strong>Purring:</strong> Low vibration means contentment; high-frequency vibrating purr with tense body means annoyance or fear.</li>
-              <li><strong>Rumblestrutting:</strong> Swaying hips and deep purring sound associated with dominance and courting.</li>
-            </ul>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-cocoa-50 border">
-            <strong class="text-cocoa-800 block mb-1">💩 Poop & Pee Health Decoder</strong>
-            <p class="text-cocoa-600">Healthy droppings are firm, uniform, and oval. Guinea pigs also produce softer caecotrophs (night poops) directly from their bottom which they re-ingest for vital B-vitamins. Milky or chalky white urine drying on fleece is normal calcium excess excretion, but gritty sludge or blood requires immediate vet investigation.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 5: 8-POINT HEALTH CHECK -->
+    <!-- TAB 6: 8-POINT HEALTH CHECK -->
     <div id="tab-content-exams" class="tab-pane hidden space-y-4 text-xs">
-      <div class="bg-white p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 shadow-sm space-y-3">
-        <h3 class="text-lg font-display text-cocoa-800">Weekly 8-Point Physical Health Check-Up</h3>
-        <p class="text-cocoa-600 mb-2">Perform this structured check weekly. Click each point to read detailed assessment guidance and troubleshooting tips.</p>
+      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
+        <h3 class="text-lg font-display text-cocoa-800 dark:text-white">Weekly 8-Point Physical Health Check-Up</h3>
+        <p class="text-cocoa-600 dark:text-stone-300 mb-2">Perform this structured check weekly. Click each point to read detailed assessment guidance and troubleshooting tips.</p>
         
         <div class="space-y-2.5">
-          <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
-            <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>1. Incisors & Dry Chin</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
-              <p><strong>What to check:</strong> Front incisors should meet evenly without overlapping, misalingment, or sharp spurs. The chin must be completely dry.</p>
-              <p><strong>Troubleshooting:</strong> Wet chin or drooling indicates dental malocclusion ( overgrown back molars) or mouth pain making swallowing difficult. Book an exotic vet appointment immediately.</p>
+          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
+            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>1. Incisors & Dry Chin</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
+            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
+              <p><strong>What to check:</strong> Front incisors should meet evenly without overlapping, misaligning, or sharp spurs. The chin must be completely dry.</p>
+              <p><strong>Troubleshooting:</strong> Wet chin or drooling indicates dental malocclusion (overgrown back molars) or mouth pain making swallowing difficult. Book an exotic vet appointment immediately.</p>
             </div>
           </details>
 
-          <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
-            <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>2. Silent Breathing</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
+            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>2. Silent Breathing</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
+            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
               <p><strong>What to check:</strong> Hold your piggy gently near your ear. Respiration should be effortless and completely silent.</p>
               <p><strong>Troubleshooting:</strong> Clicking, rattling, wheezing, or wet sounding breaths indicate an Upper Respiratory Infection (URI) or pneumonia, which can deteriorate rapidly in guinea pigs.</p>
             </div>
           </details>
 
-          <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
-            <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>3. Clear Eyes & Nose</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
+            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>3. Clear Eyes & Nose</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
+            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
               <p><strong>What to check:</strong> Eyes must be bright, bold, and clear with zero cloudiness or milky discharge. Nose must be clean and free of crust.</p>
               <p><strong>Troubleshooting:</strong> Milky eye discharge can signal eye injuries or respiratory flare-ups. Crusty nostrils point toward infection or allergies to dusty hay.</p>
             </div>
           </details>
 
-          <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
-            <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>4. Plentiful Droppings</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
+            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>4. Plentiful Droppings</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
+            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
               <p><strong>What to check:</strong> Normal poops are consistent, firm, oval-shaped pellets produced in high volume throughout the day.</p>
               <p><strong>Troubleshooting:</strong> Small, misshapen, or clustered poops indicate gut stasis or lack of fibre intake. Watery diarrhoea is an emergency requiring vet intervention.</p>
             </div>
           </details>
 
-          <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
-            <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>5. Clean Footpads</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
+            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>5. Clean Footpads</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
+            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
               <p><strong>What to check:</strong> Inspect footpads for smooth skin and absence of swelling, redness, or scabs (pododermatitis / bumblefoot).</p>
-              <p><strong>Troubleshooting:</strong> Bumblefoot is caused by damp bedding or abrasive wire flooring. Switch to clean fleece liners or absorbant paper bedding and consult a vet if sores appear.</p>
+              <p><strong>Troubleshooting:</strong> Bumblefoot is caused by damp bedding or abrasive wire flooring. Switch to clean fleece liners or absorbent paper bedding and consult a vet if sores appear.</p>
             </div>
           </details>
 
-          <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
-            <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>6. Coat & Skin Check</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
+            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>6. Coat & Skin Check</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
+            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
               <p><strong>What to check:</strong> Part the fur to inspect skin health. Look for dry flakes, scabs, bald spots, or excessive scratching.</p>
-              <p><strong>Troubleshooting:</strong> Flaking skin, hair loss in a V-shape, or intense scratching often point towards burrowing mites (mange mites) or fungal ringworm, which require vet-prescribed treatments like Ivermectin.</p>
+              <p><strong>Troubleshooting:</strong> Flaking skin, hair loss in a V-shape, or intense scratching often point towards burrowing mites (mange mites) or fungal ringworm, which require vet-prescribed treatments.</p>
             </div>
           </details>
 
-          <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
-            <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>7. Dry Bottom & Urine</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
+            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>7. Dry Bottom & Urine</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
+            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
               <p><strong>What to check:</strong> Rear end must be completely dry and clean. Boars require checks for impaction (blockage in anal sac).</p>
-              <p><strong>Troubleshooting:</strong> Wet fur around the tail can mean urinary tract infections, sludge, or impaction in older boars. Clean gently and seek vet advice if odor or pain occurs.</p>
+              <p><strong>Troubleshooting:</strong> Wet fur around the tail can mean urinary tract infections, sludge, or impaction in older boars. Clean gently and seek vet advice if odour or pain occurs.</p>
             </div>
           </details>
 
-          <details class="p-3 rounded-xl bg-cocoa-50 border border-cocoa-200 group">
-            <summary class="font-bold text-cocoa-800 cursor-pointer flex justify-between items-center"><span>8. Grease Gland Maintenance</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 pt-2 border-t border-cocoa-200 space-y-1.5">
+          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
+            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>8. Grease Gland Maintenance</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
+            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
               <p><strong>What to check:</strong> Located on the rump just above the tail. Boars in particular secrete waxy oils that can accumulate.</p>
               <p><strong>Troubleshooting:</strong> Clean periodically with a tiny dab of coconut oil or mild pet shampoo to dissolve waxy buildup, then rinse thoroughly to prevent skin irritation.</p>
             </div>
@@ -335,35 +363,27 @@
       </div>
     </div>
 
-    <!-- TAB 6: SAFE MEDS & TRIAGE -->
-    <div id="tab-content-meds" class="tab-pane hidden space-y-4 text-xs">
-      <div class="bg-blush-50 p-4 rounded-squish border-2 border-blush-200 space-y-2">
-        <h3 class="font-display text-blush-600 font-bold text-sm">🚫 FATAL ANTIBIOTIC WARNING</h3>
-        <p class="text-cocoa-800 leading-relaxed">Penicillin, Amoxicillin, Clavamox, Ampicillin, and Erythromycin wipe out essential caecal flora and are <strong>fatal</strong> to guinea pigs. Safe options prescribed by exotic vets include Baytril (Enrofloxacin) and Septrin / Bactrim.</p>
-      </div>
-    </div>
-
   </main>
 
   <!-- PROFILE MODAL -->
   <div id="profile-modal" class="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-squish-lg max-w-sm w-full p-5 border-2 border-cocoa-200 shadow-2xl relative">
-      <div class="flex items-center justify-between pb-3 border-b-2 border-cocoa-200/60 mb-4">
-        <h3 id="profile-modal-title" class="font-display text-lg text-cocoa-800">Add Guinea Pig</h3>
-        <button onclick="closeProfileModal()" class="w-7 h-7 rounded-full bg-cocoa-100 text-cocoa-600 flex items-center justify-center text-xs font-bold">✕</button>
+    <div class="bg-white dark:bg-stone-900 rounded-squish-lg max-w-sm w-full p-5 border-2 border-cocoa-200 dark:border-stone-800 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-3 border-b-2 border-cocoa-200/60 dark:border-stone-800 mb-4">
+        <h3 id="profile-modal-title" class="font-display text-lg text-cocoa-800 dark:text-white">Add Guinea Pig</h3>
+        <button onclick="closeProfileModal()" class="w-7 h-7 rounded-full bg-cocoa-100 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 flex items-center justify-center text-xs font-bold">✕</button>
       </div>
       <form onsubmit="handleProfileSubmit(event)" class="space-y-3 text-xs">
         <input type="hidden" id="p-id">
-        <div><label class="block font-bold text-cocoa-600 mb-1">Name</label><input type="text" id="p-name" required class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2"></div>
+        <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Name</label><input type="text" id="p-name" required class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
         <div class="grid grid-cols-2 gap-2">
-          <div><label class="block font-bold text-cocoa-600 mb-1">Sex</label><select id="p-gender" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-2 py-2"><option value="Boar (Male)">Boar (Male)</option><option value="Sow (Female)">Sow (Female)</option><option value="Neutered Boar">Neutered Boar</option><option value="Spayed Sow">Spayed Sow</option></select></div>
-          <div><label class="block font-bold text-cocoa-600 mb-1">Date of Birth</label><input type="date" id="p-dob" required class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-2 py-2"></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Sex</label><select id="p-gender" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-2 py-2"><option value="Boar (Male)">Boar (Male)</option><option value="Sow (Female)">Sow (Female)</option><option value="Neutered Boar">Neutered Boar</option><option value="Spayed Sow">Spayed Sow</option></select></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Date of Birth</label><input type="date" id="p-dob" required class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-2 py-2"></div>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <div><label class="block font-bold text-cocoa-600 mb-1">Breed</label><input type="text" id="p-breed" placeholder="American / English" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2"></div>
-          <div><label class="block font-bold text-cocoa-600 mb-1">Baseline Weight (g)</label><input type="number" id="p-baseline" required value="1000" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2"></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Breed</label><input type="text" id="p-breed" placeholder="American / English" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Baseline Weight (g)</label><input type="number" id="p-baseline" required value="1000" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
         </div>
-        <div><label class="block font-bold text-cocoa-600 mb-1">Exotic Vet</label><input type="text" id="p-vet" placeholder="Clinic Name" class="w-full bg-cocoa-50 border-2 border-cocoa-200 rounded-xl px-3 py-2"></div>
+        <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Exotic Vet</label><input type="text" id="p-vet" placeholder="Clinic Name" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
         <div class="pt-2"><button type="submit" class="squish-btn w-full py-2.5 rounded-xl bg-blush-500 text-white font-black text-xs shadow-squish-pink border-2 border-blush-600">Save Piggy Profile</button></div>
       </form>
     </div>
@@ -381,37 +401,27 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'WHEEKLY_APP_V4_UK';
-    let appData = { piggies: [], activePiggyId: null };
+    const STORAGE_KEY = 'WHEEKLY_APP_V5_UK';
+    let appData = { piggies: [], activePiggyId: null, darkMode: false };
     let weightChartInstance = null;
     let currentFoodFilter = 'ALL';
 
     const FOOD_DATABASE = [
-      // SAFE DAILY STAPLES
       { name: "Timothy, Orchard & Meadow Hay", cat: "SAFE", badge: "Unlimited 24/7", desc: "Must make up 85%+ of total diet. Essential long-strand fibre keeps the gut moving and teeth worn down correctly." },
-      { name: "Bell Peppers (Red, Yellow, Orange)", cat: "SAFE", badge: "1/4 Daily", desc: "Outstanding natural source of daily Vitamin C with low calcium levels. Red and yellow varieties have the highest vitamin content." },
+      { name: "Bell Peppers (Red, Yellow, Orange)", cat: "SAFE", badge: "1/4 Daily", desc: "Outstanding natural source of daily Vitamin C with low calcium levels." },
       { name: "Green & Red Leaf Lettuce", cat: "SAFE", badge: "Daily", desc: "Gentle, low-calcium leafy greens suitable for daily feeding." },
-      { name: "Romaine & Gem Lettuce", cat: "SAFE", badge: "Daily", desc: "Crunchy and nutritious leafy greens loved by cavies and safe for everyday rotation." },
-      { name: "Coriander (Cilantro)", cat: "SAFE", badge: "Daily", desc: "Highly palatable herb rich in vitamins, though feed in moderation due to moderate calcium content." },
+      { name: "Coriander (Cilantro)", cat: "SAFE", badge: "Daily", desc: "Highly palatable herb rich in vitamins, though feed in moderation due to moderate calcium." },
       { name: "Cucumber", cat: "SAFE", badge: "2-3 slices daily", desc: "Hydrating and refreshing, though mostly water with little nutritional density." },
       { name: "Zucchini (Courgette)", cat: "SAFE", badge: "1-2 slices", desc: "Safe, mild watery vegetable enjoyed by most guinea pigs." },
       { name: "Spring Greens", cat: "SAFE", badge: "2-3 leaves", desc: "Great brassica option providing vitamins and dietary fibre." },
-      { name: "Dandelion Leaves & Roots", cat: "SAFE", badge: "Forage treat", desc: "Excellent natural forage, though acts as a mild diuretic so feed in moderate portions." },
-      
-      // MODERATION / LIMIT
       { name: "Parsley & Dill", cat: "LIMIT", badge: "Occasional treat", desc: "Extremely rich in calcium; overfeeding can contribute to bladder stones or chalky sludge." },
-      { name: "Spinach & Kale", cat: "LIMIT", badge: "1-2 times weekly", desc: "High in oxalates and calcium; feed sparingly to prevent urinary tract issues." },
       { name: "Carrot", cat: "LIMIT", badge: "1 small slice weekly", desc: "High in natural sugars and starch; treat as a sugary sweet." },
-      { name: "Apple (no pips)", cat: "LIMIT", badge: "Tiny piece weekly", desc: "High sugar content. Pips/seeds contain cyanide compounds and must be removed." },
-      { name: "Strawberries & Blueberries", cat: "LIMIT", badge: "Occasional treat", desc: "Good vitamin C content but high sugar levels mean they should only be given rarely." },
-
-      // TOXIC / DANGEROUS
+      { name: "Apple (no pips)", cat: "LIMIT", badge: "Tiny piece weekly", desc: "High sugar content. Pips/seeds contain cyanide and must be removed." },
       { name: "Iceberg Lettuce", cat: "TOXIC", badge: "NEVER", desc: "Contains lactucarium and excessive water content which causes severe, watery diarrhoea." },
       { name: "Onions, Garlic, Chives & Leeks", cat: "TOXIC", badge: "FATAL", desc: "Contains organosulfoxides that rupture red blood cells, causing fatal haemolytic anaemia." },
       { name: "Potato & Potato Sprouts", cat: "TOXIC", badge: "FATAL", desc: "Contains solanine, a dangerous glycoalkaloid poison." },
       { name: "Avocado", cat: "TOXIC", badge: "FATAL", desc: "Extremely high fat content and contains persin, which is toxic to small herbivores." },
-      { name: "Muesli / Seed Mixes", cat: "TOXIC", badge: "AVOID", desc: "Commercial mixes encourage selective feeding, leading to obesity, severe dental disease, and nutritional deficiencies." },
-      { name: "Lawnmower Clippings", cat: "TOXIC", badge: "NEVER", desc: "Mown grass ferments rapidly in a guinea pig's stomach, producing dangerous gas and fatal bloat." }
+      { name: "Muesli / Seed Mixes", cat: "TOXIC", badge: "AVOID", desc: "Commercial mixes encourage selective feeding, leading to obesity and severe dental disease." }
     ];
 
     const DEFAULT_MEALS = [
@@ -433,10 +443,19 @@
       if (!appData.activePiggyId && appData.piggies.length > 0) {
         appData.activePiggyId = appData.piggies[0].id;
       }
+      if (appData.darkMode) {
+        document.documentElement.classList.add('dark');
+      }
     }
 
     function saveData() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    }
+
+    function toggleDarkMode() {
+      appData.darkMode = !appData.darkMode;
+      document.documentElement.classList.toggle('dark', appData.darkMode);
+      saveData();
     }
 
     function getActivePiggy() {
@@ -465,6 +484,8 @@
         renderPiggyChips();
         renderHero();
         renderWeights();
+        renderCalculators();
+        renderGrooming();
       }
     }
 
@@ -475,7 +496,7 @@
         const btn = document.createElement('button');
         const active = p.id === appData.activePiggyId;
         btn.onclick = () => { appData.activePiggyId = p.id; saveData(); renderApp(); };
-        btn.className = `px-3 py-1 rounded-full text-xs font-bold transition ${active ? 'bg-matcha-500 text-white' : 'bg-white text-cocoa-600 border border-cocoa-200'}`;
+        btn.className = `px-3 py-1 rounded-full text-xs font-bold transition ${active ? 'bg-matcha-500 text-white' : 'bg-white dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 border border-cocoa-200 dark:border-stone-700'}`;
         btn.textContent = p.name;
         c.appendChild(btn);
       });
@@ -492,6 +513,57 @@
       document.getElementById('hero-baseline').textContent = `${p.baselineWeight} g`;
       document.getElementById('hero-vet').textContent = p.vet || 'None';
       document.getElementById('hero-avatar-container').innerHTML = p.photo ? `<img src="${p.photo}" class="w-full h-full object-cover">` : '🐹';
+    }
+
+    function renderCalculators() {
+      const p = getActivePiggy();
+      if (!p) return;
+      const weightKg = p.baselineWeight / 1000;
+      const minVitC = Math.round(weightKg * 10);
+      const maxVitC = Math.round(weightKg * 20);
+      document.getElementById('calc-vitc-result').textContent = `${minVitC}mg - ${maxVitC}mg daily (Based on ${p.baselineWeight}g weight)`;
+    }
+
+    function logGrooming(type) {
+      const p = getActivePiggy();
+      if (!p) return;
+      if (!p.grooming) p.grooming = {};
+      p.grooming[type] = new Date().toISOString().split('T')[0];
+      saveData();
+      renderGrooming();
+    }
+
+    function renderGrooming() {
+      const p = getActivePiggy();
+      if (!p || !p.grooming) return;
+      document.getElementById('groom-nail-status').textContent = p.grooming.nail ? `Last done: ${p.grooming.nail}` : 'Not logged yet';
+      document.getElementById('groom-bath-status').textContent = p.grooming.bath ? `Last done: ${p.grooming.bath}` : 'Not logged yet';
+      document.getElementById('groom-cage-status').textContent = p.grooming.cage ? `Last done: ${p.grooming.cage}` : 'Not logged yet';
+    }
+
+    function exportDataBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", "wheekly_backup.json");
+      document.body.appendChild(dlAnchor);
+      dlAnchor.click();
+      dlAnchor.remove();
+    }
+
+    function importDataBackup(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        try {
+          appData = JSON.parse(ev.target.result);
+          saveData();
+          renderApp();
+          alert("Backup successfully restored!");
+        } catch(err) { alert("Invalid backup file format."); }
+      };
+      r.readAsDataURL(file);
     }
 
     function renderWeights() {
@@ -530,10 +602,11 @@
 
       [...w].reverse().forEach(item => {
         const tr = document.createElement('tr');
+        tr.className = "dark:border-stone-800";
         tr.innerHTML = `
           <td class="p-3 font-bold">${item.date}</td>
           <td class="p-3 font-black">${item.weight} g</td>
-          <td class="p-3 text-cocoa-600">${item.notes || '—'}</td>
+          <td class="p-3 text-cocoa-600 dark:text-stone-300">${item.notes || '—'}</td>
           <td class="p-3 text-right"><button onclick="deleteWeight('${item.id}')" class="text-blush-600 font-bold">✕</button></td>
         `;
         tbody.appendChild(tr);
@@ -590,13 +663,13 @@
         return matchesCat && matchesQuery;
       });
       filtered.forEach(item => {
-        let cardStyle = 'bg-matcha-50/70 border-matcha-200';
-        let badgeStyle = 'bg-matcha-200 text-matcha-600';
-        if (item.cat === 'TOXIC') { cardStyle = 'bg-blush-50 border-blush-200'; badgeStyle = 'bg-blush-500 text-white'; }
-        if (item.cat === 'LIMIT') { cardStyle = 'bg-butter-50 border-butter-200'; badgeStyle = 'bg-butter-200 text-butter-700'; }
+        let cardStyle = 'bg-matcha-50/70 dark:bg-stone-800 border-matcha-200 dark:border-stone-700';
+        let badgeStyle = 'bg-matcha-200 text-matcha-600 dark:bg-matcha-900 dark:text-matcha-300';
+        if (item.cat === 'TOXIC') { cardStyle = 'bg-blush-50 dark:bg-stone-800 border-blush-200 dark:border-stone-700'; badgeStyle = 'bg-blush-500 text-white'; }
+        if (item.cat === 'LIMIT') { cardStyle = 'bg-butter-50 dark:bg-stone-800 border-butter-200 dark:border-stone-700'; badgeStyle = 'bg-butter-200 text-butter-700'; }
         const div = document.createElement('div');
         div.className = `p-3.5 rounded-2xl border-2 ${cardStyle} space-y-1.5`;
-        div.innerHTML = `<div class="flex justify-between"><strong class="text-cocoa-800">${item.name}</strong><span class="text-[10px] font-black px-2 py-0.5 rounded-full ${badgeStyle}">${item.badge}</span></div><p class="text-cocoa-800">${item.desc}</p>`;
+        div.innerHTML = `<div class="flex justify-between"><strong class="text-cocoa-800 dark:text-white">${item.name}</strong><span class="text-[10px] font-black px-2 py-0.5 rounded-full ${badgeStyle}">${item.badge}</span></div><p class="text-cocoa-800 dark:text-stone-300">${item.desc}</p>`;
         list.appendChild(div);
       });
     }
@@ -608,8 +681,8 @@
       grid.innerHTML = '';
       DEFAULT_MEALS.forEach(m => {
         const d = document.createElement('div');
-        d.className = 'p-3.5 rounded-2xl bg-cocoa-50 border border-cocoa-200 flex gap-2.5';
-        d.innerHTML = `<input type="checkbox" class="mt-1 accent-matcha-500"><div><strong class="text-cocoa-800 block">${m.day}</strong><span class="text-cocoa-600">${m.menu}</span></div>`;
+        d.className = 'p-3.5 rounded-2xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 flex gap-2.5';
+        d.innerHTML = `<input type="checkbox" class="mt-1 accent-matcha-500"><div><strong class="text-cocoa-800 dark:text-white block">${m.day}</strong><span class="text-cocoa-600 dark:text-stone-300">${m.menu}</span></div>`;
         grid.appendChild(d);
       });
     }
@@ -629,7 +702,7 @@
         const idx = appData.piggies.findIndex(p => p.id === id);
         if (idx !== -1) appData.piggies[idx] = { ...appData.piggies[idx], ...data };
       } else {
-        const newPig = { id: 'p_' + Date.now(), ...data, weights: [] };
+        const newPig = { id: 'p_' + Date.now(), ...data, weights: [], grooming: {} };
         appData.piggies.push(newPig);
         appData.activePiggyId = newPig.id;
       }
