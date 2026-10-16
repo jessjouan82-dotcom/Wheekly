@@ -70,10 +70,25 @@
     }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    #splash-screen {
+      transition: opacity 0.5s ease-out;
+    }
   </style>
 </head>
 
 <body class="text-cocoa-800 dark:text-cocoa-50 min-h-screen flex flex-col font-body antialiased transition-colors">
+
+  <!-- Splash Screen Video Overlay -->
+  <div id="splash-screen" class="fixed inset-0 z-50 bg-[#E8F7ED] dark:bg-stone-900 flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-4 border-matcha-200 dark:border-stone-800 bg-white dark:bg-stone-900">
+      <video id="splash-video" autoplay muted playsinline class="w-full h-auto object-cover">
+        <source src="Gemini_generated_video_bb72c4fd.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <button onclick="dismissSplash()" class="mt-6 px-5 py-2 rounded-xl bg-matcha-500 text-white font-bold text-xs shadow-md">Skip Intro</button>
+  </div>
 
   <!-- Header with Logo -->
   <header class="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b-2 border-cocoa-200/50 dark:border-stone-800 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3">
@@ -116,14 +131,15 @@
 
     <!-- Active Profile Header -->
     <div id="profile-section" class="hidden space-y-4 mb-5">
-      <div class="flex items-center justify-between">
+      <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
           <span class="text-[11px] font-black uppercase text-cocoa-400 pl-1 shrink-0">Piggies:</span>
           <div id="piggy-chips-container" class="flex items-center gap-2"></div>
         </div>
-        <div class="flex gap-2 text-xs">
-          <button onclick="exportDataBackup()" class="px-2.5 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold">Export</button>
-          <label class="px-2.5 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold cursor-pointer">
+        <div class="flex flex-wrap gap-2 text-xs">
+          <button onclick="copyVetReport()" class="px-3 py-1.5 rounded-lg bg-matcha-500 text-white font-bold shadow-sm flex items-center gap-1">📋 Copy Vet Report</button>
+          <button onclick="exportDataBackup()" class="px-2.5 py-1.5 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold">Export</button>
+          <label class="px-2.5 py-1.5 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold cursor-pointer">
             Import <input type="file" accept=".json" class="hidden" onchange="importDataBackup(event)">
           </label>
         </div>
@@ -452,6 +468,57 @@
       { day: "Saturday", menu: "1/4 Orange Bell Pepper + Red Leaf Lettuce + Tiny carrot coin" },
       { day: "Sunday", menu: "1/4 Red Bell Pepper + Spring Greens + Small parsley sprig" }
     ];
+
+    function dismissSplash() {
+      const splash = document.getElementById('splash-screen');
+      const vid = document.getElementById('splash-video');
+      if (vid) vid.pause();
+      if (splash) {
+        splash.style.opacity = '0';
+        setTimeout(() => splash.remove(), 500);
+      }
+    }
+
+    window.addEventListener('load', () => {
+      const vid = document.getElementById('splash-video');
+      if (vid) {
+        vid.onended = () => dismissSplash();
+        setTimeout(() => dismissSplash(), 4000);
+      }
+    });
+
+    function copyVetReport() {
+      const p = getActivePiggy();
+      if (!p) { alert("No piggy profile selected!"); return; }
+      const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
+      const latest = w.length > 0 ? `${w[0].weight}g (on ${w[0].date})` : 'No weigh-ins yet';
+      
+      let report = `=== VET HEALTH & WEIGHT REPORT ===\n`;
+      report += `Name: ${p.name}\n`;
+      report += `Sex: ${p.gender}\n`;
+      report += `Breed: ${p.breed || 'Cavy'}\n`;
+      report += `Date of Birth: ${p.dob || 'Unknown'} (Age: ${computeAge(p.dob)})\n`;
+      report += `Baseline Weight: ${p.baselineWeight}g\n`;
+      report += `Latest Weight: ${latest}\n`;
+      report += `Exotic Vet Clinic: ${p.vet || 'None Specified'}\n\n`;
+      report += `--- RECENT WEIGH-IN HISTORY ---\n`;
+      if (w.length === 0) {
+        report += `No weight logs recorded.\n`;
+      } else {
+        w.forEach(item => {
+          const diff = item.weight - p.baselineWeight;
+          const diffStr = diff > 0 ? `+${diff}g` : `${diff}g`;
+          report += `• ${item.date}: ${item.weight}g (Delta from baseline: ${diffStr}) ${item.notes ? '[Notes: ' + item.notes + ']' : ''}\n`;
+        });
+      }
+      report += `\nGenerated via Wheekly UK Health Suite`;
+
+      navigator.clipboard.writeText(report).then(() => {
+        alert("📋 Vet Report copied to clipboard! You can now paste it directly into an email or message to your vet.");
+      }).catch(err => {
+        alert("Could not copy automatically. Please use the Export button instead.");
+      });
+    }
 
     function loadData() {
       try {
