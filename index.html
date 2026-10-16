@@ -1,1057 +1,556 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Wheekly — UK Guinea Pig Care & Health Suite</title>
-  
-  <!-- App Icons & PWA meta -->
-  <link rel="icon" type="image/jpeg" href="wheekly_logo.jpg">
-  <link rel="apple-touch-icon" href="wheekly_logo.jpg">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Wheekly">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Quicksand:wght@500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Nunito', 'sans-serif'],
-            display: ['Bubblegum Sans', 'cursive'],
-            body: ['Quicksand', 'sans-serif']
-          },
-          colors: {
-            blush: { 50: '#FFF0F3', 100: '#FFD6E0', 200: '#FFB3C6', 300: '#FF8FA3', 500: '#FF758F', 600: '#E05772' },
-            matcha: { 50: '#F2FBF5', 100: '#E8F7ED', 200: '#D8F3DC', 300: '#B7E4C7', 500: '#52B788', 600: '#2D6A4F' },
-            lavender: { 50: '#FBF8FE', 100: '#F4EEFC', 200: '#E8DFF5', 500: '#A370F7', 700: '#6B3FA0' },
-            butter: { 50: '#FFFDF0', 100: '#FCF6BD', 200: '#F9E79F', 500: '#D4AC0D', 700: '#9A7D0A' },
-            sky: { 50: '#F0F9FF', 100: '#E0F2FE', 200: '#BAE6FD', 500: '#0284C7', 700: '#0369A1' },
-            cocoa: { 800: '#4A403A', 600: '#7A6E65', 400: '#A89F91', 200: '#DDD5CA', 50: '#F9F6F2' }
-          },
-          boxShadow: {
-            'squish-pink': '0 4px 0 #E05772',
-            'squish-matcha': '0 4px 0 #2D6A4F',
-            'squish-card': '0 6px 0 #DDD5CA'
-          },
-          borderRadius: {
-            'squish': '24px',
-            'squish-lg': '32px'
-          }
-        }
-      }
-    }
-  </script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wheekly — UK Guinea Pig Health Suite</title>
   <style>
-    body {
-      background-color: #FAF6F0;
-      background-image: radial-gradient(#E8DFD8 1.2px, transparent 1.2px);
-      background-size: 20px 20px;
-      -webkit-tap-highlight-color: transparent;
+    :root {
+      --primary: #2e7d5b;
+      --primary-dark: #166534;
+      --bg-cream: #fcfbf7;
+      --card-bg: #ffffff;
+      --border-color: #e5e0d5;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
     }
-    .dark body {
-      background-color: #1E1B18;
-      background-image: radial-gradient(#2D2925 1.2px, transparent 1.2px);
-      color: #E7E2DD;
-    }
-    .squish-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 rgba(0,0,0,0.15) !important;
-    }
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    @media print {
-      body * { visibility: hidden; }
-      #vet-report-modal, #vet-report-modal * { visibility: visible; }
-      #vet-report-modal { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; padding: 0; }
-      .no-print { display: none !important; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      margin: 0;
+      padding: 16px;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Top Nav & Branding */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand h1 {
+      font-size: 18px;
+      margin: 0;
+      color: var(--primary-dark);
+    }
+    .brand p {
+      font-size: 11.5px;
+      margin: 2px 0 0;
+      color: var(--text-muted);
+    }
+
+    /* Piggy Selector Tabs */
+    .piggy-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .piggy-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      text-align: center;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .piggy-btn.active {
+      background: #f0fdf4;
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+
+    /* Action Toolbar */
+    .action-toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .btn-main {
+      flex: 1;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(46, 125, 91, 0.2);
+    }
+
+    /* Card Layout */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .card h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--primary-dark);
+      margin: 0 0 12px;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 8px;
+    }
+
+    .profile-header {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .piggy-avatar {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+    }
+    .profile-info h3 {
+      margin: 0 0 4px;
+      font-size: 20px;
+    }
+    .badges {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .badge {
+      background: #f3f4f6;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .badge.highlight {
+      background: #dcfce7;
+      color: var(--primary-dark);
+    }
+    .vet-info {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .stat-box {
+      background: #fafaf9;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+    .stat-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Grooming & Mange Mite Section */
+    .grooming-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 13.5px;
+    }
+    .grooming-item:last-child {
+      border-bottom: none;
+    }
+    .btn-done {
+      background: #dcfce7;
+      color: var(--primary-dark);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Toast Notification */
+    #wheekly-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary-dark);
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 13.5px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      z-index: 99999;
+      display: none;
+      white-space: nowrap;
     }
   </style>
 </head>
+<body>
 
-<body class="text-cocoa-800 dark:text-cocoa-50 min-h-screen flex flex-col font-body antialiased transition-colors">
+<div class="container">
 
-  <!-- Header with Logo -->
-  <header class="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b-2 border-cocoa-200/50 dark:border-stone-800 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3">
-    <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-matcha-100 border-2 border-matcha-200 shadow-sm overflow-hidden flex items-center justify-center shrink-0">
-          <img src="wheekly_logo.jpg" alt="Wheekly Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='🐹'">
-        </div>
-        <div class="min-w-0">
-          <h1 class="text-lg sm:text-xl font-display text-cocoa-800 dark:text-white leading-tight tracking-wide">Wheekly</h1>
-          <p class="text-[10px] sm:text-[11px] text-cocoa-600 dark:text-stone-400 truncate font-semibold">UK Health Suite</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-xl bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 flex items-center justify-center text-xs font-bold transition">🌙</button>
-        <button onclick="handleShareApp()" class="squish-btn inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-extrabold bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 border-2 border-sky-200 dark:border-sky-800 transition">
-          <i class="fa-solid fa-share-nodes text-xs"></i> <span>Share</span>
-        </button>
-        <button onclick="openProfileModal()" class="squish-btn inline-flex items-center gap-1 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-extrabold bg-blush-500 text-white shadow-squish-pink border-2 border-blush-600 transition">
-          <i class="fa-solid fa-plus text-[10px]"></i> <span>Add Piggy</span>
-        </button>
+  <!-- Top Header -->
+  <div class="top-header">
+    <div class="brand">
+      <div>
+        <h1>Wheekly</h1>
+        <p>UK Health Suite[span_5](start_span)[span_5](end_span)</p>
       </div>
     </div>
-  </header>
+    <div style="font-size: 12px; font-weight: 600; color: var(--primary-dark); background: #f0fdf4; padding: 4px 10px; border-radius: 999px;">
+      🟢 Live UK Mode
+    </div>
+  </div>
 
-  <!-- Main Content -->
-  <main class="flex-grow max-w-5xl mx-auto px-3 sm:px-4 py-5 w-full">
+  <!-- Piggy Selector -->
+  <div class="piggy-selector">
+    <div class="piggy-btn active" id="tab-stilton" onclick="switchPiggy('stilton')">Stilton (897g)[span_6](start_span)[span_6](end_span)</div>
+    <div class="piggy-btn" id="tab-gorgonzola" onclick="switchPiggy('gorgonzola')">Gorgonzola (1060g)[span_7](start_span)[span_7](end_span)</div>
+  </div>
 
-    <!-- Zero State -->
-    <div id="zero-state-view" class="my-6 max-w-lg mx-auto bg-white dark:bg-stone-900 p-6 sm:p-8 rounded-squish-lg border-2 border-cocoa-200 dark:border-stone-800 shadow-squish-card text-center">
-      <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-butter-100 border-2 border-butter-200 flex items-center justify-center text-3xl sm:text-4xl mb-4 shadow-sm">🐹</div>
-      <h2 class="text-2xl font-display text-cocoa-800 dark:text-white mb-2">Welcome to Wheekly!</h2>
-      <p class="text-cocoa-600 dark:text-stone-300 text-xs sm:text-sm leading-relaxed mb-6 font-medium">
-        Add your guinea pig profile below to start tracking weights, meal plans, health check-ups, and grooming logs!
-      </p>
-      <button onclick="openProfileModal()" class="squish-btn w-full py-3 px-4 rounded-2xl bg-blush-500 text-white font-black text-xs sm:text-sm shadow-squish-pink border-2 border-blush-600 flex items-center justify-center gap-2">
-        <i class="fa-solid fa-heart"></i> Add Your First Guinea Pig
+  <!-- Action Toolbar -->
+  <div class="action-toolbar">
+    <button class="btn-main" onclick="exportVetReportPDF()">📄 Export Vet Report PDF</button>
+  </div>
+
+  <!-- Profile Card -->
+  <div class="card">
+    <div class="profile-header">
+      <img id="piggy-img" src="https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=150" alt="Piggy" class="piggy-avatar" />
+      <div class="profile-info">
+        <h3 id="piggy-name">Stilton</h3>
+        <div class="badges">
+          <span class="badge highlight" id="piggy-sex">Boar (Male)[span_8](start_span)[span_8](end_span)</span>
+          <span class="badge" id="piggy-breed">American[span_9](start_span)[span_9](end_span)</span>
+        </div>
+        <div class="vet-info" id="piggy-vet">
+          🏥 Exotic Vet: LittleCroft Vets, Bebington, Wirral CH63 5RB[span_10](start_span)[span_10](end_span)
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">Latest Weight</div>
+        <div class="stat-val" id="piggy-weight">897 g[span_11](start_span)[span_11](end_span)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Clinical Status</div>
+        <div class="stat-val" style="color: var(--primary-dark); font-size: 14px;">✅ Weight Stable[span_12](start_span)[span_12](end_span)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grooming & Cage Maintenance Tracker -->
+  <div class="card">
+    <h2>Grooming & Cage Maintenance[span_13](start_span)[span_13](end_span)</h2>
+    <div class="grooming-item">
+      <span>✂️ Nail Clipping</span>
+      <button class="btn-done" onclick="logAction('Nail Clipping')">Mark Done</button>
+    </div>
+    <div class="grooming-item">
+      <span>🛁 Bath / Hair Trim</span>
+      <button class="btn-done" onclick="logAction('Bath / Hair Trim')">Mark Done</button>
+    </div>
+    <div class="grooming-item">
+      <span>🧹 Cage Deep Clean</span>
+      <button class="btn-done" onclick="logAction('Cage Deep Clean')">Mark Done</button>
+    </div>
+
+    <!-- Mange Mite & Parasite Treatment Tracker (Integrated) -->
+    <div style="background: #faf6f0; border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-top: 14px;">
+      <div style="font-weight: 700; font-size: 13.5px; margin-bottom: 4px; color: var(--text-main);">
+        🔬 Mange Mite & Parasite Treatment Tracker
+      </div>
+      <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 10px;">
+        Predicts follow-up doses to break the 7–10 day mite egg-hatching cycle.
+      </div>
+
+      <select id="mite-mode" onchange="updateMitePredictions()" style="width: 100%; padding: 9px; border-radius: 8px; border: 1px solid #d1d5db; margin-bottom: 8px; background: #fff; font-size: 13px;">
+        <option value="active_7">🚨 Active Infestation (3 Doses — Every 7 Days)</option>
+        <option value="active_10">🚨 Active Infestation (3 Doses — Every 10 Days)</option>
+        <option value="prev_28">🛡️ Preventative / Routine (Every 28 Days)</option>
+        <option value="prev_90">🛡️ Quarterly Prevention (Every 90 Days)</option>
+      </select>
+
+      <input type="date" id="mite-date" onchange="updateMitePredictions()" style="width: 100%; padding: 9px; border-radius: 8px; border: 1px solid #d1d5db; margin-bottom: 10px; box-sizing: border-box; background: #fff; font-size: 13px;" />
+
+      <div id="mite-output" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px; margin-bottom: 10px;"></div>
+
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 10px; cursor: pointer;">
+        <input type="checkbox" id="mite-herd" checked />
+        Apply schedule to all cage-mates (Stilton & Gorgonzola)
+      </label>
+
+      <button onclick="saveMiteSchedule()" style="width: 100%; background: var(--primary); color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px;">
+        Save Mite Treatment Schedule
       </button>
     </div>
-
-    <!-- Active Profile Header -->
-    <div id="profile-section" class="hidden space-y-4 mb-5">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
-          <span class="text-[11px] font-black uppercase text-cocoa-400 pl-1 shrink-0">Piggies:</span>
-          <div id="piggy-chips-container" class="flex items-center gap-2"></div>
-        </div>
-        <div class="flex flex-wrap gap-2 text-xs">
-          <button onclick="openVetReportModal()" class="px-3 py-1.5 rounded-lg bg-matcha-500 text-white font-bold shadow-sm flex items-center gap-1">📋 Vet Report & PDF</button>
-          <button onclick="exportDataBackup()" class="px-2.5 py-1.5 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold">Export</button>
-          <label class="px-2.5 py-1.5 rounded-lg bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 font-bold cursor-pointer">
-            Import <input type="file" accept=".json" class="hidden" onchange="importDataBackup(event)">
-          </label>
-        </div>
-      </div>
-
-      <div class="bg-white dark:bg-stone-900 rounded-squish-lg p-4 sm:p-5 border-2 border-cocoa-200 dark:border-stone-800 shadow-squish-card">
-        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-          <div class="relative shrink-0 flex flex-col items-center gap-1.5">
-            <div id="hero-avatar-container" class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-blush-100 border-2 border-cocoa-200 dark:border-stone-700 shadow-inner overflow-hidden flex items-center justify-center text-3xl font-bold">🐹</div>
-            <div class="flex items-center gap-1">
-              <label class="px-2 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 text-[10px] font-bold border border-cocoa-200 dark:border-stone-700 cursor-pointer">
-                📷 Change <input type="file" accept="image/*" class="hidden" onchange="handleHeroPhotoUpload(event)">
-              </label>
-              <button onclick="togglePhotoFit()" id="photo-fit-btn" class="px-2 py-1 rounded-lg bg-cocoa-50 dark:bg-stone-800 text-[10px] font-bold border border-cocoa-200 dark:border-stone-700">Fit: Fill</button>
-            </div>
-          </div>
-
-          <div class="flex-grow text-center sm:text-left min-w-0">
-            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
-              <h2 id="hero-name" class="text-2xl font-display text-cocoa-800 dark:text-white">--</h2>
-              <span id="hero-gender" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-lavender-100 text-lavender-700 border border-lavender-200">--</span>
-              <span id="hero-breed" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-200">--</span>
-            </div>
-            <p class="text-xs text-cocoa-600 dark:text-stone-300 mb-2">
-              DOB: <strong id="hero-dob-val">--</strong> • Age: <strong id="hero-age-val">--</strong>
-            </p>
-            <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-[11px] text-cocoa-600 dark:text-stone-300">
-              <span>Baseline: <strong id="hero-baseline" class="text-cocoa-800 dark:text-white">-- g</strong></span>
-              <span class="cursor-pointer underline decoration-dotted" onclick="openExoticVetModal()" title="Click to learn what an exotic vet is">Exotic Vet: <strong id="hero-vet" class="text-cocoa-800 dark:text-white">--</strong> ℹ️</span>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2 w-full sm:w-auto">
-            <button onclick="editCurrentProfile()" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold bg-cocoa-50 dark:bg-stone-800 text-cocoa-800 dark:text-white border-2 border-cocoa-200 dark:border-stone-700 transition">
-              <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Navigation Tabs -->
-    <div id="nav-tabs-container" class="hidden flex border-b-2 border-cocoa-200/60 dark:border-stone-800 gap-3 sm:gap-5 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-black mb-5">
-      <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-2.5 text-matcha-600 border-b-2 border-matcha-600 shrink-0">⚖️ Weight Log</button>
-      <button onclick="switchTab('healthlogs')" id="tab-btn-healthlogs" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 Health Log</button>
-      <button onclick="switchTab('calculators')" id="tab-btn-calculators" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🧮 Calculators</button>
-      <button onclick="switchTab('grooming')" id="tab-btn-grooming" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">✂️ Grooming</button>
-      <button onclick="switchTab('meals')" id="tab-btn-meals" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🥗 Meals</button>
-      <button onclick="switchTab('foods')" id="tab-btn-foods" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🍎 Foods</button>
-      <button onclick="switchTab('exams')" id="tab-btn-exams" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 Health Check</button>
-    </div>
-
-    <!-- TAB 1: WEIGHT LOG -->
-    <div id="tab-content-weights" class="tab-pane space-y-4">
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div class="bg-white dark:bg-stone-900 p-3.5 sm:p-4 rounded-2xl border-2 border-cocoa-200 dark:border-stone-800 shadow-sm">
-          <span class="text-[10px] font-black uppercase text-cocoa-400">Latest Weight</span>
-          <div class="text-xl sm:text-2xl font-black text-cocoa-800 dark:text-white mt-0.5"><span id="metric-latest-weight">--</span> <span class="text-xs">g</span></div>
-        </div>
-        <div class="bg-white dark:bg-stone-900 p-3.5 sm:p-4 rounded-2xl border-2 border-cocoa-200 dark:border-stone-800 shadow-sm">
-          <span class="text-[10px] font-black uppercase text-cocoa-400">Baseline Delta</span>
-          <div class="text-xl sm:text-2xl font-black text-cocoa-800 dark:text-white mt-0.5"><span id="metric-baseline-diff">--</span> <span class="text-xs">g</span></div>
-        </div>
-        <div class="col-span-2 sm:col-span-1 bg-matcha-100 dark:bg-matcha-900/40 p-3.5 sm:p-4 rounded-2xl border-2 border-matcha-200 dark:border-matcha-800 flex flex-col justify-center">
-          <span class="text-[10px] font-black uppercase text-matcha-600 dark:text-matcha-300">Clinical Status</span>
-          <p id="metric-health-verdict" class="text-xs font-black text-cocoa-800 dark:text-white mt-0.5">Ready for weigh-in</p>
-        </div>
-      </div>
-
-      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm">
-        <h3 class="text-base font-display text-cocoa-800 dark:text-white mb-3">Record Scale Weigh-In</h3>
-        <form onsubmit="handleWeightSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
-          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Weight (Grams)</label><input type="number" id="w-val" required placeholder="e.g. 1040" min="100" max="2500" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
-          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Notes</label><input type="text" id="w-notes" placeholder="e.g. Before veggies" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
-          <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-xl bg-matcha-500 text-white font-extrabold shadow-squish-matcha border-2 border-matcha-600">+ Save Weight</button></div>
-        </form>
-      </div>
-
-      <div class="bg-white dark:bg-stone-900 p-4 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm text-xs">
-        <h4 class="font-bold text-cocoa-600 dark:text-stone-300 mb-2">Weight Progression Curve</h4>
-        <div class="h-48 sm:h-56 w-full"><canvas id="weightHistoryChart"></canvas></div>
-      </div>
-
-      <div class="bg-white dark:bg-stone-900 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm overflow-hidden text-xs">
-        <div class="p-3.5 border-b border-cocoa-200 dark:border-stone-800 font-display text-sm text-cocoa-800 dark:text-white">Weigh-In History</div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 font-bold border-b border-cocoa-200 dark:border-stone-700">
-              <tr><th class="p-3">Date</th><th class="p-3">Weight</th><th class="p-3">Notes</th><th class="p-3 text-right">Delete</th></tr>
-            </thead>
-            <tbody id="weight-table-body" class="divide-y divide-cocoa-200/50 dark:divide-stone-800"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: HEALTH LOG -->
-    <div id="tab-content-healthlogs" class="tab-pane hidden space-y-4 text-xs">
-      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
-        <h3 class="text-base font-display text-cocoa-800 dark:text-white">🩺 Health & Symptom Observation Log</h3>
-        <p class="text-cocoa-600 dark:text-stone-300">Record any observations regarding eyes, nose, paws, skin, coat, breathing, or behavior here.</p>
-        
-        <form onsubmit="handleHealthLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-2">
-          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Date</label><input type="date" id="hl-date" required class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
-          <div>
-            <label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Area / Category</label>
-            <select id="hl-category" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-2 py-2">
-              <option value="Eyes / Nose">Eyes / Nose</option>
-              <option value="Skin / Coat / Mites">Skin / Coat / Mites</option>
-              <option value="Paws / Footpads">Paws / Footpads</option>
-              <option value="Teeth / Eating / Chin">Teeth / Eating / Chin</option>
-              <option value="Breathing / Chest">Breathing / Chest</option>
-              <option value="Bottom / Droppings">Bottom / Droppings</option>
-              <option value="Other Observation">Other Observation</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Severity / Status</label>
-            <select id="hl-severity" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-2 py-2">
-              <option value="Mild / Monitoring">Mild / Monitoring</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Urgent / Vet Booked">Urgent / Vet Booked</option>
-              <option value="Resolved">Resolved</option>
-            </select>
-          </div>
-          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Details & Notes</label><input type="text" id="hl-notes" required placeholder="e.g. Mild crust on right nostril, active and eating" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
-          <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-xl bg-matcha-500 text-white font-extrabold shadow-squish-matcha border-2 border-matcha-600">+ Log Incident</button></div>
-        </form>
-      </div>
-
-      <div class="bg-white dark:bg-stone-900 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm overflow-hidden">
-        <div class="p-3.5 border-b border-cocoa-200 dark:border-stone-800 font-display text-sm text-cocoa-800 dark:text-white">Logged Health Incidents</div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 font-bold border-b border-cocoa-200 dark:border-stone-700">
-              <tr><th class="p-3">Date</th><th class="p-3">Category</th><th class="p-3">Severity</th><th class="p-3">Details</th><th class="p-3 text-right">Delete</th></tr>
-            </thead>
-            <tbody id="healthlog-table-body" class="divide-y divide-cocoa-200/50 dark:divide-stone-800"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 3: CALCULATORS -->
-    <div id="tab-content-calculators" class="tab-pane hidden space-y-4 text-xs">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
-          <h3 class="text-base font-display text-cocoa-800 dark:text-white">🍋 Vitamin C Daily Dosage</h3>
-          <p class="text-cocoa-600 dark:text-stone-300">Calculates estimated requirement (~10-20mg per kg daily).</p>
-          <div class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border">
-            <strong id="calc-vitc-result" class="text-matcha-600 dark:text-matcha-400 text-sm block">--</strong>
-          </div>
-        </div>
-        <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
-          <h3 class="text-base font-display text-cocoa-800 dark:text-white">🥣 Critical Care Mixing Guide</h3>
-          <p class="text-cocoa-600 dark:text-stone-300">Standard recovery formula mix ratio.</p>
-          <div class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border space-y-1">
-            <p><strong>Powder to Warm Water:</strong> 1 part Oxbow Critical Care to 1.5 - 2 parts warm water.</p>
-            <p class="text-cocoa-400">Feed approx 10ml - 15ml per 100g of body weight split across 4-6 feedings daily if off food.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 4: GROOMING -->
-    <div id="tab-content-grooming" class="tab-pane hidden space-y-4 text-xs">
-      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
-        <h3 class="text-lg font-display text-cocoa-800 dark:text-white">✂️ Grooming & Cage Maintenance Tracker</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div class="p-3.5 rounded-2xl bg-cocoa-50 dark:bg-stone-800 border space-y-2">
-            <strong class="text-cocoa-800 dark:text-white block">💅 Nail Clipping</strong>
-            <p id="groom-nail-status" class="text-cocoa-600 dark:text-stone-300">Not logged yet</p>
-            <button onclick="logGrooming('nail')" class="w-full py-1.5 rounded-lg bg-matcha-500 text-white font-bold">Mark Done Today</button>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-cocoa-50 dark:bg-stone-800 border space-y-2">
-            <strong class="text-cocoa-800 dark:text-white block">🛁 Bath / Hair Trim</strong>
-            <p id="groom-bath-status" class="text-cocoa-600 dark:text-stone-300">Not logged yet</p>
-            <button onclick="logGrooming('bath')" class="w-full py-1.5 rounded-lg bg-matcha-500 text-white font-bold">Mark Done Today</button>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-cocoa-50 dark:bg-stone-800 border space-y-2">
-            <strong class="text-cocoa-800 dark:text-white block">🏡 Cage Deep Clean</strong>
-            <p id="groom-cage-status" class="text-cocoa-600 dark:text-stone-300">Not logged yet</p>
-            <button onclick="logGrooming('cage')" class="w-full py-1.5 rounded-lg bg-matcha-500 text-white font-bold">Mark Done Today</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 5: MEALS -->
-    <div id="tab-content-meals" class="tab-pane hidden space-y-4">
-      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm text-xs space-y-3">
-        <h3 class="text-lg font-display text-cocoa-800 dark:text-white">Balanced 7-Day Low-Calcium UK Meal Plan</h3>
-        <p class="text-cocoa-600 dark:text-stone-300">Approx. 1 cup (~100g) of fresh veggies per piggy daily + unlimited Timothy or Meadow hay.</p>
-        <div id="meal-plan-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-      </div>
-    </div>
-
-    <!-- TAB 6: FOODS -->
-    <div id="tab-content-foods" class="tab-pane hidden space-y-4">
-      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-4 text-xs">
-        <h3 class="text-lg font-display text-cocoa-800 dark:text-white">Comprehensive Food Safety Directory</h3>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food (e.g. iceberg, parsley, carrot, dandelion)..." class="flex-grow bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5">
-          <div class="flex gap-1.5 overflow-x-auto pb-1">
-            <button onclick="setFoodFilter('ALL')" id="flt-ALL" class="px-3 py-2 rounded-xl font-extrabold bg-cocoa-800 text-white shrink-0">All</button>
-            <button onclick="setFoodFilter('SAFE')" id="flt-SAFE" class="px-3 py-2 rounded-xl font-extrabold bg-matcha-100 text-matcha-600 border shrink-0">✅ Safe</button>
-            <button onclick="setFoodFilter('LIMIT')" id="flt-LIMIT" class="px-3 py-2 rounded-xl font-extrabold bg-butter-100 text-butter-700 border shrink-0">⚠️ Limit</button>
-            <button onclick="setFoodFilter('TOXIC')" id="flt-TOXIC" class="px-3 py-2 rounded-xl font-extrabold bg-blush-100 text-blush-600 border shrink-0">🚫 Toxic</button>
-          </div>
-        </div>
-        <div id="food-directory-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-      </div>
-    </div>
-
-    <!-- TAB 7: HEALTH CHECK -->
-    <div id="tab-content-exams" class="tab-pane hidden space-y-4 text-xs">
-      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
-        <h3 class="text-lg font-display text-cocoa-800 dark:text-white">Weekly 8-Point Physical Health Check-Up</h3>
-        <p class="text-cocoa-600 dark:text-stone-300 mb-2">Perform this structured check weekly. Click each point to read detailed assessment guidance and troubleshooting tips.</p>
-        
-        <div class="space-y-2.5">
-          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
-            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>1. Incisors & Dry Chin</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
-              <p><strong>What to check:</strong> Front incisors should meet evenly without overlapping, misaligning, or sharp spurs. The chin must be completely dry.</p>
-              <p><strong>Troubleshooting:</strong> Wet chin or drooling indicates dental malocclusion (overgrown back molars) or mouth pain making swallowing difficult. Book an exotic vet appointment immediately.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
-            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>2. Silent Breathing</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
-              <p><strong>What to check:</strong> Hold your piggy gently near your ear. Respiration should be effortless and completely silent.</p>
-              <p><strong>Troubleshooting:</strong> Clicking, rattling, wheezing, or wet sounding breaths indicate an Upper Respiratory Infection (URI) or pneumonia, which can deteriorate rapidly in guinea pigs.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
-            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>3. Clear Eyes & Nose</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
-              <p><strong>What to check:</strong> Eyes must be bright, bold, and clear with zero cloudiness or milky discharge. Nose must be clean and free of crust.</p>
-              <p><strong>Troubleshooting:</strong> Milky eye discharge can signal eye injuries or respiratory flare-ups. Crusty nostrils point toward infection or allergies to dusty hay.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
-            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>4. Plentiful Droppings</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
-              <p><strong>What to check:</strong> Normal poops are consistent, firm, oval-shaped pellets produced in high volume throughout the day.</p>
-              <p><strong>Troubleshooting:</strong> Small, misshapen, or clustered poops indicate gut stasis or lack of fibre intake. Watery diarrhoea is an emergency requiring vet intervention.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
-            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>5. Clean Footpads</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
-              <p><strong>What to check:</strong> Inspect footpads for smooth skin and absence of swelling, redness, or scabs (pododermatitis / bumblefoot).</p>
-              <p><strong>Troubleshooting:</strong> Bumblefoot is caused by damp bedding or abrasive wire flooring. Switch to clean fleece liners or absorbent paper bedding and consult a vet if sores appear.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
-            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>6. Coat & Skin Check</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
-              <p><strong>What to check:</strong> Part the fur to inspect skin health. Look for dry flakes, scabs, bald spots, or excessive scratching.</p>
-              <p><strong>Troubleshooting:</strong> Flaking skin, hair loss in a V-shape, or intense scratching often point towards burrowing mites (mange mites) or fungal ringworm, which require vet-prescribed treatments.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
-            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>7. Dry Bottom & Urine</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
-              <p><strong>What to check:</strong> Rear end must be completely dry and clean. Boars require checks for impaction (blockage in anal sac).</p>
-              <p><strong>Troubleshooting:</strong> Wet fur around the tail can mean urinary tract infections, sludge, or impaction in older boars. Clean gently and seek vet advice if odour or pain occurs.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 group">
-            <summary class="font-bold text-cocoa-800 dark:text-white cursor-pointer flex justify-between items-center"><span>8. Grease Gland Maintenance</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-cocoa-600 dark:text-stone-300 pt-2 border-t border-cocoa-200 dark:border-stone-700 space-y-1.5">
-              <p><strong>What to check:</strong> Located on the rump just above the tail. Boars in particular secrete waxy oils that can accumulate.</p>
-              <p><strong>Troubleshooting:</strong> Clean periodically with a tiny dab of coconut oil or mild pet shampoo to dissolve waxy buildup, then rinse thoroughly to prevent skin irritation.</p>
-            </div>
-          </details>
-        </div>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- VET REPORT & PDF MODAL -->
-  <div id="vet-report-modal" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white dark:bg-stone-900 rounded-squish-lg max-w-2xl w-full p-6 sm:p-8 border-4 border-matcha-300 dark:border-stone-800 shadow-2xl relative space-y-5 text-xs text-cocoa-800 dark:text-stone-200">
-      
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between pb-3 border-b-2 border-cocoa-200 dark:border-stone-800">
-        <div class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-xl bg-matcha-100 flex items-center justify-center text-lg">📋</div>
-          <div>
-            <h3 class="font-display text-lg text-cocoa-800 dark:text-white font-bold">Exotic Vet Patient Medical Report</h3>
-            <p class="text-[10px] text-cocoa-600 dark:text-stone-400">Generated by Wheekly UK Health Suite</p>
-          </div>
-        </div>
-        <button onclick="closeVetReportModal()" class="no-print w-7 h-7 rounded-full bg-cocoa-100 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 flex items-center justify-center font-bold">✕</button>
-      </div>
-
-      <!-- Report Content Container -->
-      <div id="vet-report-content" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-        <!-- Filled dynamically via JavaScript -->
-      </div>
-
-      <!-- Modal Footer Actions -->
-      <div class="no-print pt-3 border-t-2 border-cocoa-200 dark:border-stone-800 flex flex-wrap items-center justify-between gap-2">
-        <button onclick="copyVetReportText()" class="px-4 py-2 rounded-xl bg-cocoa-100 dark:bg-stone-800 font-bold hover:bg-cocoa-200 transition">📋 Copy Text Only</button>
-        <div class="flex gap-2">
-          <button onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-matcha-500 text-white font-black shadow-sm hover:bg-matcha-600 transition flex items-center gap-1.5">🖨️ Print / Save as PDF</button>
-          <button onclick="closeVetReportModal()" class="px-4 py-2.5 rounded-xl bg-cocoa-800 dark:bg-stone-700 text-white font-bold">Close</button>
-        </div>
-      </div>
-
-    </div>
   </div>
 
-  <!-- PROFILE MODAL -->
-  <div id="profile-modal" class="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white dark:bg-stone-900 rounded-squish-lg max-w-sm w-full p-5 border-2 border-cocoa-200 dark:border-stone-800 shadow-2xl relative">
-      <div class="flex items-center justify-between pb-3 border-b-2 border-cocoa-200/60 dark:border-stone-800 mb-4">
-        <h3 id="profile-modal-title" class="font-display text-lg text-cocoa-800 dark:text-white">Add Guinea Pig</h3>
-        <button onclick="closeProfileModal()" class="w-7 h-7 rounded-full bg-cocoa-100 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 flex items-center justify-center text-xs font-bold">✕</button>
+</div>
+
+<!-- In-App Toast -->
+<div id="wheekly-toast"></div>
+
+<script>
+  // Piggy State Database
+  const piggies = {
+    stilton: {
+      name: "Stilton",
+      sex: "Boar (Male)[span_14](start_span)[span_14](end_span)",
+      breed: "American[span_15](start_span)[span_15](end_span)",
+      weight: 897,
+      dob: "2025-12-05[span_16](start_span)[span_16](end_span)",
+      age: "10 mos[span_17](start_span)[span_17](end_span)",
+      vet: "LittleCroft Vets, 46 Town Ln, Bebington, Wirral CH63 5RB[span_18](start_span)[span_18](end_span)",
+      img: "https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=150"
+    },
+    gorgonzola: {
+      name: "Gorgonzola",
+      sex: "Boar (Male)[span_19](start_span)[span_19](end_span)",
+      breed: "Peruvian[span_20](start_span)[span_20](end_span)",
+      weight: 1060,
+      dob: "2025-12-05[span_21](start_span)[span_21](end_span)",
+      age: "10 mos[span_22](start_span)[span_22](end_span)",
+      vet: "LittleCroft Vets, 46 Town Ln, Bebington, Wirral CH63 5RB[span_23](start_span)[span_23](end_span)",
+      img: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=150"
+    }
+  };
+
+  let currentPiggyKey = 'stilton';
+
+  function switchPiggy(key) {
+    currentPiggyKey = key;
+    const p = piggies[key];
+
+    document.getElementById('tab-stilton').className = key === 'stilton' ? 'piggy-btn active' : 'piggy-btn';
+    document.getElementById('tab-gorgonzola').className = key === 'gorgonzola' ? 'piggy-btn active' : 'piggy-btn';
+
+    document.getElementById('piggy-name').innerText = p.name;
+    document.getElementById('piggy-sex').innerText = p.sex;
+    document.getElementById('piggy-breed').innerText = p.breed;
+    document.getElementById('piggy-weight').innerText = p.weight + ' g';
+    document.getElementById('piggy-img').src = p.img;
+    document.getElementById('piggy-vet').innerText = '🏥 Exotic Vet: ' + p.vet;
+
+    showToast(`Switched active profile to ${p.name}`);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('wheekly-toast');
+    t.innerText = msg;
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 3500);
+  }
+
+  function logAction(taskName) {
+    const p = piggies[currentPiggyKey];
+    showToast(`✅ Marked '${taskName}' done for ${p.name}!`);
+  }
+
+  // Mite Schedule Calculator
+  document.getElementById('mite-date').value = new Date().toISOString().split('T')[0];
+
+  function updateMitePredictions() {
+    const mode = document.getElementById('mite-mode').value;
+    const dateVal = document.getElementById('mite-date').value;
+    const base = dateVal ? new Date(dateVal) : new Date();
+
+    const addDays = (d, n) => {
+      const copy = new Date(d);
+      copy.setDate(copy.getDate() + n);
+      return copy.toLocaleDateString('en-GB');
+    };
+
+    let doses = [];
+    let label = '';
+
+    if (mode === 'active_7' || mode === 'active_10') {
+      const step = mode === 'active_7' ? 7 : 10;
+      label = `Active Infestation (3 Doses, Every ${step} Days)`;
+      doses = [
+        { name: 'Dose 1 (Initial)', date: addDays(base, 0), note: 'Kills adult mites' },
+        { name: 'Dose 2 (Follow-up)', date: addDays(base, step), note: `Kills hatched mites (+${step}d)` },
+        { name: 'Dose 3 (Final)', date: addDays(base, step * 2), note: `Full eradication (+${step * 2}d)` }
+      ];
+    } else {
+      const step = mode === 'prev_28' ? 28 : 90;
+      label = `Preventative / Routine (Every ${step} Days)`;
+      doses = [
+        { name: 'Preventative Dose', date: addDays(base, 0), note: 'Logged' },
+        { name: 'Next Due Date', date: addDays(base, step), note: `Next check (+${step}d)` }
+      ];
+    }
+
+    window._currentMiteSchedule = { label, doses };
+
+    document.getElementById('mite-output').innerHTML = doses.map((d, i) => `
+      <div style="display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 4px;">
+        <span>${i === 0 ? '✅' : '⏳'} <strong>${d.name}:</strong></span>
+        <span><strong>${d.date}</strong> <em style="color: var(--text-muted);">(${d.note})</em></span>
       </div>
-      <form onsubmit="handleProfileSubmit(event)" class="space-y-3 text-xs">
-        <input type="hidden" id="p-id">
-        <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Name</label><input type="text" id="p-name" required class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
-        <div class="grid grid-cols-2 gap-2">
-          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Sex</label><select id="p-gender" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-2 py-2"><option value="Boar (Male)">Boar (Male)</option><option value="Sow (Female)">Sow (Female)</option><option value="Neutered Boar">Neutered Boar</option><option value="Spayed Sow">Spayed Sow</option></select></div>
-          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Date of Birth</label><input type="date" id="p-dob" required class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-2 py-2"></div>
+    `).join('');
+  }
+
+  function saveMiteSchedule() {
+    const p = piggies[currentPiggyKey];
+    const herd = document.getElementById('mite-herd').checked;
+    if (!window._currentMiteSchedule) updateMitePredictions();
+
+    if (herd) {
+      localStorage.setItem('wheekly_mite_stilton', JSON.stringify(window._currentMiteSchedule));
+      localStorage.setItem('wheekly_mite_gorgonzola', JSON.stringify(window._currentMiteSchedule));
+      showToast('🔬 Mite schedule saved for Stilton & Gorgonzola!');
+    } else {
+      localStorage.setItem('wheekly_mite_' + currentPiggyKey, JSON.stringify(window._currentMiteSchedule));
+      showToast(`🔬 Mite schedule saved for ${p.name}!`);
+    }
+  }
+
+  updateMitePredictions();
+
+  // Clinical PDF Export Generator
+  function exportVetReportPDF() {
+    const p = piggies[currentPiggyKey];
+    const vitCMin = Math.round((p.weight / 1000) * 10);
+    const vitCMax = Math.round((p.weight / 1000) * 20);
+    const ccMin = ((p.weight / 100) * 10).toFixed(1);
+    const ccMax = ((p.weight / 100) * 15).toFixed(1);
+
+    const miteRaw = localStorage.getItem('wheekly_mite_' + currentPiggyKey);
+    const mite = miteRaw ? JSON.parse(miteRaw) : null;
+
+    // Clipboard backup
+    const plainText = `WHEEKLY VET REPORT - ${p.name} (${p.sex}, ${p.breed})\nWeight: ${p.weight}g | Vet: ${p.vet}\nVit C: ${vitCMin}-${vitCMax}mg/day | Critical Care: ${ccMin}-${ccMax}ml/day`;
+    if (navigator.clipboard) navigator.clipboard.writeText(plainText).catch(() => {});
+
+    showToast('📄 Vet Report PDF Generated & Copied!');
+
+    const reportHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Wheekly_Vet_Report_${p.name}</title>
+        <style>
+          @page { size: A4; margin: 12mm; }
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1f2937; margin: 0; padding: 18px; }
+          .top-bar { background: #2e7d5b; color: #fff; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+          .top-bar button { background: #fff; color: #2e7d5b; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+          .header { display: flex; justify-content: space-between; align-items: center; background: #f0fdf4; border: 2px solid #2e7d5b; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+          .header h1 { margin: 0; font-size: 20px; color: #166534; }
+          .header p { margin: 4px 0 0; font-size: 12px; color: #4b5563; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+          .card { border: 1px solid #d1d5db; border-radius: 10px; padding: 14px; background: #fafaf9; }
+          .card h2 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; color: #166534; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+          .row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+          table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 6px; }
+          th, td { border: 1px solid #e5e7eb; padding: 7px 10px; text-align: left; }
+          th { background: #f3f4f6; }
+          .warn { margin-top: 16px; padding: 10px 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #991b1b; font-size: 11.5px; }
+          @media print { .top-bar { display: none !important; } body { padding: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="top-bar">
+          <span>📋 <strong>Wheekly Clinical Vet Report (${p.name})</strong> — Select "Save as PDF"</span>
+          <button onclick="window.print()">Save as PDF / Print</button>
         </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Breed</label><input type="text" id="p-breed" placeholder="American / English" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
-          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Baseline Weight (g)</label><input type="number" id="p-baseline" required value="1000" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+        <div class="header">
+          <div>
+            <h1>Wheekly — UK Guinea Pig Clinical Vet Report</h1>
+            <p>Exotic Vet Triage & Health Summary • wheekly.vercel.app[span_24](start_span)[span_24](end_span)</p>
+          </div>
+          <div style="text-align:right; font-size:12px;">
+            <strong>Date:</strong> ${new Date().toLocaleDateString('en-GB')}<br>
+            <strong style="color:#166534;">Status: Weight Stable (${p.weight} g)[span_25](start_span)[span_25](end_span)</strong>
+          </div>
         </div>
-        <div>
-          <label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1 flex justify-between items-center">
-            <span>Exotic Vet Clinic</span>
-            <button type="button" onclick="openExoticVetModal()" class="text-sky-600 dark:text-sky-400 font-bold underline text-[10px]">What is this?</button>
-          </label>
-          <input type="text" id="p-vet" placeholder="Clinic Name" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2">
+        <div class="grid">
+          <div class="card">
+            <h2>🐹 Patient Details</h2>
+            <div class="row"><span>Name:</span><strong>${p.name}</strong></div>
+            <div class="row"><span>Sex / Breed:</span><strong>${p.sex} • ${p.breed}</strong></div>
+            <div class="row"><span>DOB / Age:</span><strong>${p.dob} (${p.age})</strong></div>
+            <div class="row"><span>Exotic Vet:</span><strong style="text-align:right; max-width:60%;">${p.vet}</strong></div>
+          </div>
+          <div class="card">
+            <h2>⚖️ Weight & Dosage Triage</h2>
+            <div class="row"><span>Latest Weight:</span><strong>${p.weight} g</strong></div>
+            <div class="row"><span>Vitamin C (10-20mg/kg):</span><strong>${vitCMin}mg – ${vitCMax}mg daily</strong></div>
+            <div class="row"><span>Critical Care (10-15ml/100g):</span><strong>${ccMin}ml – ${ccMax}ml daily</strong></div>
+            <div class="row"><span>Spot-On Threshold:</span><strong>${p.weight >= 800 ? '≥800g (Adult)' : '<800g (Mini)'}</strong></div>
+          </div>
         </div>
-        <div class="pt-2"><button type="submit" class="squish-btn w-full py-2.5 rounded-xl bg-blush-500 text-white font-black text-xs shadow-squish-pink border-2 border-blush-600">Save Piggy Profile</button></div>
-      </form>
-    </div>
-  </div>
-
-  <!-- EXOTIC VET EXPLANATION MODAL -->
-  <div id="exotic-vet-modal" class="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-stone-900 rounded-squish-lg max-w-md w-full p-6 border-2 border-cocoa-200 dark:border-stone-800 shadow-2xl relative space-y-3 text-xs">
-      <div class="flex items-center justify-between pb-2 border-b-2 border-cocoa-200/60 dark:border-stone-800">
-        <h3 class="font-display text-base text-cocoa-800 dark:text-white font-bold">What is an Exotic Vet?</h3>
-        <button onclick="closeExoticVetModal()" class="w-6 h-6 rounded-full bg-cocoa-100 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 flex items-center justify-center font-bold">✕</button>
-      </div>
-      <p class="text-cocoa-600 dark:text-stone-300 leading-relaxed">
-        An <strong>exotic vet</strong> is a specialist veterinary surgeon with advanced training in treating non-traditional pets like guinea pigs, rabbits, and small mammals, rather than just standard cats and dogs.
-      </p>
-      <div class="p-3 rounded-xl bg-matcha-50 dark:bg-stone-800 border border-matcha-200 dark:border-stone-700 space-y-1.5">
-        <strong class="text-matcha-600 dark:text-matcha-400 block">Why guinea pigs specifically need one:</strong>
-        <ul class="list-disc pl-4 space-y-1 text-cocoa-800 dark:text-stone-200">
-          <li><strong>Specialised Dental Care:</strong> Guinea pig teeth grow continuously. Standard vets often lack the specific tools needed to properly inspect and burr back molar spurs or malocclusion.</li>
-          <li><strong>Fatal Drug Sensitivities:</strong> Many standard antibiotics prescribed to dogs and cats (like penicillin-based drugs) are completely <strong>fatal</strong> to guinea pigs. Exotic vets know safe alternatives like Baytril or Septrin.</li>
-          <li><strong>Masking Illness:</strong> As prey animals, guinea pigs hide pain until they are very sick. Exotic specialists are trained to spot subtle clinical signs that standard vets might miss.</li>
-        </ul>
-      </div>
-      <button onclick="closeExoticVetModal()" class="w-full py-2.5 rounded-xl bg-matcha-500 text-white font-black">Got it!</button>
-    </div>
-  </div>
-
-  <script>
-    const STORAGE_KEY = 'WHEEKLY_PERMANENT_KEY';
-    let appData = { piggies: [], activePiggyId: null, darkMode: false };
-    let weightChartInstance = null;
-    let currentFoodFilter = 'ALL';
-
-    const FOOD_DATABASE = [
-      { name: "Timothy, Orchard & Meadow Hay", cat: "SAFE", badge: "Unlimited 24/7", desc: "Must make up 85%+ of total diet. Essential long-strand fibre keeps the gut moving and teeth worn down correctly." },
-      { name: "Bell Peppers (Red, Yellow, Orange)", cat: "SAFE", badge: "1/4 Daily", desc: "Outstanding natural source of daily Vitamin C with low calcium levels." },
-      { name: "Green & Red Leaf Lettuce", cat: "SAFE", badge: "Daily", desc: "Gentle, low-calcium leafy greens suitable for daily feeding." },
-      { name: "Coriander (Cilantro)", cat: "SAFE", badge: "Daily", desc: "Highly palatable herb rich in vitamins, though feed in moderation due to moderate calcium." },
-      { name: "Cucumber", cat: "SAFE", badge: "2-3 slices daily", desc: "Hydrating and refreshing, though mostly water with little nutritional density." },
-      { name: "Zucchini (Courgette)", cat: "SAFE", badge: "1-2 slices", desc: "Safe, mild watery vegetable enjoyed by most guinea pigs." },
-      { name: "Spring Greens", cat: "SAFE", badge: "2-3 leaves", desc: "Great brassica option providing vitamins and dietary fibre." },
-      { name: "Parsley & Dill", cat: "LIMIT", badge: "Occasional treat", desc: "Extremely rich in calcium; overfeeding can contribute to bladder stones or chalky sludge." },
-      { name: "Carrot", cat: "LIMIT", badge: "1 small slice weekly", desc: "High in natural sugars and starch; treat as a sugary sweet." },
-      { name: "Apple (no pips)", cat: "LIMIT", badge: "Tiny piece weekly", desc: "High sugar content. Pips/seeds contain cyanide and must be removed." },
-      { name: "Iceberg Lettuce", cat: "TOXIC", badge: "NEVER", desc: "Contains lactucarium and excessive water content which causes severe, watery diarrhoea." },
-      { name: "Onions, Garlic, Chives & Leeks", cat: "TOXIC", badge: "FATAL", desc: "Contains organosulfoxides that rupture red blood cells, causing fatal haemolytic anaemia." },
-      { name: "Potato & Potato Sprouts", cat: "TOXIC", badge: "FATAL", desc: "Contains solanine, a dangerous glycoalkaloid poison." },
-      { name: "Avocado", cat: "TOXIC", badge: "FATAL", desc: "Extremely high fat content and contains persin, which is toxic to small herbivores." },
-      { name: "Muesli / Seed Mixes", cat: "TOXIC", badge: "AVOID", desc: "Commercial mixes encourage selective feeding, leading to obesity and severe dental disease." }
-    ];
-
-    const DEFAULT_MEALS = [
-      { day: "Monday", menu: "1/4 Red Bell Pepper + Green Leaf Lettuce + Cucumber slice" },
-      { day: "Tuesday", menu: "1/4 Yellow Bell Pepper + Red Leaf Lettuce + Courgette slice" },
-      { day: "Wednesday", menu: "1/4 Orange Bell Pepper + Spring Greens + Celery stick" },
-      { day: "Thursday", menu: "1/4 Red Bell Pepper + Green Leaf Lettuce + Coriander sprig" },
-      { day: "Friday", menu: "1/4 Yellow Bell Pepper + Romaine Lettuce + Cucumber slice" },
-      { day: "Saturday", menu: "1/4 Orange Bell Pepper + Red Leaf Lettuce + Tiny carrot coin" },
-      { day: "Sunday", menu: "1/4 Red Bell Pepper + Spring Greens + Small parsley sprig" }
-    ];
-
-    function openVetReportModal() {
-      const p = getActivePiggy();
-      if (!p) { alert("No piggy profile selected!"); return; }
-      const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const latest = w.length > 0 ? `${w[0].weight}g (${w[0].date})` : 'No weigh-ins recorded';
-
-      let html = `
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-matcha-50 dark:bg-stone-800 rounded-2xl border border-matcha-200 dark:border-stone-700">
-          <div><span class="text-[10px] uppercase font-bold text-cocoa-400">Patient Name</span><p class="font-black text-sm">${p.name}</p></div>
-          <div><span class="text-[10px] uppercase font-bold text-cocoa-400">Sex & Breed</span><p class="font-black text-sm">${p.gender} (${p.breed || 'Cavy'})</p></div>
-          <div><span class="text-[10px] uppercase font-bold text-cocoa-400">Age / DOB</span><p class="font-black text-sm">${computeAge(p.dob)}</p></div>
-          <div><span class="text-[10px] uppercase font-bold text-cocoa-400">Baseline Weight</span><p class="font-black text-sm">${p.baselineWeight}g</p></div>
-        </div>
-
-        <div class="space-y-1">
-          <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">Exotic Vet Clinic:</h4>
-          <p class="font-semibold text-xs">${p.vet || 'Not Specified'}</p>
-        </div>
-
-        <div class="space-y-2">
-          <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">🩺 Health & Symptom Observations</h4>
-          <div class="border border-cocoa-200 dark:border-stone-700 rounded-xl overflow-hidden">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 border-b border-cocoa-200 dark:border-stone-700">
-                <tr><th class="p-2.5">Date</th><th class="p-2.5">Category</th><th class="p-2.5">Severity</th><th class="p-2.5">Details</th></tr>
-              </thead>
-              <tbody class="divide-y divide-cocoa-200/50 dark:divide-stone-800">
-        `;
-
-      if (hLogs.length === 0) {
-        html += `<tr><td colspan="4" class="p-3 text-center text-cocoa-400">No health incidents logged.</td></tr>`;
-      } else {
-        hLogs.forEach(h => {
-          html += `<tr><td class="p-2.5 font-bold">${h.date}</td><td class="p-2.5">${h.category}</td><td class="p-2.5"><span class="px-2 py-0.5 rounded bg-butter-100 text-butter-800 font-bold">${h.severity}</span></td><td class="p-2.5">${h.notes}</td></tr>`;
-        });
-      }
-
-      html += `
+        <div class="card" style="margin-bottom:14px;">
+          <h2>🔬 Mange Mite & Parasite Treatment Schedule</h2>
+          ${mite ? `
+            <p style="margin:0 0 8px; font-size:13px;"><strong>Protocol:</strong> ${mite.label}</p>
+            <table>
+              <thead><tr><th>Dose Step</th><th>Scheduled Date</th><th>Notes</th></tr></thead>
+              <tbody>
+                ${mite.doses.map(d => `<tr><td>${d.name}</td><td><strong>${d.date}</strong></td><td>${d.note}</td></tr>`).join('')}
               </tbody>
             </table>
-          </div>
+          ` : `<p style="margin:0; font-size:13px; color:#4b5563;">No active mange mite treatment schedule logged.</p>`}
         </div>
-
-        <div class="space-y-2">
-          <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">⚖️ Weigh-In History</h4>
-          <div class="border border-cocoa-200 dark:border-stone-700 rounded-xl overflow-hidden">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 border-b border-cocoa-200 dark:border-stone-700">
-                <tr><th class="p-2.5">Date</th><th class="p-2.5">Weight</th><th class="p-2.5">Delta from Baseline</th><th class="p-2.5">Notes</th></tr>
-              </thead>
-              <tbody class="divide-y divide-cocoa-200/50 dark:divide-stone-800">
-        `;
-
-      if (w.length === 0) {
-        html += `<tr><td colspan="4" class="p-3 text-center text-cocoa-400">No weight records found.</td></tr>`;
-      } else {
-        w.forEach(item => {
-          const diff = item.weight - p.baselineWeight;
-          const diffStr = diff > 0 ? `+${diff}g` : `${diff}g`;
-          html += `<tr><td class="p-2.5 font-bold">${item.date}</td><td class="p-2.5 font-black">${item.weight}g</td><td class="p-2.5">${diffStr}</td><td class="p-2.5">${item.notes || '—'}</td></tr>`;
-        });
-      }
-
-      html += `
-              </tbody>
-            </table>
-          </div>
+        <div class="warn">
+          <strong>⚠️ Fatal Antibiotic Warning:</strong> Penicillin-based drugs (e.g., Amoxicillin) are fatal to guinea pigs. Safe exotic vet options include Baytril or Septrin.
         </div>
-      `;
+        <script>window.onload = () => setTimeout(() => window.print(), 250);<\/script>
+      </body>
+      </html>
+    `;
 
-      document.getElementById('vet-report-content').innerHTML = html;
-      document.getElementById('vet-report-modal').classList.remove('hidden');
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.open();
+      win.document.write(reportHTML);
+      win.document.close();
     }
+  }
+</script>
 
-    function closeVetReportModal() {
-      document.getElementById('vet-report-modal').classList.add('hidden');
-    }
-
-    function copyVetReportText() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      
-      let report = `=== VET HEALTH & WEIGHT REPORT ===\n`;
-      report += `Name: ${p.name}\nSex: ${p.gender}\nBreed: ${p.breed || 'Cavy'}\nDOB: ${p.dob || 'Unknown'} (Age: ${computeAge(p.dob)})\nBaseline: ${p.baselineWeight}g\nClinic: ${p.vet || 'None'}\n\n`;
-      report += `--- HEALTH LOGS ---\n`;
-      hLogs.forEach(h => { report += `• [${h.date}] ${h.category} (${h.severity}): ${h.notes}\n`; });
-      report += `\n--- WEIGH-IN HISTORY ---\n`;
-      w.forEach(item => { report += `• ${item.date}: ${item.weight}g (${item.weight - p.baselineWeight}g delta) ${item.notes ? '[' + item.notes + ']' : ''}\n`; });
-
-      navigator.clipboard.writeText(report).then(() => {
-        alert("📋 Copied text report to clipboard!");
-      });
-    }
-
-    function loadData() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) appData = JSON.parse(raw);
-      } catch (e) {}
-      if (!appData.piggies) appData.piggies = [];
-      if (!appData.activePiggyId && appData.piggies.length > 0) {
-        appData.activePiggyId = appData.piggies[0].id;
-      }
-      if (appData.darkMode) {
-        document.documentElement.classList.add('dark');
-      }
-    }
-
-    function saveData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-    }
-
-    function toggleDarkMode() {
-      appData.darkMode = !appData.darkMode;
-      document.documentElement.classList.toggle('dark', appData.darkMode);
-      saveData();
-    }
-
-    function openExoticVetModal() {
-      document.getElementById('exotic-vet-modal').classList.remove('hidden');
-    }
-
-    function closeExoticVetModal() {
-      document.getElementById('exotic-vet-modal').classList.add('hidden');
-    }
-
-    function getActivePiggy() {
-      return appData.piggies.find(p => p.id === appData.activePiggyId) || null;
-    }
-
-    function computeAge(dobStr) {
-      if (!dobStr) return '--';
-      const dob = new Date(dobStr);
-      const now = new Date();
-      if (isNaN(dob)) return '--';
-      let years = now.getFullYear() - dob.getFullYear();
-      let months = now.getMonth() - dob.getMonth();
-      if (months < 0) { years--; months += 12; }
-      if (years === 0) return `${months} mos`;
-      return `${years} yr ${months} mos`;
-    }
-
-    function renderApp() {
-      const hasPiggies = appData.piggies && appData.piggies.length > 0;
-      document.getElementById('zero-state-view').classList.toggle('hidden', hasPiggies);
-      document.getElementById('profile-section').classList.toggle('hidden', !hasPiggies);
-      document.getElementById('nav-tabs-container').classList.toggle('hidden', !hasPiggies);
-
-      if (hasPiggies) {
-        renderPiggyChips();
-        renderHero();
-        renderWeights();
-        renderHealthLogs();
-        renderCalculators();
-        renderGrooming();
-      }
-    }
-
-    function renderPiggyChips() {
-      const c = document.getElementById('piggy-chips-container');
-      c.innerHTML = '';
-      appData.piggies.forEach(p => {
-        const btn = document.createElement('button');
-        const active = p.id === appData.activePiggyId;
-        btn.onclick = () => { appData.activePiggyId = p.id; saveData(); renderApp(); };
-        btn.className = `px-3 py-1 rounded-full text-xs font-bold transition ${active ? 'bg-matcha-500 text-white' : 'bg-white dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 border border-cocoa-200 dark:border-stone-700'}`;
-        btn.textContent = p.name;
-        c.appendChild(btn);
-      });
-    }
-
-    function renderHero() {
-      const p = getActivePiggy();
-      if (!p) return;
-      document.getElementById('hero-name').textContent = p.name;
-      document.getElementById('hero-gender').textContent = p.gender;
-      document.getElementById('hero-breed').textContent = p.breed || 'Cavy';
-      document.getElementById('hero-dob-val').textContent = p.dob || '--';
-      document.getElementById('hero-age-val').textContent = computeAge(p.dob);
-      document.getElementById('hero-baseline').textContent = `${p.baselineWeight} g`;
-      document.getElementById('hero-vet').textContent = p.vet || 'None Specified';
-      
-      const fitMode = p.photoFit || 'cover';
-      document.getElementById('photo-fit-btn').textContent = `Fit: ${fitMode === 'contain' ? 'Full' : 'Fill'}`;
-      
-      document.getElementById('hero-avatar-container').innerHTML = p.photo 
-        ? `<img src="${p.photo}" class="w-full h-full object-${fitMode}">` 
-        : '🐹';
-    }
-
-    function togglePhotoFit() {
-      const p = getActivePiggy();
-      if (!p) return;
-      p.photoFit = p.photoFit === 'contain' ? 'cover' : 'contain';
-      saveData();
-      renderHero();
-    }
-
-    function renderCalculators() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const weightKg = p.baselineWeight / 1000;
-      const minVitC = Math.round(weightKg * 10);
-      const maxVitC = Math.round(weightKg * 20);
-      document.getElementById('calc-vitc-result').textContent = `${minVitC}mg - ${maxVitC}mg daily (Based on ${p.baselineWeight}g weight)`;
-    }
-
-    function logGrooming(type) {
-      const p = getActivePiggy();
-      if (!p) return;
-      if (!p.grooming) p.grooming = {};
-      p.grooming[type] = new Date().toISOString().split('T')[0];
-      saveData();
-      renderGrooming();
-    }
-
-    function renderGrooming() {
-      const p = getActivePiggy();
-      if (!p || !p.grooming) return;
-      document.getElementById('groom-nail-status').textContent = p.grooming.nail ? `Last done: ${p.grooming.nail}` : 'Not logged yet';
-      document.getElementById('groom-bath-status').textContent = p.grooming.bath ? `Last done: ${p.grooming.bath}` : 'Not logged yet';
-      document.getElementById('groom-cage-status').textContent = p.grooming.cage ? `Last done: ${p.grooming.cage}` : 'Not logged yet';
-    }
-
-    function exportDataBackup() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
-      const dlAnchor = document.createElement('a');
-      dlAnchor.setAttribute("href", dataStr);
-      dlAnchor.setAttribute("download", "wheekly_backup.json");
-      document.body.appendChild(dlAnchor);
-      dlAnchor.click();
-      dlAnchor.remove();
-    }
-
-    function importDataBackup(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = ev => {
-        try {
-          appData = JSON.parse(ev.target.result);
-          saveData();
-          renderApp();
-          alert("Backup successfully restored!");
-        } catch(err) { alert("Invalid backup file format."); }
-      };
-      r.readAsDataURL(file);
-    }
-
-    function renderWeights() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const w = p.weights || [];
-      w.sort((a,b) => new Date(a.date) - new Date(b.date));
-
-      const latestEl = document.getElementById('metric-latest-weight');
-      const diffEl = document.getElementById('metric-baseline-diff');
-      const verdictEl = document.getElementById('metric-health-verdict');
-      const tbody = document.getElementById('weight-table-body');
-      tbody.innerHTML = '';
-
-      if (w.length === 0) {
-        latestEl.textContent = '--';
-        diffEl.textContent = '--';
-        verdictEl.textContent = 'Ready for weigh-in';
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-cocoa-400">No weights recorded yet.</td></tr>`;
-        updateChart([], []);
-        return;
-      }
-
-      const latest = w[w.length - 1];
-      const delta = latest.weight - p.baselineWeight;
-      latestEl.textContent = latest.weight;
-      diffEl.textContent = delta > 0 ? `+${delta}` : delta;
-      
-      if (p.baselineWeight - latest.weight >= 60) {
-        verdictEl.textContent = '🚨 Emergency Drop (≥60g)';
-      } else if (p.baselineWeight - latest.weight >= 30) {
-        verdictEl.textContent = '⚠️ Monitor Daily (30-50g loss)';
-      } else {
-        verdictEl.textContent = '✅ Weight Stable';
-      }
-
-      [...w].reverse().forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = "dark:border-stone-800";
-        tr.innerHTML = `
-          <td class="p-3 font-bold">${item.date}</td>
-          <td class="p-3 font-black">${item.weight} g</td>
-          <td class="p-3 text-cocoa-600 dark:text-stone-300">${item.notes || '—'}</td>
-          <td class="p-3 text-right"><button onclick="deleteWeight('${item.id}')" class="text-blush-600 font-bold">✕</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      updateChart(w.map(i => i.date), w.map(i => i.weight));
-    }
-
-    function updateChart(labels, data) {
-      const ctx = document.getElementById('weightHistoryChart').getContext('2d');
-      if (weightChartInstance) weightChartInstance.destroy();
-      weightChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{ data, borderColor: '#52B788', backgroundColor: 'rgba(82, 183, 136, 0.12)', fill: true, tension: 0.3 }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
-      });
-    }
-
-    function handleWeightSubmit(e) {
-      e.preventDefault();
-      const p = getActivePiggy();
-      if (!p) return;
-      if (!p.weights) p.weights = [];
-      p.weights.push({
-        id: 'w_' + Date.now(),
-        date: document.getElementById('w-date').value,
-        weight: parseFloat(document.getElementById('w-val').value),
-        notes: document.getElementById('w-notes').value.trim()
-      });
-      saveData();
-      renderApp();
-      e.target.reset();
-      document.getElementById('w-date').valueAsDate = new Date();
-    }
-
-    function deleteWeight(id) {
-      const p = getActivePiggy();
-      if (!p) return;
-      p.weights = p.weights.filter(w => w.id !== id);
-      saveData();
-      renderApp();
-    }
-
-    function handleHealthLogSubmit(e) {
-      e.preventDefault();
-      const p = getActivePiggy();
-      if (!p) return;
-      if (!p.healthLogs) p.healthLogs = [];
-      p.healthLogs.push({
-        id: 'hl_' + Date.now(),
-        date: document.getElementById('hl-date').value,
-        category: document.getElementById('hl-category').value,
-        severity: document.getElementById('hl-severity').value,
-        notes: document.getElementById('hl-notes').value.trim()
-      });
-      saveData();
-      renderApp();
-      e.target.reset();
-      document.getElementById('hl-date').valueAsDate = new Date();
-    }
-
-    function deleteHealthLog(id) {
-      const p = getActivePiggy();
-      if (!p || !p.healthLogs) return;
-      p.healthLogs = p.healthLogs.filter(h => h.id !== id);
-      saveData();
-      renderApp();
-    }
-
-    function renderHealthLogs() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const logs = p.healthLogs || [];
-      logs.sort((a,b) => new Date(b.date) - new Date(a.date));
-      const tbody = document.getElementById('healthlog-table-body');
-      tbody.innerHTML = '';
-
-      if (logs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-cocoa-400">No health incidents logged yet.</td></tr>`;
-        return;
-      }
-
-      logs.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = "dark:border-stone-800";
-        tr.innerHTML = `
-          <td class="p-3 font-bold">${item.date}</td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-bold">${item.category}</span></td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded-full bg-butter-100 text-butter-700 font-bold">${item.severity}</span></td>
-          <td class="p-3 text-cocoa-600 dark:text-stone-300">${item.notes}</td>
-          <td class="p-3 text-right"><button onclick="deleteHealthLog('${item.id}')" class="text-blush-600 font-bold">✕</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderFoodDirectory() {
-      const q = (document.getElementById('food-search-input').value || '').toLowerCase();
-      const list = document.getElementById('food-directory-list');
-      list.innerHTML = '';
-      const filtered = FOOD_DATABASE.filter(item => {
-        const matchesCat = currentFoodFilter === 'ALL' || item.cat === currentFoodFilter;
-        const matchesQuery = item.name.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q);
-        return matchesCat && matchesQuery;
-      });
-      filtered.forEach(item => {
-        let cardStyle = 'bg-matcha-50/70 dark:bg-stone-800 border-matcha-200 dark:border-stone-700';
-        let badgeStyle = 'bg-matcha-200 text-matcha-600 dark:bg-matcha-900 dark:text-matcha-300';
-        if (item.cat === 'TOXIC') { cardStyle = 'bg-blush-50 dark:bg-stone-800 border-blush-200 dark:border-stone-700'; badgeStyle = 'bg-blush-500 text-white'; }
-        if (item.cat === 'LIMIT') { cardStyle = 'bg-butter-50 dark:bg-stone-800 border-butter-200 dark:border-stone-700'; badgeStyle = 'bg-butter-200 text-butter-700'; }
-        const div = document.createElement('div');
-        div.className = `p-3.5 rounded-2xl border-2 ${cardStyle} space-y-1.5`;
-        div.innerHTML = `<div class="flex justify-between"><strong class="text-cocoa-800 dark:text-white">${item.name}</strong><span class="text-[10px] font-black px-2 py-0.5 rounded-full ${badgeStyle}">${item.badge}</span></div><p class="text-cocoa-800 dark:text-stone-300">${item.desc}</p>`;
-        list.appendChild(div);
-      });
-    }
-
-    function setFoodFilter(cat) { currentFoodFilter = cat; renderFoodDirectory(); }
-
-    function renderMealPlan() {
-      const grid = document.getElementById('meal-plan-grid');
-      grid.innerHTML = '';
-      DEFAULT_MEALS.forEach(m => {
-        const d = document.createElement('div');
-        d.className = 'p-3.5 rounded-2xl bg-cocoa-50 dark:bg-stone-800 border border-cocoa-200 dark:border-stone-700 flex gap-2.5';
-        d.innerHTML = `<input type="checkbox" class="mt-1 accent-matcha-500"><div><strong class="text-cocoa-800 dark:text-white block">${m.day}</strong><span class="text-cocoa-600 dark:text-stone-300">${m.menu}</span></div>`;
-        grid.appendChild(d);
-      });
-    }
-
-    function handleProfileSubmit(e) {
-      e.preventDefault();
-      const id = document.getElementById('p-id').value;
-      const data = {
-        name: document.getElementById('p-name').value.trim(),
-        gender: document.getElementById('p-gender').value,
-        dob: document.getElementById('p-dob').value,
-        breed: document.getElementById('p-breed').value.trim(),
-        baselineWeight: parseFloat(document.getElementById('p-baseline').value) || 1000,
-        vet: document.getElementById('p-vet').value.trim()
-      };
-      if (id) {
-        const idx = appData.piggies.findIndex(p => p.id === id);
-        if (idx !== -1) appData.piggies[idx] = { ...appData.piggies[idx], ...data };
-      } else {
-        const newPig = { id: 'p_' + Date.now(), ...data, weights: [], healthLogs: [], grooming: {}, photoFit: 'cover' };
-        appData.piggies.push(newPig);
-        appData.activePiggyId = newPig.id;
-      }
-      saveData();
-      closeProfileModal();
-      renderApp();
-    }
-
-    function handleHeroPhotoUpload(e) {
-      const file = e.target.files[0];
-      const p = getActivePiggy();
-      if (!file || !p) return;
-      const r = new FileReader();
-      r.onload = ev => { p.photo = ev.target.result; saveData(); renderApp(); };
-      r.readAsDataURL(file);
-    }
-
-    function openProfileModal(edit = false) {
-      const p = getActivePiggy();
-      if (edit && p) {
-        document.getElementById('p-id').value = p.id;
-        document.getElementById('p-name').value = p.name;
-        document.getElementById('p-dob').value = p.dob;
-        document.getElementById('p-breed').value = p.breed;
-        document.getElementById('p-baseline').value = p.baselineWeight;
-        document.getElementById('p-vet').value = p.vet;
-      } else {
-        document.getElementById('p-id').value = '';
-        document.getElementById('p-name').value = '';
-        document.getElementById('p-dob').value = '';
-        document.getElementById('p-breed').value = '';
-        document.getElementById('p-baseline').value = '1000';
-        document.getElementById('p-vet').value = '';
-      }
-      document.getElementById('profile-modal').classList.remove('hidden');
-    }
-
-    function closeProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); }
-    function editCurrentProfile() { openProfileModal(true); }
-
-    function switchTab(t) {
-      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('border-matcha-600', 'text-matcha-600');
-        b.classList.add('border-transparent', 'text-cocoa-400');
-      });
-      document.getElementById(`tab-content-${t}`).classList.remove('hidden');
-      const btn = document.getElementById(`tab-btn-${t}`);
-      btn.classList.remove('border-transparent', 'text-cocoa-400');
-      btn.classList.add('border-matcha-600', 'text-matcha-600');
-    }
-
-    async function handleShareApp() {
-      if (navigator.share) {
-        try { await navigator.share({ title: 'Wheekly', url: window.location.href }); return; } catch(e) {}
-      }
-      alert(window.location.href);
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('w-date').value = todayStr;
-      document.getElementById('hl-date').value = todayStr;
-      renderMealPlan();
-      renderFoodDirectory();
-      loadData();
-      renderApp();
-    });
-  </script>
 </body>
 </html>
