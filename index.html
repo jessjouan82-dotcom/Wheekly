@@ -70,10 +70,25 @@
     }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    #splash-screen {
+      transition: opacity 0.5s ease-out;
+    }
   </style>
 </head>
 
 <body class="text-cocoa-800 dark:text-cocoa-50 min-h-screen flex flex-col font-body antialiased transition-colors">
+
+  <!-- Splash Screen Video Overlay -->
+  <div id="splash-screen" class="fixed inset-0 z-50 bg-[#E8F7ED] dark:bg-stone-900 flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-4 border-matcha-200 dark:border-stone-800 bg-white dark:bg-stone-900">
+      <video id="splash-video" autoplay muted playsinline class="w-full h-auto object-cover">
+        <source src="Gemini_generated_video_bb72c4fd.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <button onclick="dismissSplash()" class="mt-6 px-5 py-2 rounded-xl bg-matcha-500 text-white font-bold text-xs shadow-md">Skip Intro</button>
+  </div>
 
   <!-- Header with Logo -->
   <header class="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b-2 border-cocoa-200/50 dark:border-stone-800 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3">
@@ -452,6 +467,24 @@
       { day: "Saturday", menu: "1/4 Orange Bell Pepper + Red Leaf Lettuce + Tiny carrot coin" },
       { day: "Sunday", menu: "1/4 Red Bell Pepper + Spring Greens + Small parsley sprig" }
     ];
+
+    function dismissSplash() {
+      const splash = document.getElementById('splash-screen');
+      const vid = document.getElementById('splash-video');
+      if (vid) vid.pause();
+      if (splash) {
+        splash.style.opacity = '0';
+        setTimeout(() => splash.remove(), 500);
+      }
+    }
+
+    window.addEventListener('load', () => {
+      const vid = document.getElementById('splash-video');
+      if (vid) {
+        vid.onended = () => dismissSplash();
+        setTimeout(() => dismissSplash(), 4000); // Fallback timeout
+      }
+    });
 
     function loadData() {
       try {
