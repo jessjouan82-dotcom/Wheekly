@@ -114,7 +114,7 @@
       <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-butter-100 border-2 border-butter-200 flex items-center justify-center text-3xl sm:text-4xl mb-4 shadow-sm">🐹</div>
       <h2 class="text-2xl font-display text-cocoa-800 dark:text-white mb-2">Welcome to Wheekly!</h2>
       <p class="text-cocoa-600 dark:text-stone-300 text-xs sm:text-sm leading-relaxed mb-6 font-medium">
-        Add your guinea pig profile below to start tracking weights, meal plans, health check-ups, and emergency stasis recovery logs!
+        Add your guinea pig profile below to start tracking weights, emergency stasis recovery, exotic vet clinics, and health check-ups!
       </p>
       <button onclick="openProfileModal()" class="squish-btn w-full py-3 px-4 rounded-2xl bg-blush-500 text-white font-black text-xs sm:text-sm shadow-squish-pink border-2 border-blush-600 flex items-center justify-center gap-2">
         <i class="fa-solid fa-heart"></i> Add Your First Guinea Pig
@@ -177,6 +177,7 @@
     <div id="nav-tabs-container" class="hidden flex border-b-2 border-cocoa-200/60 dark:border-stone-800 gap-3 sm:gap-5 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-black mb-5">
       <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-2.5 text-matcha-600 border-b-2 border-matcha-600 shrink-0">⚖️ Weight Log</button>
       <button onclick="switchTab('stasis')" id="tab-btn-stasis" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0 text-blush-600 dark:text-blush-400">🚨 Stasis Mode</button>
+      <button onclick="switchTab('clinics')" id="tab-btn-clinics" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0 text-sky-600 dark:text-sky-400">🏥 UK Vets</button>
       <button onclick="switchTab('healthlogs')" id="tab-btn-healthlogs" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 Health & Mites</button>
       <button onclick="switchTab('calculators')" id="tab-btn-calculators" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🧮 Calculators</button>
       <button onclick="switchTab('grooming')" id="tab-btn-grooming" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">✂️ Grooming</button>
@@ -251,7 +252,6 @@
         </div>
       </div>
 
-      <!-- Log Feeding Form -->
       <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
         <h4 class="font-display text-sm text-cocoa-800 dark:text-white">Record Syringe Feeding or Hydration</h4>
         <form onsubmit="handleStasisFeedSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
@@ -262,7 +262,6 @@
         </form>
       </div>
 
-      <!-- Feeding History Table -->
       <div class="bg-white dark:bg-stone-900 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm overflow-hidden">
         <div class="p-3.5 border-b border-cocoa-200 dark:border-stone-800 font-display text-sm text-cocoa-800 dark:text-white">Stasis Emergency Feeding History</div>
         <div class="overflow-x-auto">
@@ -276,9 +275,37 @@
       </div>
     </div>
 
+    <!-- TAB: UK VET CLINIC LOCATOR & EMERGENCY CHECKLIST -->
+    <div id="tab-content-clinics" class="tab-pane hidden space-y-5 text-xs">
+      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-display text-cocoa-800 dark:text-white">🏥 UK Exotic Vet Clinic & Emergency Guide</h3>
+          <button onclick="openExoticVetModal()" class="px-3 py-1.5 rounded-lg bg-sky-100 text-sky-700 font-bold">Why an Exotic Vet?</button>
+        </div>
+        <p class="text-cocoa-600 dark:text-stone-300">Save your primary veterinary clinic details so they automatically appear on your printable Vet Report PDF, and use the emergency checklist below during phone calls.</p>
+        
+        <div class="p-4 rounded-2xl bg-sky-50 dark:bg-stone-800 border-2 border-sky-200 dark:border-stone-700 space-y-3">
+          <h4 class="font-bold text-sky-800 dark:text-sky-300">Find an RCVS-Accredited UK Exotic Practice</h4>
+          <p class="text-cocoa-600 dark:text-stone-300">Need an emergency appointment? Use the official RCVS Find A Vet directory or check specialized exotic hospitals such as the Rabbit Welfare Association & Fund (RWAF) recommended vet list.</p>
+          <div class="flex gap-2">
+            <a href="https://findavet.rcvs.org.uk" target="_blank" class="px-4 py-2 rounded-xl bg-sky-600 text-white font-bold inline-flex items-center gap-1.5 shadow-sm">🌐 RCVS Find a Vet Directory <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-2">
+          <h4 class="font-bold text-cocoa-800 dark:text-white">Emergency Phone Triage Checklist (What to tell the vet receptionist):</h4>
+          <ul class="space-y-2 text-cocoa-600 dark:text-stone-300">
+            <li class="flex items-start gap-2"><span>1.</span> <span><strong>Exact Weight Loss:</strong> State the precise weight drop in grams (e.g., *"He has dropped 55g in 4 days"*).</span></li>
+            <li class="flex items-start gap-2"><span>2.</span> <span><strong>Eating & Pooping Status:</strong> Confirm whether they are eating hay independently and whether droppings have stopped or shrunk.</span></li>
+            <li class="flex items-start gap-2"><span>3.</span> <span><strong>Ask for an Exotic Specialist:</strong> Explicitly ask: *"Do you have a vet on duty today who regularly treats guinea pigs and dental malocclusion?"*</span></li>
+            <li class="flex items-start gap-2"><span>4.</span> <span><strong>Antibiotic Safety Check:</strong> Be prepared to remind them that penicillin-based drugs are fatal to cavies if any antibiotics are prescribed.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <!-- TAB: HEALTH & MITES LOG -->
     <div id="tab-content-healthlogs" class="tab-pane hidden space-y-6 text-xs">
-      <!-- Section A: General Health Observations -->
       <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
         <h3 class="text-base font-display text-cocoa-800 dark:text-white">🩺 Symptom Observation Log</h3>
         <p class="text-cocoa-600 dark:text-stone-300">Record observations regarding eyes, nose, paws, skin flaking, coat, or breathing.</p>
@@ -323,7 +350,6 @@
         </div>
       </div>
 
-      <!-- Section B: Mite & Parasite Treatment Log -->
       <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
         <h3 class="text-base font-display text-cocoa-800 dark:text-white">🐛 Mite & Parasite Treatment Log (Ivermectin / Xeno)</h3>
         <p class="text-cocoa-600 dark:text-stone-300">Track anti-parasite spot-on treatments (e.g. Xeno 200/450) and schedule follow-up doses (typically every 10-14 days for 3 doses).</p>
@@ -562,7 +588,7 @@
             <span>Exotic Vet Clinic</span>
             <button type="button" onclick="openExoticVetModal()" class="text-sky-600 dark:text-sky-400 font-bold underline text-[10px]">What is this?</button>
           </label>
-          <input type="text" id="p-vet" placeholder="Clinic Name" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2">
+          <input type="text" id="p-vet" placeholder="Clinic Name & Phone" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2">
         </div>
         <div class="pt-2"><button type="submit" class="squish-btn w-full py-2.5 rounded-xl bg-blush-500 text-white font-black text-xs shadow-squish-pink border-2 border-blush-600">Save Piggy Profile</button></div>
       </form>
@@ -642,8 +668,8 @@
         </div>
 
         <div class="space-y-1">
-          <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">Exotic Vet Clinic:</h4>
-          <p class="font-semibold text-xs">${p.vet || 'Not Specified'}</p>
+          <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">Saved Exotic Vet Clinic:</h4>
+          <p class="font-semibold text-xs text-sky-700 dark:text-sky-300">${p.vet || 'Not Specified (Update in Edit Profile)'}</p>
         </div>
 
         <!-- Stasis & Critical Care Logs -->
@@ -1032,7 +1058,6 @@
       renderApp();
     }
 
-    // Stasis Emergency Mode Functions
     function toggleStasisEmergencyActive() {
       const p = getActivePiggy();
       if (!p) return;
@@ -1058,7 +1083,6 @@
       const logs = p.stasisLogs || [];
       logs.sort((a,b) => new Date(b.time) - new Date(a.time));
 
-      // Calculate total 24h feed
       const now = new Date();
       const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       let total24h = 0;
@@ -1070,7 +1094,6 @@
       });
       document.getElementById('stasis-total-24h').textContent = `${total24h} ml`;
 
-      // Next due calculation (3 hours after latest feed)
       if (logs.length > 0) {
         const latestTime = new Date(logs[0].time);
         const dueTime = new Date(latestTime.getTime() + 3 * 60 * 60 * 1000);
@@ -1344,7 +1367,7 @@
     function switchTab(t) {
       document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('border-matcha-600', 'text-matcha-600', 'border-blush-600', 'text-blush-600');
+        b.classList.remove('border-matcha-600', 'text-matcha-600', 'border-blush-600', 'text-blush-600', 'border-sky-600', 'text-sky-600');
         b.classList.add('border-transparent', 'text-cocoa-400');
       });
       document.getElementById(`tab-content-${t}`).classList.remove('hidden');
@@ -1352,6 +1375,8 @@
       btn.classList.remove('border-transparent', 'text-cocoa-400');
       if (t === 'stasis') {
         btn.classList.add('border-blush-600', 'text-blush-600');
+      } else if (t === 'clinics') {
+        btn.classList.add('border-sky-600', 'text-sky-600');
       } else {
         btn.classList.add('border-matcha-600', 'text-matcha-600');
       }
