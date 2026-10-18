@@ -176,7 +176,7 @@
     <!-- Main Navigation Tabs -->
     <div id="nav-tabs-container" class="hidden flex border-b-2 border-cocoa-200/60 dark:border-stone-800 gap-3 sm:gap-5 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-black mb-5">
       <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-2.5 text-matcha-600 border-b-2 border-matcha-600 shrink-0">⚖️ Weight Log</button>
-      <button onclick="switchTab('healthlogs')" id="tab-btn-healthlogs" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 Health Log</button>
+      <button onclick="switchTab('healthlogs')" id="tab-btn-healthlogs" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 Health & Mites</button>
       <button onclick="switchTab('calculators')" id="tab-btn-calculators" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🧮 Calculators</button>
       <button onclick="switchTab('grooming')" id="tab-btn-grooming" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">✂️ Grooming</button>
       <button onclick="switchTab('meals')" id="tab-btn-meals" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🥗 Meals</button>
@@ -229,24 +229,26 @@
       </div>
     </div>
 
-    <!-- TAB: HEALTH LOG -->
-    <div id="tab-content-healthlogs" class="tab-pane hidden space-y-4 text-xs">
+    <!-- TAB: HEALTH & MITES LOG -->
+    <div id="tab-content-healthlogs" class="tab-pane hidden space-y-6 text-xs">
+      
+      <!-- Section A: General Health Observations -->
       <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
-        <h3 class="text-base font-display text-cocoa-800 dark:text-white">🩺 Health & Symptom Observation Log</h3>
-        <p class="text-cocoa-600 dark:text-stone-300">Record any observations regarding eyes, nose, paws, skin, coat, breathing, or behavior here.</p>
+        <h3 class="text-base font-display text-cocoa-800 dark:text-white">🩺 Symptom Observation Log</h3>
+        <p class="text-cocoa-600 dark:text-stone-300">Record observations regarding eyes, nose, paws, skin flaking, coat, or breathing.</p>
         
         <form onsubmit="handleHealthLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-2">
           <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Date</label><input type="date" id="hl-date" required class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
           <div>
-            <label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Area / Category</label>
+            <label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Category</label>
             <select id="hl-category" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-2 py-2">
               <option value="Eyes / Nose">Eyes / Nose</option>
-              <option value="Skin / Coat / Mites">Skin / Coat / Mites</option>
+              <option value="Skin / Coat">Skin / Coat</option>
               <option value="Paws / Footpads">Paws / Footpads</option>
               <option value="Teeth / Eating / Chin">Teeth / Eating / Chin</option>
               <option value="Breathing / Chest">Breathing / Chest</option>
               <option value="Bottom / Droppings">Bottom / Droppings</option>
-              <option value="Other Observation">Other Observation</option>
+              <option value="Other">Other</option>
             </select>
           </div>
           <div>
@@ -258,13 +260,13 @@
               <option value="Resolved">Resolved</option>
             </select>
           </div>
-          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Details & Notes</label><input type="text" id="hl-notes" required placeholder="e.g. Mild crust on right nostril, active and eating" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
-          <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-xl bg-matcha-500 text-white font-extrabold shadow-squish-matcha border-2 border-matcha-600">+ Log Incident</button></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Details</label><input type="text" id="hl-notes" required placeholder="e.g. Mild scratch near ear" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+          <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-xl bg-matcha-500 text-white font-extrabold shadow-squish-matcha border-2 border-matcha-600">+ Log Symptom</button></div>
         </form>
       </div>
 
       <div class="bg-white dark:bg-stone-900 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm overflow-hidden">
-        <div class="p-3.5 border-b border-cocoa-200 dark:border-stone-800 font-display text-sm text-cocoa-800 dark:text-white">Logged Health Incidents</div>
+        <div class="p-3.5 border-b border-cocoa-200 dark:border-stone-800 font-display text-sm text-cocoa-800 dark:text-white">Logged Symptoms</div>
         <div class="overflow-x-auto">
           <table class="w-full text-left">
             <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 font-bold border-b border-cocoa-200 dark:border-stone-700">
@@ -274,6 +276,42 @@
           </table>
         </div>
       </div>
+
+      <!-- Section B: Mite & Parasite Treatment Log (Ivermectin / Xeno) -->
+      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
+        <h3 class="text-base font-display text-cocoa-800 dark:text-white">🐛 Mite & Parasite Treatment Log (Ivermectin / Xeno)</h3>
+        <p class="text-cocoa-600 dark:text-stone-300">Track anti-parasite spot-on treatments (e.g. Xeno 200/450) and schedule follow-up doses (typically every 10-14 days for 3 doses).</p>
+        
+        <form onsubmit="handleMiteLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-2">
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Date Given</label><input type="date" id="m-date" required class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+          <div>
+            <label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Product / Treatment</label>
+            <select id="m-product" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-2 py-2">
+              <option value="Xeno 200 Spot-On">Xeno 200 Spot-On</option>
+              <option value="Xeno 450 Spot-On">Xeno 450 Spot-On</option>
+              <option value="Vet Ivermectin Injection">Vet Ivermectin Injection</option>
+              <option value="Beaphar Anti-Parasite Spot-On">Beaphar Spot-On</option>
+              <option value="Other Parasite Treatment">Other Treatment</option>
+            </select>
+          </div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Dose / Weight (g)</label><input type="text" id="m-dose" required placeholder="e.g. 1050g / 1 Pipette" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Next Dose Due Date</label><input type="date" id="m-next" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+          <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-xl bg-sky-600 text-white font-extrabold shadow-sm border-2 border-sky-700">+ Log Treatment</button></div>
+        </form>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm overflow-hidden">
+        <div class="p-3.5 border-b border-cocoa-200 dark:border-stone-800 font-display text-sm text-cocoa-800 dark:text-white">Mite & Parasite History</div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 font-bold border-b border-cocoa-200 dark:border-stone-700">
+              <tr><th class="p-3">Date Given</th><th class="p-3">Product</th><th class="p-3">Dose / Weight</th><th class="p-3">Next Due</th><th class="p-3 text-right">Delete</th></tr>
+            </thead>
+            <tbody id="mitelog-table-body" class="divide-y divide-cocoa-200/50 dark:divide-stone-800"></tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
     <!-- TAB 3: CALCULATORS -->
@@ -547,7 +585,7 @@
       if (!p) { alert("No piggy profile selected!"); return; }
       const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const latest = w.length > 0 ? `${w[0].weight}g (${w[0].date})` : 'No weigh-ins recorded';
+      const mLogs = p.miteLogs ? [...p.miteLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
 
       let html = `
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-matcha-50 dark:bg-stone-800 rounded-2xl border border-matcha-200 dark:border-stone-700">
@@ -562,15 +600,41 @@
           <p class="font-semibold text-xs">${p.vet || 'Not Specified'}</p>
         </div>
 
+        <!-- Mite & Parasite Treatments -->
         <div class="space-y-2">
-          <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">🩺 Health & Symptom Observations</h4>
+          <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">🐛 Mite & Parasite Treatment History (Ivermectin / Xeno)</h4>
+          <div class="border border-cocoa-200 dark:border-stone-700 rounded-xl overflow-hidden">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 border-b border-cocoa-200 dark:border-stone-700">
+                <tr><th class="p-2.5">Date Given</th><th class="p-2.5">Product</th><th class="p-2.5">Dose / Weight</th><th class="p-2.5">Next Due</th></tr>
+              </thead>
+              <tbody class="divide-y divide-cocoa-200/50 dark:divide-stone-800">
+      `;
+
+      if (mLogs.length === 0) {
+        html += `<tr><td colspan="4" class="p-3 text-center text-cocoa-400">No parasite treatments logged.</td></tr>`;
+      } else {
+        mLogs.forEach(m => {
+          html += `<tr><td class="p-2.5 font-bold">${m.date}</td><td class="p-2.5">${m.product}</td><td class="p-2.5">${m.dose}</td><td class="p-2.5 font-semibold text-sky-600">${m.nextDue || '—'}</td></tr>`;
+        });
+      }
+
+      html += `
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Health Symptom Logs -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">🩺 Symptom Observations</h4>
           <div class="border border-cocoa-200 dark:border-stone-700 rounded-xl overflow-hidden">
             <table class="w-full text-left text-xs">
               <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 border-b border-cocoa-200 dark:border-stone-700">
                 <tr><th class="p-2.5">Date</th><th class="p-2.5">Category</th><th class="p-2.5">Severity</th><th class="p-2.5">Details</th></tr>
               </thead>
               <tbody class="divide-y divide-cocoa-200/50 dark:divide-stone-800">
-        `;
+      `;
 
       if (hLogs.length === 0) {
         html += `<tr><td colspan="4" class="p-3 text-center text-cocoa-400">No health incidents logged.</td></tr>`;
@@ -586,6 +650,7 @@
           </div>
         </div>
 
+        <!-- Weigh-In History -->
         <div class="space-y-2">
           <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">⚖️ Weigh-In History</h4>
           <div class="border border-cocoa-200 dark:border-stone-700 rounded-xl overflow-hidden">
@@ -594,7 +659,7 @@
                 <tr><th class="p-2.5">Date</th><th class="p-2.5">Weight</th><th class="p-2.5">Delta from Baseline</th><th class="p-2.5">Notes</th></tr>
               </thead>
               <tbody class="divide-y divide-cocoa-200/50 dark:divide-stone-800">
-        `;
+      `;
 
       if (w.length === 0) {
         html += `<tr><td colspan="4" class="p-3 text-center text-cocoa-400">No weight records found.</td></tr>`;
@@ -626,11 +691,19 @@
       if (!p) return;
       const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
+      const mLogs = p.miteLogs ? [...p.miteLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       
       let report = `=== VET HEALTH & WEIGHT REPORT ===\n`;
       report += `Name: ${p.name}\nSex: ${p.gender}\nBreed: ${p.breed || 'Cavy'}\nDOB: ${p.dob || 'Unknown'} (Age: ${computeAge(p.dob)})\nBaseline: ${p.baselineWeight}g\nClinic: ${p.vet || 'None'}\n\n`;
-      report += `--- HEALTH LOGS ---\n`;
+      
+      report += `--- MITE & PARASITE TREATMENTS (IVERMECTIN / XENO) ---\n`;
+      if (mLogs.length === 0) report += `No parasite treatments logged.\n`;
+      mLogs.forEach(m => { report += `• [${m.date}] ${m.product} | Dose/Weight: ${m.dose} | Next Due: ${m.nextDue || 'N/A'}\n`; });
+
+      report += `\n--- SYMPTOM LOGS ---\n`;
+      if (hLogs.length === 0) report += `No symptoms logged.\n`;
       hLogs.forEach(h => { report += `• [${h.date}] ${h.category} (${h.severity}): ${h.notes}\n`; });
+
       report += `\n--- WEIGH-IN HISTORY ---\n`;
       w.forEach(item => { report += `• ${item.date}: ${item.weight}g (${item.weight - p.baselineWeight}g delta) ${item.notes ? '[' + item.notes + ']' : ''}\n`; });
 
@@ -698,6 +771,7 @@
         renderHero();
         renderWeights();
         renderHealthLogs();
+        renderMiteLogs();
         renderCalculators();
         renderGrooming();
       }
@@ -916,7 +990,7 @@
       tbody.innerHTML = '';
 
       if (logs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-cocoa-400">No health incidents logged yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-cocoa-400">No symptoms logged yet.</td></tr>`;
         return;
       }
 
@@ -929,6 +1003,59 @@
           <td class="p-3"><span class="px-2 py-0.5 rounded-full bg-butter-100 text-butter-700 font-bold">${item.severity}</span></td>
           <td class="p-3 text-cocoa-600 dark:text-stone-300">${item.notes}</td>
           <td class="p-3 text-right"><button onclick="deleteHealthLog('${item.id}')" class="text-blush-600 font-bold">✕</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleMiteLogSubmit(e) {
+      e.preventDefault();
+      const p = getActivePiggy();
+      if (!p) return;
+      if (!p.miteLogs) p.miteLogs = [];
+      p.miteLogs.push({
+        id: 'm_' + Date.now(),
+        date: document.getElementById('m-date').value,
+        product: document.getElementById('m-product').value,
+        dose: document.getElementById('m-dose').value.trim(),
+        nextDue: document.getElementById('m-next').value
+      });
+      saveData();
+      renderApp();
+      e.target.reset();
+      document.getElementById('m-date').valueAsDate = new Date();
+    }
+
+    function deleteMiteLog(id) {
+      const p = getActivePiggy();
+      if (!p || !p.miteLogs) return;
+      p.miteLogs = p.miteLogs.filter(m => m.id !== id);
+      saveData();
+      renderApp();
+    }
+
+    function renderMiteLogs() {
+      const p = getActivePiggy();
+      if (!p) return;
+      const logs = p.miteLogs || [];
+      logs.sort((a,b) => new Date(b.date) - new Date(a.date));
+      const tbody = document.getElementById('mitelog-table-body');
+      tbody.innerHTML = '';
+
+      if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-cocoa-400">No parasite treatments logged.</td></tr>`;
+        return;
+      }
+
+      logs.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "dark:border-stone-800";
+        tr.innerHTML = `
+          <td class="p-3 font-bold">${item.date}</td>
+          <td class="p-3 font-semibold text-cocoa-800 dark:text-white">${item.product}</td>
+          <td class="p-3">${item.dose}</td>
+          <td class="p-3 font-bold text-sky-600">${item.nextDue || '—'}</td>
+          <td class="p-3 text-right"><button onclick="deleteMiteLog('${item.id}')" class="text-blush-600 font-bold">✕</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -983,7 +1110,7 @@
         const idx = appData.piggies.findIndex(p => p.id === id);
         if (idx !== -1) appData.piggies[idx] = { ...appData.piggies[idx], ...data };
       } else {
-        const newPig = { id: 'p_' + Date.now(), ...data, weights: [], healthLogs: [], grooming: {}, photoFit: 'cover' };
+        const newPig = { id: 'p_' + Date.now(), ...data, weights: [], healthLogs: [], miteLogs: [], grooming: {}, photoFit: 'cover' };
         appData.piggies.push(newPig);
         appData.activePiggyId = newPig.id;
       }
@@ -1047,6 +1174,7 @@
       const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('w-date').value = todayStr;
       document.getElementById('hl-date').value = todayStr;
+      document.getElementById('m-date').value = todayStr;
       renderMealPlan();
       renderFoodDirectory();
       loadData();
