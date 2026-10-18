@@ -114,7 +114,7 @@
       <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-butter-100 border-2 border-butter-200 flex items-center justify-center text-3xl sm:text-4xl mb-4 shadow-sm">🐹</div>
       <h2 class="text-2xl font-display text-cocoa-800 dark:text-white mb-2">Welcome to Wheekly!</h2>
       <p class="text-cocoa-600 dark:text-stone-300 text-xs sm:text-sm leading-relaxed mb-6 font-medium">
-        Add your guinea pig profile below to start tracking weights, meal plans, health check-ups, and grooming logs!
+        Add your guinea pig profile below to start tracking weights, meal plans, health check-ups, and emergency stasis recovery logs!
       </p>
       <button onclick="openProfileModal()" class="squish-btn w-full py-3 px-4 rounded-2xl bg-blush-500 text-white font-black text-xs sm:text-sm shadow-squish-pink border-2 border-blush-600 flex items-center justify-center gap-2">
         <i class="fa-solid fa-heart"></i> Add Your First Guinea Pig
@@ -176,6 +176,7 @@
     <!-- Main Navigation Tabs -->
     <div id="nav-tabs-container" class="hidden flex border-b-2 border-cocoa-200/60 dark:border-stone-800 gap-3 sm:gap-5 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-black mb-5">
       <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-2.5 text-matcha-600 border-b-2 border-matcha-600 shrink-0">⚖️ Weight Log</button>
+      <button onclick="switchTab('stasis')" id="tab-btn-stasis" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0 text-blush-600 dark:text-blush-400">🚨 Stasis Mode</button>
       <button onclick="switchTab('healthlogs')" id="tab-btn-healthlogs" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🩺 Health & Mites</button>
       <button onclick="switchTab('calculators')" id="tab-btn-calculators" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">🧮 Calculators</button>
       <button onclick="switchTab('grooming')" id="tab-btn-grooming" class="tab-btn pb-2.5 text-cocoa-400 border-b-2 border-transparent shrink-0">✂️ Grooming</button>
@@ -229,9 +230,54 @@
       </div>
     </div>
 
+    <!-- TAB: STASIS EMERGENCY MODE -->
+    <div id="tab-content-stasis" class="tab-pane hidden space-y-5 text-xs">
+      <div class="bg-blush-50 dark:bg-stone-900 p-4 sm:p-6 rounded-squish-lg border-2 border-blush-300 dark:border-stone-800 shadow-sm space-y-4">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-display text-blush-600 dark:text-blush-400">🚨 GI Stasis & Critical Care Emergency Mode</h3>
+            <p class="text-cocoa-600 dark:text-stone-300 mt-1">If your guinea pig has stopped eating, every hour counts. Track syringe feedings (approx 10ml–15ml per 100g body weight split across frequent sessions) and log fluid intake.</p>
+          </div>
+          <button onclick="toggleStasisEmergencyActive()" id="stasis-toggle-btn" class="px-3.5 py-2 rounded-xl bg-blush-500 text-white font-black shadow-squish-pink border-2 border-blush-600 shrink-0">Activate Mode</button>
+        </div>
+
+        <div id="stasis-active-banner" class="hidden p-4 rounded-2xl bg-white dark:bg-stone-800 border-2 border-blush-300 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="inline-block px-2 py-0.5 rounded bg-blush-100 text-blush-600 font-black text-[10px] uppercase">Active Emergency Protocol</span>
+            <h4 class="font-bold text-sm text-cocoa-800 dark:text-white">Next Syringe Feeding Due: <span id="stasis-next-due-time" class="text-blush-600">--</span></h4>
+            <p class="text-cocoa-600 dark:text-stone-300 text-[11px]">Total 24h Critical Care Delivered: <strong id="stasis-total-24h" class="text-cocoa-800 dark:text-white">0 ml</strong></p>
+          </div>
+          <button onclick="quickLogStasisFeed()" class="squish-btn w-full sm:w-auto px-4 py-2.5 rounded-xl bg-matcha-500 text-white font-black shadow-sm">+ Log 10ml Feed Now</button>
+        </div>
+      </div>
+
+      <!-- Log Feeding Form -->
+      <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
+        <h4 class="font-display text-sm text-cocoa-800 dark:text-white">Record Syringe Feeding or Hydration</h4>
+        <form onsubmit="handleStasisFeedSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Timestamp</label><input type="datetime-local" id="sf-time" required class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Amount (mL)</label><input type="number" id="sf-amount" required placeholder="e.g. 12" min="1" max="50" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+          <div><label class="block font-bold text-cocoa-600 dark:text-stone-300 mb-1">Type / Notes</label><input type="text" id="sf-notes" placeholder="e.g. Critical Care + water" class="w-full bg-cocoa-50 dark:bg-stone-800 border-2 border-cocoa-200 dark:border-stone-700 rounded-xl px-3 py-2"></div>
+          <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-xl bg-matcha-500 text-white font-extrabold shadow-squish-matcha border-2 border-matcha-600">+ Log Feed</button></div>
+        </form>
+      </div>
+
+      <!-- Feeding History Table -->
+      <div class="bg-white dark:bg-stone-900 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm overflow-hidden">
+        <div class="p-3.5 border-b border-cocoa-200 dark:border-stone-800 font-display text-sm text-cocoa-800 dark:text-white">Stasis Emergency Feeding History</div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 font-bold border-b border-cocoa-200 dark:border-stone-700">
+              <tr><th class="p-3">Time</th><th class="p-3">Amount</th><th class="p-3">Notes</th><th class="p-3 text-right">Delete</th></tr>
+            </thead>
+            <tbody id="stasis-table-body" class="divide-y divide-cocoa-200/50 dark:divide-stone-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- TAB: HEALTH & MITES LOG -->
     <div id="tab-content-healthlogs" class="tab-pane hidden space-y-6 text-xs">
-      
       <!-- Section A: General Health Observations -->
       <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
         <h3 class="text-base font-display text-cocoa-800 dark:text-white">🩺 Symptom Observation Log</h3>
@@ -277,7 +323,7 @@
         </div>
       </div>
 
-      <!-- Section B: Mite & Parasite Treatment Log (Ivermectin / Xeno) -->
+      <!-- Section B: Mite & Parasite Treatment Log -->
       <div class="bg-white dark:bg-stone-900 p-4 sm:p-5 rounded-squish border-2 border-cocoa-200 dark:border-stone-800 shadow-sm space-y-3">
         <h3 class="text-base font-display text-cocoa-800 dark:text-white">🐛 Mite & Parasite Treatment Log (Ivermectin / Xeno)</h3>
         <p class="text-cocoa-600 dark:text-stone-300">Track anti-parasite spot-on treatments (e.g. Xeno 200/450) and schedule follow-up doses (typically every 10-14 days for 3 doses).</p>
@@ -311,7 +357,6 @@
           </table>
         </div>
       </div>
-
     </div>
 
     <!-- TAB 3: CALCULATORS -->
@@ -586,6 +631,7 @@
       const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       const mLogs = p.miteLogs ? [...p.miteLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
+      const sLogs = p.stasisLogs ? [...p.stasisLogs].sort((a,b) => new Date(b.time) - new Date(a.time)) : [];
 
       let html = `
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-matcha-50 dark:bg-stone-800 rounded-2xl border border-matcha-200 dark:border-stone-700">
@@ -598,6 +644,31 @@
         <div class="space-y-1">
           <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">Exotic Vet Clinic:</h4>
           <p class="font-semibold text-xs">${p.vet || 'Not Specified'}</p>
+        </div>
+
+        <!-- Stasis & Critical Care Logs -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-cocoa-800 dark:text-white uppercase tracking-wider text-[10px]">🚨 Stasis & Critical Care Emergency Feed Logs</h4>
+          <div class="border border-cocoa-200 dark:border-stone-700 rounded-xl overflow-hidden">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-cocoa-50 dark:bg-stone-800 text-cocoa-600 dark:text-stone-300 border-b border-cocoa-200 dark:border-stone-700">
+                <tr><th class="p-2.5">Time</th><th class="p-2.5">Amount</th><th class="p-2.5">Notes</th></tr>
+              </thead>
+              <tbody class="divide-y divide-cocoa-200/50 dark:divide-stone-800">
+      `;
+
+      if (sLogs.length === 0) {
+        html += `<tr><td colspan="3" class="p-3 text-center text-cocoa-400">No emergency stasis feedings logged.</td></tr>`;
+      } else {
+        sLogs.forEach(s => {
+          html += `<tr><td class="p-2.5 font-bold">${s.time.replace('T', ' ')}</td><td class="p-2.5 font-black text-matcha-600">${s.amount} ml</td><td class="p-2.5">${s.notes || '—'}</td></tr>`;
+        });
+      }
+
+      html += `
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- Mite & Parasite Treatments -->
@@ -692,11 +763,16 @@
       const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       const mLogs = p.miteLogs ? [...p.miteLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
+      const sLogs = p.stasisLogs ? [...p.stasisLogs].sort((a,b) => new Date(b.time) - new Date(a.time)) : [];
       
       let report = `=== VET HEALTH & WEIGHT REPORT ===\n`;
       report += `Name: ${p.name}\nSex: ${p.gender}\nBreed: ${p.breed || 'Cavy'}\nDOB: ${p.dob || 'Unknown'} (Age: ${computeAge(p.dob)})\nBaseline: ${p.baselineWeight}g\nClinic: ${p.vet || 'None'}\n\n`;
       
-      report += `--- MITE & PARASITE TREATMENTS (IVERMECTIN / XENO) ---\n`;
+      report += `--- STASIS & CRITICAL CARE FEED LOGS ---\n`;
+      if (sLogs.length === 0) report += `No stasis feedings logged.\n`;
+      sLogs.forEach(s => { report += `• [${s.time.replace('T', ' ')}] ${s.amount}ml — ${s.notes || 'N/A'}\n`; });
+
+      report += `\n--- MITE & PARASITE TREATMENTS ---\n`;
       if (mLogs.length === 0) report += `No parasite treatments logged.\n`;
       mLogs.forEach(m => { report += `• [${m.date}] ${m.product} | Dose/Weight: ${m.dose} | Next Due: ${m.nextDue || 'N/A'}\n`; });
 
@@ -770,6 +846,7 @@
         renderPiggyChips();
         renderHero();
         renderWeights();
+        renderStasisTab();
         renderHealthLogs();
         renderMiteLogs();
         renderCalculators();
@@ -955,6 +1032,119 @@
       renderApp();
     }
 
+    // Stasis Emergency Mode Functions
+    function toggleStasisEmergencyActive() {
+      const p = getActivePiggy();
+      if (!p) return;
+      p.stasisActive = !p.stasisActive;
+      saveData();
+      renderStasisTab();
+    }
+
+    function renderStasisTab() {
+      const p = getActivePiggy();
+      if (!p) return;
+      const isActive = !!p.stasisActive;
+      const toggleBtn = document.getElementById('stasis-toggle-btn');
+      const activeBanner = document.getElementById('stasis-active-banner');
+
+      toggleBtn.textContent = isActive ? 'Deactivate Mode' : 'Activate Mode';
+      toggleBtn.className = isActive 
+        ? 'px-3.5 py-2 rounded-xl bg-cocoa-200 text-cocoa-800 font-bold shrink-0' 
+        : 'px-3.5 py-2 rounded-xl bg-blush-500 text-white font-black shadow-squish-pink border-2 border-blush-600 shrink-0';
+
+      activeBanner.classList.toggle('hidden', !isActive);
+
+      const logs = p.stasisLogs || [];
+      logs.sort((a,b) => new Date(b.time) - new Date(a.time));
+
+      // Calculate total 24h feed
+      const now = new Date();
+      const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      let total24h = 0;
+      logs.forEach(l => {
+        const lDate = new Date(l.time);
+        if (lDate >= oneDayAgo && lDate <= now) {
+          total24h += parseFloat(l.amount) || 0;
+        }
+      });
+      document.getElementById('stasis-total-24h').textContent = `${total24h} ml`;
+
+      // Next due calculation (3 hours after latest feed)
+      if (logs.length > 0) {
+        const latestTime = new Date(logs[0].time);
+        const dueTime = new Date(latestTime.getTime() + 3 * 60 * 60 * 1000);
+        document.getElementById('stasis-next-due-time').textContent = dueTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } else {
+        document.getElementById('stasis-next-due-time').textContent = 'Due Now (No recent feed logged)';
+      }
+
+      const tbody = document.getElementById('stasis-table-body');
+      tbody.innerHTML = '';
+      if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-cocoa-400">No emergency feedings logged yet.</td></tr>`;
+        return;
+      }
+
+      logs.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "dark:border-stone-800";
+        tr.innerHTML = `
+          <td class="p-3 font-bold">${item.time.replace('T', ' ')}</td>
+          <td class="p-3 font-black text-matcha-600">${item.amount} ml</td>
+          <td class="p-3 text-cocoa-600 dark:text-stone-300">${item.notes || '—'}</td>
+          <td class="p-3 text-right"><button onclick="deleteStasisLog('${item.id}')" class="text-blush-600 font-bold">✕</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleStasisFeedSubmit(e) {
+      e.preventDefault();
+      const p = getActivePiggy();
+      if (!p) return;
+      if (!p.stasisLogs) p.stasisLogs = [];
+      p.stasisLogs.push({
+        id: 'sf_' + Date.now(),
+        time: document.getElementById('sf-time').value,
+        amount: parseFloat(document.getElementById('sf-amount').value) || 10,
+        notes: document.getElementById('sf-notes').value.trim()
+      });
+      saveData();
+      renderApp();
+      e.target.reset();
+      setDefaultStasisTime();
+    }
+
+    function quickLogStasisFeed() {
+      const p = getActivePiggy();
+      if (!p) return;
+      if (!p.stasisLogs) p.stasisLogs = [];
+      const nowStr = new Date().toISOString().slice(0, 16);
+      p.stasisLogs.push({
+        id: 'sf_' + Date.now(),
+        time: nowStr,
+        amount: 10,
+        notes: 'Quick 10ml Critical Care Feed'
+      });
+      saveData();
+      renderApp();
+    }
+
+    function deleteStasisLog(id) {
+      const p = getActivePiggy();
+      if (!p || !p.stasisLogs) return;
+      p.stasisLogs = p.stasisLogs.filter(s => s.id !== id);
+      saveData();
+      renderApp();
+    }
+
+    function setDefaultStasisTime() {
+      const nowStr = new Date().toISOString().slice(0, 16);
+      const el = document.getElementById('sf-time');
+      if (el) el.value = nowStr;
+    }
+
     function handleHealthLogSubmit(e) {
       e.preventDefault();
       const p = getActivePiggy();
@@ -1110,7 +1300,7 @@
         const idx = appData.piggies.findIndex(p => p.id === id);
         if (idx !== -1) appData.piggies[idx] = { ...appData.piggies[idx], ...data };
       } else {
-        const newPig = { id: 'p_' + Date.now(), ...data, weights: [], healthLogs: [], miteLogs: [], grooming: {}, photoFit: 'cover' };
+        const newPig = { id: 'p_' + Date.now(), ...data, weights: [], healthLogs: [], miteLogs: [], stasisLogs: [], grooming: {}, photoFit: 'cover', stasisActive: false };
         appData.piggies.push(newPig);
         appData.activePiggyId = newPig.id;
       }
@@ -1154,13 +1344,17 @@
     function switchTab(t) {
       document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('border-matcha-600', 'text-matcha-600');
+        b.classList.remove('border-matcha-600', 'text-matcha-600', 'border-blush-600', 'text-blush-600');
         b.classList.add('border-transparent', 'text-cocoa-400');
       });
       document.getElementById(`tab-content-${t}`).classList.remove('hidden');
       const btn = document.getElementById(`tab-btn-${t}`);
       btn.classList.remove('border-transparent', 'text-cocoa-400');
-      btn.classList.add('border-matcha-600', 'text-matcha-600');
+      if (t === 'stasis') {
+        btn.classList.add('border-blush-600', 'text-blush-600');
+      } else {
+        btn.classList.add('border-matcha-600', 'text-matcha-600');
+      }
     }
 
     async function handleShareApp() {
@@ -1175,6 +1369,7 @@
       document.getElementById('w-date').value = todayStr;
       document.getElementById('hl-date').value = todayStr;
       document.getElementById('m-date').value = todayStr;
+      setDefaultStasisTime();
       renderMealPlan();
       renderFoodDirectory();
       loadData();
