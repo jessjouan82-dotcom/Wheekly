@@ -19,6 +19,8 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
     tailwind.config = {
@@ -63,7 +65,6 @@
       color: #F1F5F9;
     }
     
-    /* Tactile Micro-Interactions */
     button, .interactive-card {
       transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease, background-color 0.15s ease;
     }
@@ -90,13 +91,13 @@
 
 <body class="text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans antialiased transition-colors">
 
-  <!-- Toast Notification Banner (Floating Bottom-Center) -->
+  <!-- Toast Notification Banner -->
   <div id="toast-notification" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none translate-y-10 opacity-0 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-slate-100/95 text-white dark:text-slate-900 shadow-xl border border-slate-700/50 dark:border-slate-300 text-xs font-semibold backdrop-blur-md">
     <span id="toast-icon" class="text-sm">✅</span>
     <span id="toast-msg">Action completed successfully!</span>
   </div>
 
-  <!-- Header with Logo -->
+  <!-- Header with Logo & Auth Status -->
   <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 px-3 py-3 sm:px-6">
     <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
       <div class="flex items-center gap-3 min-w-0">
@@ -105,458 +106,283 @@
         </div>
         <div class="min-w-0">
           <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight tracking-tight">Wheekly</h1>
-          <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">UK Health Suite</p>
+          <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Cloud Health Suite</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 shrink-0">
-        <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">🌙</button>
-        <button onclick="handleShareApp()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 transition">
-          <i class="fa-solid fa-share-nodes text-xs"></i> <span>Share</span>
-        </button>
-        <button onclick="openProfileModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm hover:bg-rose-700 transition">
-          <i class="fa-solid fa-plus text-[10px]"></i> <span>Add Piggy</span>
-        </button>
+      <div id="header-auth-actions" class="flex items-center gap-2 shrink-0">
+        <!-- Dynamically rendered login/logout buttons -->
       </div>
     </div>
   </header>
 
-  <!-- Top Global Alert Banner -->
-  <div id="top-alert-banner" class="hidden bg-indigo-600 text-white px-4 py-2 text-xs font-medium flex items-center justify-between gap-2 shadow-inner border-b border-indigo-700">
-    <div class="flex items-center gap-2 truncate">
-      <span>🔔</span>
-      <span class="truncate">Never miss a weigh-in or mite treatment reminder!</span>
-    </div>
-    <div class="flex items-center gap-2 shrink-0">
-      <button onclick="requestNotificationPermission()" class="px-2.5 py-1 rounded bg-white text-indigo-700 font-bold hover:bg-indigo-50 transition">Enable Alerts</button>
-      <button onclick="triggerTestNotification()" class="px-2.5 py-1 rounded bg-indigo-700 text-white font-semibold hover:bg-indigo-800 transition">Test</button>
-    </div>
-  </div>
-
   <!-- Main Content -->
   <main class="flex-grow max-w-5xl mx-auto px-3 sm:px-6 py-6 w-full">
 
-    <!-- Zero State with Logo -->
-    <div id="zero-state-view" class="my-10 max-w-md mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center interactive-card">
-      <div class="w-20 h-20 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex items-center justify-center mb-4">
-        <img src="wheekly_logo.jpg" alt="Wheekly Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='🐹'">
+    <!-- AUTHENTICATION VIEW (Shown when user is logged out) -->
+    <div id="auth-view" class="hidden my-8 max-w-md mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex items-center justify-center mb-3">
+          <img src="wheekly_logo.jpg" alt="Wheekly Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='🐹'">
+        </div>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Welcome to Wheekly Cloud</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Sign in or create an account to access your guinea pig health records across any device.</p>
       </div>
-      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Welcome to Wheekly</h2>
-      <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-6">
-        Initialize your guinea pig health record below to start monitoring vital metrics, clinical weight trajectories, and emergency care logs.
-      </p>
-      <button onclick="openProfileModal()" class="w-full py-2.5 px-4 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 flex items-center justify-center gap-2 transition">
-        <i class="fa-solid fa-plus"></i> Add Guinea Pig Profile
-      </button>
+
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Email Address</label>
+          <input type="email" id="auth-email" required placeholder="name@example.com" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Password</label>
+          <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium">
+        </div>
+        <div class="pt-2 flex flex-col gap-2">
+          <button type="submit" id="auth-submit-btn" class="w-full py-2.5 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 transition">Sign In</button>
+          <button type="button" onclick="toggleAuthMode()" id="auth-toggle-mode-btn" class="w-full py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition">Need an account? Sign Up</button>
+        </div>
+      </form>
     </div>
 
-    <!-- Active Profile Header -->
-    <div id="profile-section" class="hidden space-y-4 mb-6">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Active Profile:</span>
-          <div id="piggy-chips-container" class="flex items-center gap-2"></div>
+    <!-- MAIN APP DASHBOARD VIEW (Shown when user is authenticated) -->
+    <div id="app-dashboard-view" class="hidden space-y-6">
+
+      <!-- Zero State (If user has no piggies yet) -->
+      <div id="zero-state-view" class="hidden my-10 max-w-md mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center interactive-card">
+        <div class="w-20 h-20 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex items-center justify-center mb-4">
+          <img src="wheekly_logo.jpg" alt="Wheekly Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='🐹'">
         </div>
-        <div class="flex flex-wrap gap-2 text-xs">
-          <button onclick="openVetReportModal()" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5">📋 Vet Report & PDF</button>
-          <button onclick="exportDataBackup()" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">Export</button>
-          <label class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer">
-            Import <input type="file" accept=".json" class="hidden" onchange="importDataBackup(event)">
-          </label>
-        </div>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Welcome to Wheekly</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-6">
+          Initialize your guinea pig health record below to start monitoring vital metrics, clinical weight trajectories, and emergency care logs in the cloud.
+        </p>
+        <button onclick="openProfileModal()" class="w-full py-2.5 px-4 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 flex items-center justify-center gap-2 transition">
+          <i class="fa-solid fa-plus"></i> Add Guinea Pig Profile
+        </button>
       </div>
 
-      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
-        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-          <div class="relative shrink-0 flex flex-col items-center gap-1.5">
-            <div id="hero-avatar-container" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center text-2xl font-bold">🐹</div>
-            <div class="flex items-center gap-1">
-              <label class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-medium border border-slate-200 dark:border-slate-700 cursor-pointer">
-                📷 Photo <input type="file" accept="image/*" class="hidden" onchange="handleHeroPhotoUpload(event)">
-              </label>
-              <button onclick="togglePhotoFit()" id="photo-fit-btn" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-medium border border-slate-200 dark:border-slate-700">Fit</button>
+      <!-- Active Profile Header -->
+      <div id="profile-section" class="space-y-4 mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Active Profile:</span>
+            <div id="piggy-chips-container" class="flex items-center gap-2"></div>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button onclick="openVetReportModal()" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5">📋 Vet Report & PDF</button>
+            <button onclick="openProfileModal()" class="px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-semibold shadow-sm hover:bg-rose-700 transition"><i class="fa-solid fa-plus text-[10px]"></i> Add Piggy</button>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+            <div class="relative shrink-0 flex flex-col items-center gap-1.5">
+              <div id="hero-avatar-container" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center text-2xl font-bold">🐹</div>
+            </div>
+
+            <div class="flex-grow text-center sm:text-left min-w-0">
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                <h2 id="hero-name" class="text-xl font-bold text-slate-900 dark:text-white">--</h2>
+                <span id="hero-gender" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">--</span>
+                <span id="hero-breed" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800">--</span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium">
+                DOB: <strong id="hero-dob-val" class="text-slate-700 dark:text-slate-200">--</strong> • Age: <strong id="hero-age-val" class="text-slate-700 dark:text-slate-200">--</strong>
+              </p>
+              <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-slate-500 dark:text-slate-400">
+                <span>Baseline: <strong id="hero-baseline" class="text-slate-900 dark:text-white font-bold">-- g</strong></span>
+                <span>Alert Threshold: <strong id="hero-threshold" class="text-slate-900 dark:text-white font-bold">-- g loss</strong></span>
+                <span class="cursor-pointer underline decoration-dotted text-sky-600 dark:text-sky-400" onclick="openExoticVetModal()">Exotic Clinic: <strong id="hero-vet" class="text-slate-900 dark:text-white font-bold">--</strong> ℹ️</span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button onclick="editCurrentProfile()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Profile
+              </button>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div class="flex-grow text-center sm:text-left min-w-0">
-            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
-              <h2 id="hero-name" class="text-xl font-bold text-slate-900 dark:text-white">--</h2>
-              <span id="hero-gender" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">--</span>
-              <span id="hero-breed" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800">--</span>
+      <!-- 5-Core Navigation Hubs -->
+      <div id="nav-tabs-container" class="flex border-b border-slate-200 dark:border-slate-800 gap-3 sm:gap-6 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-bold mb-6">
+        <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-3 text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-600 shrink-0">⚖️ Weight Log</button>
+        <button onclick="switchTab('stasis')" id="tab-btn-stasis" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-rose-600 dark:text-rose-400">🚨 Stasis Mode</button>
+        <button onclick="switchTab('clinics')" id="tab-btn-clinics" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-sky-600 dark:text-sky-400">🏥 UK Vets</button>
+        <button onclick="switchTab('healthhub')" id="tab-btn-healthhub" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🩺 Health Hub</button>
+        <button onclick="switchTab('dietcare')" id="tab-btn-dietcare" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🥗 Diet & Care</button>
+      </div>
+
+      <!-- HUB 1: WEIGHT LOG -->
+      <div id="tab-content-weights" class="tab-pane space-y-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Latest Weight</span>
+            <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-latest-weight">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Baseline Delta</span>
+            <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-baseline-diff">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
+          </div>
+          <div class="col-span-2 sm:col-span-1 bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-center interactive-card">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Clinical Status</span>
+            <p id="metric-health-verdict" class="text-xs font-bold text-slate-900 dark:text-white mt-0.5">Ready for weigh-in</p>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Record Scale Weigh-In</h3>
+          <form onsubmit="handleWeightSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
+            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Weight (Grams)</label><input type="number" id="w-val" required placeholder="e.g. 1040" min="100" max="2500" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
+            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes</label><input type="text" id="w-notes" placeholder="e.g. Morning pre-veg" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
+            <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Record Scale Entry</button></div>
+          </form>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-xs">
+          <h4 class="font-bold text-slate-700 dark:text-slate-300 mb-2">Weight Progression Curve</h4>
+          <div class="h-48 sm:h-56 w-full"><canvas id="weightHistoryChart"></canvas></div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden text-xs">
+          <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Historical Weigh-Ins</div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
+                <tr><th class="p-3">Date</th><th class="p-3">Weight</th><th class="p-3">Notes</th><th class="p-3 text-right">Action</th></tr>
+              </thead>
+              <tbody id="weight-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- HUB 2: STASIS EMERGENCY MODE -->
+      <div id="tab-content-stasis" class="tab-pane hidden space-y-5 text-xs">
+        <div class="bg-rose-50 dark:bg-rose-950/20 p-5 rounded-2xl border border-rose-200 dark:border-rose-900/50 shadow-sm space-y-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold text-rose-700 dark:text-rose-400">🚨 GI Stasis & Critical Care Emergency Protocol</h3>
+              <p class="text-slate-600 dark:text-slate-300 mt-1">If your guinea pig stops eating, immediate intervention is critical. Track syringe-feeding volume and maintain accurate fluid logs.</p>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium">
-              DOB: <strong id="hero-dob-val" class="text-slate-700 dark:text-slate-200">--</strong> • Age: <strong id="hero-age-val" class="text-slate-700 dark:text-slate-200">--</strong>
-            </p>
-            <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-slate-500 dark:text-slate-400">
-              <span>Baseline: <strong id="hero-baseline" class="text-slate-900 dark:text-white font-bold">-- g</strong></span>
-              <span>Alert Threshold: <strong id="hero-threshold" class="text-slate-900 dark:text-white font-bold">-- g loss</strong></span>
-              <span class="cursor-pointer underline decoration-dotted text-sky-600 dark:text-sky-400" onclick="openExoticVetModal()">Exotic Clinic: <strong id="hero-vet" class="text-slate-900 dark:text-white font-bold">--</strong> ℹ️</span>
+            <button onclick="toggleStasisEmergencyActive()" id="stasis-toggle-btn" class="px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold shadow-sm hover:bg-rose-700 transition shrink-0">Activate Mode</button>
+          </div>
+
+          <div id="stasis-active-banner" class="hidden p-4 rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="space-y-1 text-center sm:text-left">
+              <span class="inline-block px-2 py-0.5 rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 font-bold text-[10px] uppercase">Protocol Active</span>
+              <h4 class="font-bold text-slate-900 dark:text-white">Next Syringe Feeding Due: <span id="stasis-next-due-time" class="text-rose-600 font-extrabold">--</span></h4>
+              <p class="text-slate-500 dark:text-slate-400 text-[11px]">24-Hour Critical Care Delivered: <strong id="stasis-total-24h" class="text-slate-900 dark:text-white">0 ml</strong></p>
             </div>
-          </div>
-
-          <div class="flex items-center gap-2 w-full sm:w-auto">
-            <button onclick="editCurrentProfile()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-              <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Profile
-            </button>
+            <button onclick="quickLogStasisFeed()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold shadow-sm hover:bg-emerald-700 transition">+ Log 10ml Feed</button>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Streamlined 5-Core Navigation Hubs -->
-    <div id="nav-tabs-container" class="hidden flex border-b border-slate-200 dark:border-slate-800 gap-3 sm:gap-6 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-bold mb-6">
-      <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-3 text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-600 shrink-0">⚖️ Weight Log</button>
-      <button onclick="switchTab('stasis')" id="tab-btn-stasis" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-rose-600 dark:text-rose-400">🚨 Stasis Mode</button>
-      <button onclick="switchTab('clinics')" id="tab-btn-clinics" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-sky-600 dark:text-sky-400">🏥 UK Vets</button>
-      <button onclick="switchTab('healthhub')" id="tab-btn-healthhub" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🩺 Health Hub</button>
-      <button onclick="switchTab('dietcare')" id="tab-btn-dietcare" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🥗 Diet & Care</button>
-    </div>
-
-    <!-- HUB 1: WEIGHT LOG -->
-    <div id="tab-content-weights" class="tab-pane space-y-4">
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Latest Weight</span>
-          <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-latest-weight">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <h4 class="font-bold text-slate-900 dark:text-white">Log Feed / Hydration Event</h4>
+          <form onsubmit="handleStasisFeedSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Timestamp</label><input type="datetime-local" id="sf-time" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Amount (mL)</label><input type="number" id="sf-amount" required placeholder="e.g. 12" min="1" max="50" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes / Mix</label><input type="text" id="sf-notes" placeholder="e.g. Critical Care formula" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+            <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Save Entry</button></div>
+          </form>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Baseline Delta</span>
-          <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-baseline-diff">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
-        </div>
-        <div class="col-span-2 sm:col-span-1 bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-center interactive-card">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Clinical Status</span>
-          <p id="metric-health-verdict" class="text-xs font-bold text-slate-900 dark:text-white mt-0.5">Ready for weigh-in</p>
-        </div>
-      </div>
 
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Record Scale Weigh-In</h3>
-        <form onsubmit="handleWeightSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Weight (Grams)</label><input type="number" id="w-val" required placeholder="e.g. 1040" min="100" max="2500" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes</label><input type="text" id="w-notes" placeholder="e.g. Morning pre-veg" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
-          <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Record Scale Entry</button></div>
-        </form>
-      </div>
-
-      <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-xs">
-        <h4 class="font-bold text-slate-700 dark:text-slate-300 mb-2">Weight Progression Curve</h4>
-        <div class="h-48 sm:h-56 w-full"><canvas id="weightHistoryChart"></canvas></div>
-      </div>
-
-      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden text-xs">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Historical Weigh-Ins</div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
-              <tr><th class="p-3">Date</th><th class="p-3">Weight</th><th class="p-3">Notes</th><th class="p-3 text-right">Action</th></tr>
-            </thead>
-            <tbody id="weight-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- HUB 2: STASIS EMERGENCY MODE -->
-    <div id="tab-content-stasis" class="tab-pane hidden space-y-5 text-xs">
-      <div class="bg-rose-50 dark:bg-rose-950/20 p-5 rounded-2xl border border-rose-200 dark:border-rose-900/50 shadow-sm space-y-4">
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <h3 class="text-sm font-bold text-rose-700 dark:text-rose-400">🚨 GI Stasis & Critical Care Emergency Protocol</h3>
-            <p class="text-slate-600 dark:text-slate-300 mt-1">If your guinea pig stops eating, immediate intervention is critical. Track syringe-feeding volume (approx 10ml–15ml per 100g body weight across frequent sessions) and maintain accurate fluid logs.</p>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Emergency Stasis History</div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
+                <tr><th class="p-3">Timestamp</th><th class="p-3">Volume</th><th class="p-3">Notes</th><th class="p-3 text-right">Action</th></tr>
+              </thead>
+              <tbody id="stasis-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+            </table>
           </div>
-          <button onclick="toggleStasisEmergencyActive()" id="stasis-toggle-btn" class="px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold shadow-sm hover:bg-rose-700 transition shrink-0">Activate Mode</button>
         </div>
+      </div>
 
-        <div id="stasis-active-banner" class="hidden p-4 rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="space-y-1 text-center sm:text-left">
-            <span class="inline-block px-2 py-0.5 rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 font-bold text-[10px] uppercase">Protocol Active</span>
-            <h4 class="font-bold text-slate-900 dark:text-white">Next Syringe Feeding Due: <span id="stasis-next-due-time" class="text-rose-600 font-extrabold">--</span></h4>
-            <p class="text-slate-500 dark:text-slate-400 text-[11px]">24-Hour Critical Care Delivered: <strong id="stasis-total-24h" class="text-slate-900 dark:text-white">0 ml</strong></p>
+      <!-- HUB 3: UK VETS -->
+      <div id="tab-content-clinics" class="tab-pane hidden space-y-5 text-xs">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">🏥 UK Exotic Veterinary Care & Triage Guide</h3>
+            <button onclick="openExoticVetModal()" class="px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 font-semibold border border-sky-200 dark:border-sky-800">Why Exotic Vet?</button>
           </div>
-          <button onclick="quickLogStasisFeed()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold shadow-sm hover:bg-emerald-700 transition">+ Log 10ml Feed</button>
-        </div>
-      </div>
-
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-        <h4 class="font-bold text-slate-900 dark:text-white">Log Feed / Hydration Event</h4>
-        <form onsubmit="handleStasisFeedSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Timestamp</label><input type="datetime-local" id="sf-time" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Amount (mL)</label><input type="number" id="sf-amount" required placeholder="e.g. 12" min="1" max="50" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes / Mix</label><input type="text" id="sf-notes" placeholder="e.g. Critical Care formula" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Save Entry</button></div>
-        </form>
-      </div>
-
-      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Emergency Stasis History</div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
-              <tr><th class="p-3">Timestamp</th><th class="p-3">Volume</th><th class="p-3">Notes</th><th class="p-3 text-right">Action</th></tr>
-            </thead>
-            <tbody id="stasis-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- HUB 3: UK VET CLINIC LOCATOR & EMERGENCY CHECKLIST -->
-    <div id="tab-content-clinics" class="tab-pane hidden space-y-5 text-xs">
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🏥 UK Exotic Veterinary Care & Triage Guide</h3>
-          <button onclick="openExoticVetModal()" class="px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 font-semibold border border-sky-200 dark:border-sky-800">Why Exotic Vet?</button>
-        </div>
-        <p class="text-slate-500 dark:text-slate-400">Save your primary veterinary clinic details to automatically link them to your clinical PDF exports, and review the triage checklist prior to appointments.</p>
-        
-        <div class="p-4 rounded-xl bg-sky-50/50 dark:bg-slate-800/50 border border-sky-200 dark:border-slate-700 space-y-2">
-          <h4 class="font-bold text-sky-900 dark:text-sky-300">RCVS-Accredited Specialists Directory</h4>
-          <p class="text-slate-600 dark:text-slate-300">Access the official register to locate certified small mammal and exotic practitioners across the United Kingdom.</p>
-          <div class="pt-1">
+          <div class="p-4 rounded-xl bg-sky-50/50 dark:bg-slate-800/50 border border-sky-200 dark:border-slate-700 space-y-2">
+            <h4 class="font-bold text-sky-900 dark:text-sky-300">RCVS-Accredited Specialists Directory</h4>
             <a href="https://findavet.rcvs.org.uk" target="_blank" class="px-3.5 py-2 rounded-lg bg-sky-600 text-white font-semibold inline-flex items-center gap-1.5 shadow-sm hover:bg-sky-700 transition">🌐 RCVS Find a Vet Portal <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
           </div>
         </div>
+      </div>
 
-        <div class="space-y-2 pt-1">
-          <h4 class="font-bold text-slate-900 dark:text-white">Clinical Triage Checklist (Phone Intake):</h4>
-          <ul class="space-y-1.5 text-slate-600 dark:text-slate-300">
-            <li class="flex items-start gap-2"><span>1.</span> <span><strong>Precise Weight Delta:</strong> Report exact net weight loss (e.g., *"55g downward trend over 4 days"*).</span></li>
-            <li class="flex items-start gap-2"><span>2.</span> <span><strong>GI Tract Output:</strong> State whether independent pellet production has ceased or diminished.</span></li>
-            <li class="flex items-start gap-2"><span>3.</span> <span><strong>Specialist Confirmation:</strong> Verify: *"Is there an attending clinician experienced in cavy dental anatomy and gastrointestinal disorders?"*</span></li>
-            <li class="flex items-start gap-2"><span>4.</span> <span><strong>Pharmacology Audit:</strong> Confirm awareness regarding penicillin sensitivity (penicillin-based antibiotics are fatal to cavies).</span></li>
-          </ul>
+      <!-- HUB 4: HEALTH HUB -->
+      <div id="tab-content-healthhub" class="tab-pane hidden space-y-6 text-xs">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🩺 Clinical Symptom Observation Log</h3>
+          <form onsubmit="handleHealthLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-1">
+            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="hl-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+            <div>
+              <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Category</label>
+              <select id="hl-category" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
+                <option value="Eyes / Nose">Eyes / Nose</option>
+                <option value="Skin / Coat">Skin / Coat</option>
+                <option value="Paws / Footpads">Paws / Footpads</option>
+                <option value="Teeth / Eating / Chin">Teeth / Eating / Chin</option>
+                <option value="Breathing / Chest">Breathing / Chest</option>
+                <option value="Bottom / Droppings">Bottom / Droppings</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Severity / Status</label>
+              <select id="hl-severity" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
+                <option value="Mild / Monitoring">Mild / Monitoring</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Urgent / Vet Booked">Urgent / Vet Booked</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Observation</label><input type="text" id="hl-notes" required placeholder="e.g. Mild flaking" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+            <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">+ Log Symptom</button></div>
+          </form>
         </div>
-      </div>
-    </div>
-
-    <!-- HUB 4: HEALTH HUB (Symptoms, Mites, Grooming, Physical Exam) -->
-    <div id="tab-content-healthhub" class="tab-pane hidden space-y-6 text-xs">
-      
-      <!-- Symptom Log -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">🩺 Clinical Symptom Observation Log</h3>
-        <p class="text-slate-500 dark:text-slate-400">Log abnormalities regarding ocular/nasal discharge, dermatological flakes, gait, or respiration.</p>
-        
-        <form onsubmit="handleHealthLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-1">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="hl-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div>
-            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Category</label>
-            <select id="hl-category" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
-              <option value="Eyes / Nose">Eyes / Nose</option>
-              <option value="Skin / Coat">Skin / Coat</option>
-              <option value="Paws / Footpads">Paws / Footpads</option>
-              <option value="Teeth / Eating / Chin">Teeth / Eating / Chin</option>
-              <option value="Breathing / Chest">Breathing / Chest</option>
-              <option value="Bottom / Droppings">Bottom / Droppings</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Severity / Status</label>
-            <select id="hl-severity" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
-              <option value="Mild / Monitoring">Mild / Monitoring</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Urgent / Vet Booked">Urgent / Vet Booked</option>
-              <option value="Resolved">Resolved</option>
-            </select>
-          </div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Observation</label><input type="text" id="hl-notes" required placeholder="e.g. Mild flaking near left ear" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Log Symptom</button></div>
-        </form>
-      </div>
-
-      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Recorded Symptoms</div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
-              <tr><th class="p-3">Date</th><th class="p-3">Category</th><th class="p-3">Status</th><th class="p-3">Details</th><th class="p-3 text-right">Action</th></tr>
-            </thead>
-            <tbody id="healthlog-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-          </table>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Recorded Symptoms</div>
+          <div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800"><tr><th class="p-3">Date</th><th class="p-3">Category</th><th class="p-3">Status</th><th class="p-3">Details</th><th class="p-3 text-right">Action</th></tr></thead><tbody id="healthlog-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table></div>
         </div>
       </div>
 
-      <!-- Mite Log & Auto-Reminder Calculator -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">🐛 Mite & Parasite Treatment Log (Ivermectin / Xeno)</h3>
-        <p class="text-slate-500 dark:text-slate-400">Track anti-parasite spot-on applications. Automatically schedules the vital 10–14 day follow-up dose.</p>
-        
-        <form onsubmit="handleMiteLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date Administered</label><input type="date" id="m-date" onchange="autoCalculateMiteFollowup()" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div>
-            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Product</label>
-            <select id="m-product" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
-              <option value="Xeno 200 Spot-On">Xeno 200 Spot-On</option>
-              <option value="Xeno 450 Spot-On">Xeno 450 Spot-On</option>
-              <option value="Vet Ivermectin Injection">Vet Ivermectin Injection</option>
-              <option value="Beaphar Anti-Parasite Spot-On">Beaphar Spot-On</option>
-            </select>
+      <!-- HUB 5: DIET & CARE -->
+      <div id="tab-content-dietcare" class="tab-pane hidden space-y-6 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Vitamin C Daily Requirement</h3>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <strong id="calc-vitc-result" class="text-emerald-600 dark:text-emerald-400 text-sm block font-bold">--</strong>
+            </div>
           </div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Dose / Pipette</label><input type="text" id="m-dose" required placeholder="e.g. 1 Pipette" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Follow-up Due (+12 Days)</label><input type="date" id="m-next" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium text-sky-600 font-bold"></div>
-          <div class="sm:col-span-4 pt-1"><button type="submit" class="w-full py-2.5 px-4 rounded-lg bg-sky-600 text-white font-semibold text-xs shadow-sm hover:bg-sky-700 transition">+ Log Treatment & Set Alert Reminder</button></div>
-        </form>
-      </div>
-
-      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Parasite Treatment Records</div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
-              <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3">Dose</th><th class="p-3">Next Due (Follow-up)</th><th class="p-3 text-right">Action</th></tr>
-            </thead>
-            <tbody id="mitelog-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Grooming Tracker -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">✂️ Grooming & Facility Maintenance Tracker</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
-            <strong class="text-slate-900 dark:text-white block font-bold">💅 Nail Clipping</strong>
-            <p id="groom-nail-status" class="text-slate-500">Not logged</p>
-            <button onclick="logGrooming('nail')" class="w-full py-1.5 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition">Mark Completed</button>
-          </div>
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
-            <strong class="text-slate-900 dark:text-white block font-bold">🛁 Bath / Hair Trim</strong>
-            <p id="groom-bath-status" class="text-slate-500">Not logged</p>
-            <button onclick="logGrooming('bath')" class="w-full py-1.5 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition">Mark Completed</button>
-          </div>
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
-            <strong class="text-slate-900 dark:text-white block font-bold">🏡 Cage Deep Clean</strong>
-            <p id="groom-cage-status" class="text-slate-500">Not logged</p>
-            <button onclick="logGrooming('cage')" class="w-full py-1.5 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition">Mark Completed</button>
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">🥣 Critical Care Mixing Guide</h3>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+              <p><strong>Ratio:</strong> 1 part Oxbow Critical Care powder to 1.5 - 2 parts warm water.</p>
+            </div>
           </div>
         </div>
-      </div>
-
-      <!-- Weekly 8-Point Physical Exam Guide -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Weekly 8-Point Physical Examination Guide</h3>
-        <p class="text-slate-500 dark:text-slate-400 mb-2">Perform this structured physical audit weekly. Expand each section for clinical assessment criteria.</p>
-        
-        <div class="space-y-2">
-          <details class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group">
-            <summary class="font-semibold text-slate-900 dark:text-white cursor-pointer flex justify-between items-center"><span>1. Incisors & Dry Chin</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1">
-              <p><strong>Evaluation:</strong> Front incisors should meet evenly without overlapping or spurs. Chin must be dry.</p>
-              <p><strong>Action:</strong> Drooling or wet chin indicates molar malocclusion or pain. Schedule veterinary exam.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group">
-            <summary class="font-semibold text-slate-900 dark:text-white cursor-pointer flex justify-between items-center"><span>2. Silent Respiration</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1">
-              <p><strong>Evaluation:</strong> Breathing should be effortless and completely silent.</p>
-              <p><strong>Action:</strong> Clicking or wheezing indicates Upper Respiratory Infection (URI) requiring immediate antibiotics.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group">
-            <summary class="font-semibold text-slate-900 dark:text-white cursor-pointer flex justify-between items-center"><span>3. Ocular & Nasal Clarity</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1">
-              <p><strong>Evaluation:</strong> Eyes clear, bright, free of cloudiness. Nostrils clean and dry.</p>
-              <p><strong>Action:</strong> Milky discharge or nasal crusting signals infection or environmental allergens.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group">
-            <summary class="font-semibold text-slate-900 dark:text-white cursor-pointer flex justify-between items-center"><span>4. Gastrointestinal Output</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1">
-              <p><strong>Evaluation:</strong> High volume of firm, uniform, oval pellets.</p>
-              <p><strong>Action:</strong> Small or clustered poops indicate decreased fiber intake or onset of stasis.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group">
-            <summary class="font-semibold text-slate-900 dark:text-white cursor-pointer flex justify-between items-center"><span>5. Footpad Integrity</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1">
-              <p><strong>Evaluation:</strong> Smooth skin without redness, swelling, or scabs (pododermatitis / bumblefoot).</p>
-              <p><strong>Action:</strong> Improve bedding hygiene and consult a vet if open sores develop.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group">
-            <summary class="font-semibold text-slate-900 dark:text-white cursor-pointer flex justify-between items-center"><span>6. Coat & Skin Audit</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1">
-              <p><strong>Evaluation:</strong> Part fur to inspect skin for flakes, baldness, or excessive scratching.</p>
-              <p><strong>Action:</strong> Flaking or V-shaped hair loss indicates burrowing mites or fungal infection.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group">
-            <summary class="font-semibold text-slate-900 dark:text-white cursor-pointer flex justify-between items-center"><span>7. Perineal Hygiene</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1">
-              <p><strong>Evaluation:</strong> Rear end dry and clean. Audit boars for sac impaction.</p>
-              <p><strong>Action:</strong> Wetness indicates urinary issues or impaction in aging males.</p>
-            </div>
-          </details>
-
-          <details class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group">
-            <summary class="font-semibold text-slate-900 dark:text-white cursor-pointer flex justify-between items-center"><span>8. Grease Gland Assessment</span><i class="fa-solid fa-chevron-down text-[10px]"></i></summary>
-            <div class="mt-2 text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1">
-              <p><strong>Evaluation:</strong> Located on the rump. Check for waxy secretion buildup.</p>
-              <p><strong>Action:</strong> Clean periodically with mild pet shampoo or coconut oil to prevent dermatitis.</p>
-            </div>
-          </details>
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">Food Safety & Nutrition Directory</h3>
+          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 font-medium">
+          <div id="food-directory-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
         </div>
-      </div>
-
-    </div>
-
-    <!-- HUB 5: DIET & CARE (Calculators, Meals, Foods) -->
-    <div id="tab-content-dietcare" class="tab-pane hidden space-y-6 text-xs">
-      
-      <!-- Calculators -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Vitamin C Daily Requirement</h3>
-          <p class="text-slate-500 dark:text-slate-400">Estimated requirement (~10–20mg per kg daily).</p>
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-            <strong id="calc-vitc-result" class="text-emerald-600 dark:text-emerald-400 text-sm block font-bold">--</strong>
-          </div>
-        </div>
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🥣 Critical Care Mixing Guide</h3>
-          <p class="text-slate-500 dark:text-slate-400">Standard recovery formula reconstitution ratio.</p>
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
-            <p><strong>Ratio:</strong> 1 part Oxbow Critical Care powder to 1.5 - 2 parts warm water.</p>
-            <p class="text-slate-500">Administer approx 10ml - 15ml per 100g body weight split across 4-6 daily feeds.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Meal Plan -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Balanced 7-Day Low-Calcium UK Meal Plan</h3>
-        <p class="text-slate-500 dark:text-slate-400">Approx. 1 cup (~100g) fresh greens per piggy daily + unlimited high-fiber hay.</p>
-        <div id="meal-plan-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-      </div>
-
-      <!-- Food Directory -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Food Safety & Nutrition Directory</h3>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food (e.g. iceberg, parsley, bell pepper)..." class="flex-grow bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 font-medium">
-          <div class="flex gap-1.5 overflow-x-auto pb-1">
-            <button onclick="setFoodFilter('ALL')" id="flt-ALL" class="px-3 py-2 rounded-lg font-bold bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shrink-0">All</button>
-            <button onclick="setFoodFilter('SAFE')" id="flt-SAFE" class="px-3 py-2 rounded-lg font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shrink-0">✅ Safe</button>
-            <button onclick="setFoodFilter('LIMIT')" id="flt-LIMIT" class="px-3 py-2 rounded-lg font-bold bg-amber-50 text-amber-600 border border-amber-200 shrink-0">⚠️ Limit</button>
-            <button onclick="setFoodFilter('TOXIC')" id="flt-TOXIC" class="px-3 py-2 rounded-lg font-bold bg-rose-50 text-rose-600 border border-rose-200 shrink-0">🚫 Toxic</button>
-          </div>
-        </div>
-        <div id="food-directory-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
       </div>
 
     </div>
 
   </main>
 
-  <!-- Clean Streamlined Floating Quick-Action Bar -->
-  <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 shadow-lg flex items-center gap-4 text-xs font-semibold">
+  <!-- Floating Quick-Action Bar -->
+  <div id="quick-action-bar" class="hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 shadow-lg flex items-center gap-4 text-xs font-semibold">
     <button onclick="switchTab('weights'); window.scrollTo({top:0, behavior:'smooth'});" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 transition">
       <i class="fa-solid fa-weight-scale"></i> <span>+ Weight</span>
     </button>
@@ -566,39 +392,18 @@
     </button>
   </div>
 
-  <!-- VET REPORT & PDF MODAL -->
+  <!-- VET REPORT MODAL -->
   <div id="vet-report-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-5 text-xs text-slate-800 dark:text-slate-200">
-      
-      <!-- Modal Header -->
       <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center font-bold">📋</div>
-          <div>
-            <h3 class="text-base font-bold text-slate-900 dark:text-white">Exotic Veterinary Clinical Summary</h3>
-            <p class="text-[10px] text-slate-500 font-medium">Wheekly Health Suite • Patient Report</p>
-          </div>
-        </div>
-        <button onclick="closeVetReportModal()" class="no-print w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center font-bold">✕</button>
+        <h3 class="text-base font-bold text-slate-900 dark:text-white">Exotic Veterinary Clinical Summary</h3>
+        <button onclick="closeVetReportModal()" class="no-print w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold">✕</button>
       </div>
-
-      <!-- Report Content Container -->
-      <div id="vet-report-content" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-        <!-- Filled dynamically -->
+      <div id="vet-report-content" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div>
+      <div class="no-print pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between gap-2">
+        <button onclick="copyVetReportText()" class="px-3.5 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold">📋 Copy Text</button>
+        <button onclick="window.print()" class="px-4 py-2.5 rounded-lg bg-emerald-600 text-white font-semibold">🖨️ Print / Save PDF</button>
       </div>
-
-      <!-- Modal Footer Actions -->
-      <div class="no-print pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
-        <div class="flex flex-wrap gap-2">
-          <button onclick="copyVetReportText()" class="px-3.5 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition">📋 Copy Text</button>
-          <button onclick="emailVetReport()" class="px-3.5 py-2 rounded-lg bg-sky-600 text-white font-semibold shadow-sm hover:bg-sky-700 transition flex items-center gap-1.5">📧 Email Vet</button>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <button onclick="window.print()" class="px-4 py-2.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5">🖨️ Print / Save PDF</button>
-          <button onclick="closeVetReportModal()" class="px-4 py-2.5 rounded-lg bg-slate-900 text-white dark:bg-slate-800 font-semibold">Close</button>
-        </div>
-      </div>
-
     </div>
   </div>
 
@@ -613,67 +418,38 @@
         <input type="hidden" id="p-id">
         <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Name</label><input type="text" id="p-name" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
         <div class="grid grid-cols-2 gap-2">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Sex</label><select id="p-gender" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium"><option value="Boar (Male)">Boar (Male)</option><option value="Sow (Female)">Sow (Female)</option><option value="Neutered Boar">Neutered Boar</option><option value="Spayed Sow">Spayed Sow</option></select></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date of Birth</label><input type="date" id="p-dob" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium"></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Sex</label><select id="p-gender" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium"><option value="Boar (Male)">Boar (Male)</option><option value="Sow (Female)">Sow (Female)</option></select></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">DOB</label><input type="date" id="p-dob" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium"></div>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Breed</label><input type="text" id="p-breed" placeholder="e.g. American" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Baseline Weight (g)</label><input type="number" id="p-baseline" required value="1000" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Breed</label><input type="text" id="p-breed" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Baseline (g)</label><input type="number" id="p-baseline" required value="1000" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
         </div>
-        <div>
-          <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Custom Warning Threshold (g loss)</label>
-          <input type="number" id="p-threshold" required value="60" min="10" max="200" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium" placeholder="e.g. 50">
-          <p class="text-[10px] text-slate-400 mt-0.5">Weight drop required to trigger warning status (Default is 60g).</p>
-        </div>
-        <div>
-          <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1 flex justify-between items-center">
-            <span>Exotic Vet Practice</span>
-            <button type="button" onclick="openExoticVetModal()" class="text-sky-600 dark:text-sky-400 font-semibold underline text-[10px]">What is this?</button>
-          </label>
-          <input type="text" id="p-vet" placeholder="Clinic Name & Phone" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium">
-        </div>
+        <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Threshold (g loss)</label><input type="number" id="p-threshold" required value="60" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+        <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Exotic Vet</label><input type="text" id="p-vet" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
         <div class="pt-2"><button type="submit" class="w-full py-2.5 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 transition">Save Profile</button></div>
       </form>
     </div>
   </div>
 
-  <!-- EXOTIC VET EXPLANATION MODAL -->
-  <div id="exotic-vet-modal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-3 text-xs">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Why an Exotic Veterinarian?</h3>
-        <button onclick="closeExoticVetModal()" class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold">✕</button>
-      </div>
-      <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-        An <strong>exotic veterinary specialist</strong> possesses advanced clinical training in small mammal medicine (guinea pigs, rabbits, exotics) rather than standard canine/feline practice.
-      </p>
-      <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1.5">
-        <strong class="text-slate-900 dark:text-white block font-semibold">Critical Considerations for Cavies:</strong>
-        <ul class="list-disc pl-4 space-y-1 text-slate-600 dark:text-slate-300">
-          <li><strong>Molar Anatomy:</strong> Continuous tooth growth requires specialized visualization and burring equipment.</li>
-          <li><strong>Toxic Pharmacology:</strong> Standard dog/cat antibiotics (e.g. penicillins) are lethal to herbivores; specialists prescribe safe alternatives (Baytril, Septrin).</li>
-          <li><strong>Prey Masking:</strong> Subtle clinical symptoms are easily overlooked by general practitioners.</li>
-        </ul>
-      </div>
-      <button onclick="closeExoticVetModal()" class="w-full py-2 rounded-lg bg-emerald-600 text-white font-semibold">Understood</button>
-    </div>
-  </div>
-
   <script>
-    const STORAGE_KEY = 'WHEEKLY_PERMANENT_KEY';
-    let appData = { piggies: [], activePiggyId: null, darkMode: false };
+    // --- SUPABASE CLOUD CONFIGURATION ---
+    const SUPABASE_URL = 'https://xlshcsblvyanydlsguy.supabase.co'; // Your Project URL
+    const SUPABASE_KEY = 'sb_publishable_m5XhGHhmxQ5EuEfOZKzYGQ_uYy3OKL6'; // Replace with your Publishable/Anon Key from Supabase
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = null;
+    let appData = { piggies: [], activePiggyId: null };
     let weightChartInstance = null;
-    let currentFoodFilter = 'ALL';
+    let isSignUpMode = false;
     let toastTimer = null;
 
     function showToast(message, icon = '✅') {
       const toast = document.getElementById('toast-notification');
       document.getElementById('toast-msg').textContent = message;
       document.getElementById('toast-icon').textContent = icon;
-      
       toast.classList.remove('translate-y-10', 'opacity-0');
       toast.classList.add('translate-y-0', 'opacity-100');
-
       if (toastTimer) clearTimeout(toastTimer);
       toastTimer = setTimeout(() => {
         toast.classList.remove('translate-y-0', 'opacity-100');
@@ -681,290 +457,139 @@
       }, 3000);
     }
 
-    const FOOD_DATABASE = [
-      { name: "Timothy, Orchard & Meadow Hay", cat: "SAFE", badge: "Unlimited 24/7", desc: "Must constitute 85%+ of total diet. Long-strand fiber ensures digestive motility and proper incisor/molar attrition." },
-      { name: "Bell Peppers (Red, Yellow, Orange)", cat: "SAFE", badge: "1/4 Daily", desc: "Exceptional bioavailable source of daily Vitamin C with optimal calcium-to-phosphorus ratios." },
-      { name: "Green & Red Leaf Lettuce", cat: "SAFE", badge: "Daily", desc: "Gentle, low-calcium leafy greens suitable for daily dietary maintenance." },
-      { name: "Coriander (Cilantro)", cat: "SAFE", badge: "Daily", desc: "Highly palatable herb rich in micronutrients; moderate calcium content." },
-      { name: "Cucumber", cat: "SAFE", badge: "2-3 slices daily", desc: "Hydrating refreshment, though low in caloric and nutritional density." },
-      { name: "Zucchini (Courgette)", cat: "SAFE", badge: "1-2 slices", desc: "Safe, mild gourd vegetable well-tolerated by small herbivores." },
-      { name: "Spring Greens", cat: "SAFE", badge: "2-3 leaves", desc: "Reliable brassica option supplying vitamins and structural fiber." },
-      { name: "Parsley & Dill", cat: "LIMIT", badge: "Occasional", desc: "High calcium density; excessive ingestion may contribute to urolithiasis (bladder stones) or sludge." },
-      { name: "Carrot", cat: "LIMIT", badge: "1 coin weekly", desc: "Elevated natural sugar and starch content; treat strictly as an occasional reward." },
-      { name: "Apple (seedless)", cat: "LIMIT", badge: "Minimal weekly", desc: "High glycemic index. Peds/seeds contain cyanogenic glycosides and must be excised." },
-      { name: "Iceberg Lettuce", cat: "TOXIC", badge: "NEVER", desc: "Contains lactucarium and excess water volume inducing acute osmotic diarrhea." },
-      { name: "Onions, Garlic, Chives & Leeks", cat: "TOXIC", badge: "FATAL", desc: "Contains organosulfoxides causing erythrocyte oxidation and fatal hemolytic anemia." },
-      { name: "Potato & Sprouts", cat: "TOXIC", badge: "FATAL", desc: "Contains solanine, a potent neurotoxic glycoalkaloid." },
-      { name: "Avocado", cat: "TOXIC", badge: "FATAL", desc: "Extreme lipid concentration and persin toxin content; lethal to small mammals." },
-      { name: "Commercial Muesli / Seed Mixes", cat: "TOXIC", badge: "AVOID", desc: "Promotes selective feeding behavior, inducing obesity and severe dental malocclusion." }
-    ];
-
-    const DEFAULT_MEALS = [
-      { day: "Monday", menu: "1/4 Red Bell Pepper + Green Leaf Lettuce + Cucumber slice" },
-      { day: "Tuesday", menu: "1/4 Yellow Bell Pepper + Red Leaf Lettuce + Courgette slice" },
-      { day: "Wednesday", menu: "1/4 Orange Bell Pepper + Spring Greens + Celery stick" },
-      { day: "Thursday", menu: "1/4 Red Bell Pepper + Green Leaf Lettuce + Coriander sprig" },
-      { day: "Friday", menu: "1/4 Yellow Bell Pepper + Romaine Lettuce + Cucumber slice" },
-      { day: "Saturday", menu: "1/4 Orange Bell Pepper + Red Leaf Lettuce + Tiny carrot coin" },
-      { day: "Sunday", menu: "1/4 Red Bell Pepper + Spring Greens + Small parsley sprig" }
-    ];
-
-    function checkNotificationBannerState() {
-      const banner = document.getElementById('top-alert-banner');
-      if (!banner) return;
-      if (!("Notification" in window) || Notification.permission === "granted") {
-        banner.classList.add('hidden');
-      } else {
-        banner.classList.remove('hidden');
+    // --- AUTHENTICATION FLOW ---
+    async function checkAuthSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      currentUser = session ? session.user : null;
+      renderAuthUI();
+      if (currentUser) {
+        await fetchCloudData();
       }
     }
 
-    function requestNotificationPermission() {
-      if (!("Notification" in window)) {
-        showToast("Browser does not support notifications.", "⚠️");
+    function renderAuthUI() {
+      const authView = document.getElementById('auth-view');
+      const dashboardView = document.getElementById('app-dashboard-view');
+      const quickActionBar = document.getElementById('quick-action-bar');
+      const headerActions = document.getElementById('header-auth-actions');
+
+      if (!currentUser) {
+        authView.classList.remove('hidden');
+        dashboardView.classList.add('hidden');
+        quickActionBar.classList.add('hidden');
+        headerActions.innerHTML = '';
+      } else {
+        authView.classList.add('hidden');
+        dashboardView.classList.remove('hidden');
+        quickActionBar.classList.remove('hidden');
+        headerActions.innerHTML = `
+          <span class="text-xs text-slate-500 hidden sm:inline">${currentUser.email}</span>
+          <button onclick="handleLogout()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Sign Out</button>
+        `;
+      }
+    }
+
+    function toggleAuthMode() {
+      isSignUpMode = !isSignUpMode;
+      document.getElementById('auth-submit-btn').textContent = isSignUpMode ? 'Create Account' : 'Sign In';
+      document.getElementById('auth-toggle-mode-btn').textContent = isSignUpMode ? 'Already have an account? Sign In' : 'Need an account? Sign Up';
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+
+      if (isSignUpMode) {
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) { showToast(error.message, "⚠️"); return; }
+        showToast("Account created! You can now sign in.", "🎉");
+        toggleAuthMode();
+      } else {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) { showToast(error.message, "⚠️"); return; }
+        currentUser = data.user;
+        showToast("Welcome back to Wheekly! 🐹");
+        renderAuthUI();
+        await fetchCloudData();
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      appData = { piggies: [], activePiggyId: null };
+      renderAuthUI();
+      showToast("Signed out successfully");
+    }
+
+    // --- CLOUD DATA FETCHING & SAVING ---
+    async function fetchCloudData() {
+      if (!currentUser) return;
+      const { data: piggiesData, error } = await supabaseClient
+        .from('piggies')
+        .select('*')
+        .eq('user_id', currentUser.id);
+
+      if (error) {
+        showToast("Error loading cloud data", "⚠️");
         return;
       }
-      Notification.requestPermission().then(permission => {
-        if (permission === "granted") {
-          showToast("Notifications enabled successfully!");
-          checkNotificationBannerState();
-        } else {
-          showToast("Notification permission denied.", "⚠️");
-        }
-      });
-    }
 
-    function triggerTestNotification() {
-      if (!("Notification" in window)) {
-        showToast("Notifications not supported.", "⚠️");
-        return;
-      }
-      if (Notification.permission === "granted") {
-        new Notification("Wheekly Health Alert 🐹", {
-          body: "Time for your weekly guinea pig health check and weigh-in!",
-          icon: "wheekly_logo.jpg"
-        });
-        showToast("Test notification dispatched!");
-      } else {
-        requestNotificationPermission();
-      }
-    }
-
-    function autoCalculateMiteFollowup() {
-      const dateVal = document.getElementById('m-date').value;
-      if (!dateVal) return;
-      const d = new Date(dateVal);
-      d.setDate(d.getDate() + 12);
-      document.getElementById('m-next').value = d.toISOString().split('T')[0];
-    }
-
-    function openVetReportModal() {
-      const p = getActivePiggy();
-      if (!p) { showToast("No piggy profile selected!", "⚠️"); return; }
-      const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const mLogs = p.miteLogs ? [...p.miteLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const sLogs = p.stasisLogs ? [...p.stasisLogs].sort((a,b) => new Date(b.time) - new Date(a.time)) : [];
-
-      let html = `
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-          <div><span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Patient Name</span><p class="font-extrabold text-sm text-slate-900 dark:text-white">${p.name}</p></div>
-          <div><span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Sex & Breed</span><p class="font-extrabold text-sm text-slate-900 dark:text-white">${p.gender} (${p.breed || 'Cavy'})</p></div>
-          <div><span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Age / DOB</span><p class="font-extrabold text-sm text-slate-900 dark:text-white">${computeAge(p.dob)}</p></div>
-          <div><span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Baseline Weight</span><p class="font-extrabold text-sm text-slate-900 dark:text-white">${p.baselineWeight}g</p></div>
-        </div>
-
-        <div class="space-y-1">
-          <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">Registered Clinic:</h4>
-          <p class="font-semibold text-xs text-sky-600 dark:text-sky-400">${p.vet || 'Not Specified'}</p>
-        </div>
-
-        <!-- Stasis Logs -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">🚨 Stasis & Critical Care Feed Logs</h4>
-          <div class="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 border-b border-slate-200 dark:border-slate-700">
-                <tr><th class="p-2.5">Timestamp</th><th class="p-2.5">Volume</th><th class="p-2.5">Notes</th></tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-      `;
-
-      if (sLogs.length === 0) {
-        html += `<tr><td colspan="3" class="p-4 text-center text-slate-400">No stasis records logged yet.</td></tr>`;
-      } else {
-        sLogs.forEach(s => {
-          html += `<tr><td class="p-2.5 font-bold">${s.time.replace('T', ' ')}</td><td class="p-2.5 font-extrabold text-emerald-600">${s.amount} ml</td><td class="p-2.5">${s.notes || '—'}</td></tr>`;
-        });
-      }
-
-      html += `
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Mite Logs -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">🐛 Parasite Treatment History</h4>
-          <div class="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 border-b border-slate-200 dark:border-slate-700">
-                <tr><th class="p-2.5">Date</th><th class="p-2.5">Product</th><th class="p-2.5">Dose</th><th class="p-2.5">Next Due</th></tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-      `;
-
-      if (mLogs.length === 0) {
-        html += `<tr><td colspan="4" class="p-4 text-center text-slate-400">No parasite records logged yet.</td></tr>`;
-      } else {
-        mLogs.forEach(m => {
-          html += `<tr><td class="p-2.5 font-bold">${m.date}</td><td class="p-2.5">${m.product}</td><td class="p-2.5">${m.dose}</td><td class="p-2.5 font-semibold text-sky-600">${m.nextDue || '—'}</td></tr>`;
-        });
-      }
-
-      html += `
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Health Logs -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">🩺 Symptom Observations</h4>
-          <div class="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 border-b border-slate-200 dark:border-slate-700">
-                <tr><th class="p-2.5">Date</th><th class="p-2.5">Category</th><th class="p-2.5">Status</th><th class="p-2.5">Details</th></tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-      `;
-
-      if (hLogs.length === 0) {
-        html += `<tr><td colspan="4" class="p-4 text-center text-slate-400">No symptom records logged yet.</td></tr>`;
-      } else {
-        hLogs.forEach(h => {
-          html += `<tr><td class="p-2.5 font-bold">${h.date}</td><td class="p-2.5">${h.category}</td><td class="p-2.5 font-semibold text-amber-600">${h.severity}</td><td class="p-2.5">${h.notes}</td></tr>`;
-        });
-      }
-
-      html += `
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Weights -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">⚖️ Weigh-In Log</h4>
-          <div class="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 border-b border-slate-200 dark:border-slate-700">
-                <tr><th class="p-2.5">Date</th><th class="p-2.5">Weight</th><th class="p-2.5">Delta</th><th class="p-2.5">Notes</th></tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-      `;
-
-      if (w.length === 0) {
-        html += `<tr><td colspan="4" class="p-4 text-center text-slate-400">No weight entries logged yet.</td></tr>`;
-      } else {
-        w.forEach(item => {
-          const diff = item.weight - p.baselineWeight;
-          const diffStr = diff > 0 ? `+${diff}g` : `${diff}g`;
-          html += `<tr><td class="p-2.5 font-bold">${item.date}</td><td class="p-2.5 font-extrabold">${item.weight}g</td><td class="p-2.5">${diffStr}</td><td class="p-2.5">${item.notes || '—'}</td></tr>`;
-        });
-      }
-
-      html += `
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('vet-report-content').innerHTML = html;
-      document.getElementById('vet-report-modal').classList.remove('hidden');
-    }
-
-    function closeVetReportModal() {
-      document.getElementById('vet-report-modal').classList.add('hidden');
-    }
-
-    function copyVetReportText() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const report = generateReportPlainText(p);
-      navigator.clipboard.writeText(report).then(() => showToast("Copied text report to clipboard!"));
-    }
-
-    function emailVetReport() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const subject = encodeURIComponent(`Clinical Summary Report: ${p.name} (Wheekly Health Suite)`);
-      const body = encodeURIComponent(generateReportPlainText(p));
-      window.location.href = `mailto:?subject=${subject}&body=${body}`;
-      showToast("Opening email client...");
-    }
-
-    function generateReportPlainText(p) {
-      const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const mLogs = p.miteLogs ? [...p.miteLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const sLogs = p.stasisLogs ? [...p.stasisLogs].sort((a,b) => new Date(b.time) - new Date(a.time)) : [];
-      
-      let report = `=== VET CLINICAL SUMMARY ===\n`;
-      report += `Patient: ${p.name} | Sex: ${p.gender} | Breed: ${p.breed || 'Cavy'} | Age: ${computeAge(p.dob)}\nBaseline: ${p.baselineWeight}g | Threshold: ${p.weightThreshold || 60}g drop | Clinic: ${p.vet || 'None'}\n\n`;
-      
-      report += `--- STASIS FEEDS ---\n`;
-      if (sLogs.length === 0) report += `No records.\n`;
-      sLogs.forEach(s => { report += `[${s.time}] ${s.amount}ml — ${s.notes || ''}\n`; });
-
-      report += `\n--- PARASITE TREATMENTS ---\n`;
-      if (mLogs.length === 0) report += `No records.\n`;
-      mLogs.forEach(m => { report += `[${m.date}] ${m.product} (${m.dose}) | Next Due: ${m.nextDue || 'N/A'}\n`; });
-
-      report += `\n--- SYMPTOMS ---\n`;
-      if (hLogs.length === 0) report += `No records.\n`;
-      hLogs.forEach(h => { report += `[${h.date}] ${h.category} (${h.severity}): ${h.notes}\n`; });
-
-      report += `\n--- WEIGHT HISTORY ---\n`;
-      if (w.length === 0) report += `No records.\n`;
-      w.forEach(item => { report += `${item.date}: ${item.weight}g (${item.weight - p.baselineWeight}g delta)\n`; });
-
-      return report;
-    }
-
-    function loadData() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) appData = JSON.parse(raw);
-      } catch (e) {}
-      if (!appData.piggies) appData.piggies = [];
-      if (!appData.activePiggyId && appData.piggies.length > 0) {
+      appData.piggies = piggiesData || [];
+      if (appData.piggies.length > 0 && !appData.activePiggyId) {
         appData.activePiggyId = appData.piggies[0].id;
       }
-      if (appData.darkMode) {
-        document.documentElement.classList.add('dark');
+      renderApp();
+    }
+
+    async function handleProfileSubmit(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+      const id = document.getElementById('p-id').value;
+      const profileData = {
+        user_id: currentUser.id,
+        name: document.getElementById('p-name').value.trim(),
+        gender: document.getElementById('p-gender').value,
+        dob: document.getElementById('p-dob').value,
+        breed: document.getElementById('p-breed').value.trim(),
+        baseline_weight: parseFloat(document.getElementById('p-baseline').value) || 1000,
+        weight_threshold: parseFloat(document.getElementById('p-threshold').value) || 60,
+        vet: document.getElementById('p-vet').value.trim()
+      };
+
+      if (id) {
+        const { error } = await supabaseClient.from('piggies').update(profileData).eq('id', id);
+        if (error) { showToast("Error updating profile", "⚠️"); return; }
+        showToast("Profile updated successfully!", "🐹");
+      } else {
+        const { data, error } = await supabaseClient.from('piggies').insert([profileData]).select();
+        if (error) { showToast("Error creating profile", "⚠️"); return; }
+        if (data && data.length > 0) appData.activePiggyId = data[0].id;
+        showToast("Guinea pig profile created! 🎉", "🐹");
       }
+
+      closeProfileModal();
+      await fetchCloudData();
     }
 
-    function saveData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-    }
+    // Standard static data helpers
+    const FOOD_DATABASE = [
+      { name: "Timothy & Orchard Hay", cat: "SAFE", badge: "Unlimited 24/7", desc: "Must constitute 85%+ of total diet." },
+      { name: "Bell Peppers (Red/Yellow)", cat: "SAFE", badge: "1/4 Daily", desc: "Exceptional source of daily Vitamin C." },
+      { name: "Iceberg Lettuce", cat: "TOXIC", badge: "NEVER", desc: "Induces acute osmotic diarrhea." }
+    ];
 
-    function toggleDarkMode() {
-      appData.darkMode = !appData.darkMode;
-      document.documentElement.classList.toggle('dark', appData.darkMode);
-      saveData();
-      showToast(appData.darkMode ? "Dark mode enabled" : "Light mode enabled", appData.darkMode ? "🌙" : "☀️");
-    }
-
-    function openExoticVetModal() {
-      document.getElementById('exotic-vet-modal').classList.remove('hidden');
-    }
-
-    function closeExoticVetModal() {
-      document.getElementById('exotic-vet-modal').classList.add('hidden');
+    function renderFoodDirectory() {
+      const list = document.getElementById('food-directory-list');
+      if (!list) return;
+      list.innerHTML = '';
+      FOOD_DATABASE.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'p-3.5 rounded-xl border bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 space-y-1.5 interactive-card';
+        div.innerHTML = `<div class="flex justify-between items-center"><strong class="text-slate-900 dark:text-white">${item.name}</strong><span class="text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">${item.badge}</span></div><p class="text-slate-600 dark:text-slate-300 text-[11px]">${item.desc}</p>`;
+        list.appendChild(div);
+      });
     }
 
     function getActivePiggy() {
@@ -975,7 +600,6 @@
       if (!dobStr) return '--';
       const dob = new Date(dobStr);
       const now = new Date();
-      if (isNaN(dob)) return '--';
       let years = now.getFullYear() - dob.getFullYear();
       let months = now.getMonth() - dob.getMonth();
       if (months < 0) { years--; months += 12; }
@@ -992,26 +616,7 @@
       if (hasPiggies) {
         renderPiggyChips();
         renderHero();
-        renderWeights();
-        renderStasisTab();
-        renderHealthLogs();
-        renderMiteLogs();
-        renderCalculators();
-        renderGrooming();
       }
-    }
-
-    function getPiggyHealthDot(p) {
-      if (!p.weights || p.weights.length === 0) return '🟢';
-      const sorted = [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date));
-      const latest = sorted[0].weight;
-      const drop = p.baselineWeight - latest;
-      const threshold = p.weightThreshold || 60;
-      const warningThreshold = Math.round(threshold * 0.5);
-
-      if (drop >= threshold) return '🔴';
-      if (drop >= warningThreshold) return '🟡';
-      return '🟢';
     }
 
     function renderPiggyChips() {
@@ -1020,10 +625,9 @@
       appData.piggies.forEach(p => {
         const btn = document.createElement('button');
         const active = p.id === appData.activePiggyId;
-        const statusDot = getPiggyHealthDot(p);
-        btn.onclick = () => { appData.activePiggyId = p.id; saveData(); renderApp(); };
+        btn.onclick = () => { appData.activePiggyId = p.id; renderApp(); };
         btn.className = `px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${active ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}`;
-        btn.innerHTML = `<span>${statusDot}</span> <span>${p.name}</span>`;
+        btn.innerHTML = `<span>🐹</span> <span>${p.name}</span>`;
         c.appendChild(btn);
       });
     }
@@ -1036,511 +640,9 @@
       document.getElementById('hero-breed').textContent = p.breed || 'Cavy';
       document.getElementById('hero-dob-val').textContent = p.dob || '--';
       document.getElementById('hero-age-val').textContent = computeAge(p.dob);
-      document.getElementById('hero-baseline').textContent = `${p.baselineWeight} g`;
-      document.getElementById('hero-threshold').textContent = `${p.weightThreshold || 60} g loss`;
+      document.getElementById('hero-baseline').textContent = `${p.baseline_weight} g`;
+      document.getElementById('hero-threshold').textContent = `${p.weight_threshold || 60} g loss`;
       document.getElementById('hero-vet').textContent = p.vet || 'None Specified';
-      
-      const fitMode = p.photoFit || 'cover';
-      document.getElementById('photo-fit-btn').textContent = `Fit: ${fitMode === 'contain' ? 'Full' : 'Fill'}`;
-      
-      document.getElementById('hero-avatar-container').innerHTML = p.photo 
-        ? `<img src="${p.photo}" class="w-full h-full object-${fitMode}">` 
-        : '🐹';
-    }
-
-    function togglePhotoFit() {
-      const p = getActivePiggy();
-      if (!p) return;
-      p.photoFit = p.photoFit === 'contain' ? 'cover' : 'contain';
-      saveData();
-      renderHero();
-      showToast("Avatar fit updated");
-    }
-
-    function renderCalculators() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const weightKg = p.baselineWeight / 1000;
-      const minVitC = Math.round(weightKg * 10);
-      const maxVitC = Math.round(weightKg * 20);
-      document.getElementById('calc-vitc-result').textContent = `${minVitC}mg - ${maxVitC}mg daily (Based on ${p.baselineWeight}g weight)`;
-    }
-
-    function logGrooming(type) {
-      const p = getActivePiggy();
-      if (!p) return;
-      if (!p.grooming) p.grooming = {};
-      p.grooming[type] = new Date().toISOString().split('T')[0];
-      saveData();
-      renderGrooming();
-      showToast(`Logged ${type.toUpperCase()} maintenance!`, "✂️");
-    }
-
-    function renderGrooming() {
-      const p = getActivePiggy();
-      if (!p || !p.grooming) return;
-      document.getElementById('groom-nail-status').textContent = p.grooming.nail ? `Done: ${p.grooming.nail}` : 'Not logged';
-      document.getElementById('groom-bath-status').textContent = p.grooming.bath ? `Done: ${p.grooming.bath}` : 'Not logged';
-      document.getElementById('groom-cage-status').textContent = p.grooming.cage ? `Done: ${p.grooming.cage}` : 'Not logged';
-    }
-
-    function exportDataBackup() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
-      const dlAnchor = document.createElement('a');
-      dlAnchor.setAttribute("href", dataStr);
-      dlAnchor.setAttribute("download", "wheekly_backup.json");
-      document.body.appendChild(dlAnchor);
-      dlAnchor.click();
-      dlAnchor.remove();
-      showToast("Data backup exported successfully!");
-    }
-
-    function importDataBackup(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = ev => {
-        try {
-          appData = JSON.parse(ev.target.result);
-          saveData();
-          renderApp();
-          showToast("Backup successfully restored!");
-        } catch(err) { showToast("Invalid backup file.", "⚠️"); }
-      };
-      r.readAsDataURL(file);
-    }
-
-    function renderWeights() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const w = p.weights || [];
-      w.sort((a,b) => new Date(a.date) - new Date(b.date));
-
-      const latestEl = document.getElementById('metric-latest-weight');
-      const diffEl = document.getElementById('metric-baseline-diff');
-      const verdictEl = document.getElementById('metric-health-verdict');
-      const tbody = document.getElementById('weight-table-body');
-      tbody.innerHTML = '';
-
-      if (w.length === 0) {
-        latestEl.textContent = '--';
-        diffEl.textContent = '--';
-        verdictEl.textContent = 'Ready for weigh-in';
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="4" class="p-6 text-center text-slate-400">
-              <div class="flex flex-col items-center justify-center space-y-2">
-                <span class="text-xl">⚖️</span>
-                <p class="font-medium text-slate-600 dark:text-slate-300">No weights recorded yet. Weigh in weekly to catch early health drops!</p>
-                <button onclick="document.getElementById('w-val').focus(); window.scrollTo({top:150, behavior:'smooth'});" class="mt-1 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">
-                  + Record First Weigh-In
-                </button>
-              </div>
-            </td>
-          </tr>`;
-        updateChart([], []);
-        return;
-      }
-
-      const latest = w[w.length - 1];
-      const delta = latest.weight - p.baselineWeight;
-      latestEl.textContent = latest.weight;
-      diffEl.textContent = delta > 0 ? `+${delta}` : delta;
-      
-      const threshold = p.weightThreshold || 60;
-      const warningThreshold = Math.round(threshold * 0.5);
-
-      if (p.baselineWeight - latest.weight >= threshold) {
-        verdictEl.textContent = `🚨 Critical Drop (≥${threshold}g)`;
-      } else if (p.baselineWeight - latest.weight >= warningThreshold) {
-        verdictEl.textContent = `⚠️ Monitor (${warningThreshold}-${threshold - 1}g loss)`;
-      } else {
-        verdictEl.textContent = '✅ Weight Stable';
-      }
-
-      [...w].reverse().forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = "dark:border-slate-800";
-        tr.innerHTML = `
-          <td class="p-3 font-semibold">${item.date}</td>
-          <td class="p-3 font-extrabold">${item.weight} g</td>
-          <td class="p-3 text-slate-600 dark:text-slate-400">${item.notes || '—'}</td>
-          <td class="p-3 text-right"><button onclick="deleteWeight('${item.id}')" class="text-rose-600 font-bold hover:underline">Delete</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      updateChart(w.map(i => i.date), w.map(i => i.weight));
-    }
-
-    function updateChart(labels, data) {
-      const ctx = document.getElementById('weightHistoryChart').getContext('2d');
-      if (weightChartInstance) weightChartInstance.destroy();
-      weightChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{ data, borderColor: '#22C55E', backgroundColor: 'rgba(34, 197, 94, 0.08)', fill: true, tension: 0.2, borderWidth: 2 }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
-      });
-    }
-
-    function handleWeightSubmit(e) {
-      e.preventDefault();
-      const p = getActivePiggy();
-      if (!p) return;
-      if (!p.weights) p.weights = [];
-      p.weights.push({
-        id: 'w_' + Date.now(),
-        date: document.getElementById('w-date').value,
-        weight: parseFloat(document.getElementById('w-val').value),
-        notes: document.getElementById('w-notes').value.trim()
-      });
-      saveData();
-      renderApp();
-      e.target.reset();
-      document.getElementById('w-date').valueAsDate = new Date();
-      showToast("Scale entry recorded successfully!", "⚖️");
-    }
-
-    function deleteWeight(id) {
-      const p = getActivePiggy();
-      if (!p) return;
-      p.weights = p.weights.filter(w => w.id !== id);
-      saveData();
-      renderApp();
-      showToast("Weight entry removed", "🗑️");
-    }
-
-    function toggleStasisEmergencyActive() {
-      const p = getActivePiggy();
-      if (!p) return;
-      p.stasisActive = !p.stasisActive;
-      saveData();
-      renderStasisTab();
-      showToast(p.stasisActive ? "🚨 Stasis Protocol Activated!" : "Stasis protocol deactivated", p.stasisActive ? "🚨" : "ℹ️");
-    }
-
-    function renderStasisTab() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const isActive = !!p.stasisActive;
-      const toggleBtn = document.getElementById('stasis-toggle-btn');
-      const activeBanner = document.getElementById('stasis-active-banner');
-
-      toggleBtn.textContent = isActive ? 'Deactivate Protocol' : 'Activate Protocol';
-      toggleBtn.className = isActive 
-        ? 'px-3.5 py-1.5 rounded-lg bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-white font-semibold shrink-0' 
-        : 'px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold shadow-sm shrink-0';
-
-      activeBanner.classList.toggle('hidden', !isActive);
-
-      const logs = p.stasisLogs || [];
-      logs.sort((a,b) => new Date(b.time) - new Date(a.time));
-
-      const now = new Date();
-      const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      let total24h = 0;
-      logs.forEach(l => {
-        const lDate = new Date(l.time);
-        if (lDate >= oneDayAgo && lDate <= now) {
-          total24h += parseFloat(l.amount) || 0;
-        }
-      });
-      document.getElementById('stasis-total-24h').textContent = `${total24h} ml`;
-
-      if (logs.length > 0) {
-        const latestTime = new Date(logs[0].time);
-        const dueTime = new Date(latestTime.getTime() + 3 * 60 * 60 * 1000);
-        document.getElementById('stasis-next-due-time').textContent = dueTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      } else {
-        document.getElementById('stasis-next-due-time').textContent = 'Due Now (No recent feed)';
-      }
-
-      const tbody = document.getElementById('stasis-table-body');
-      tbody.innerHTML = '';
-      if (logs.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="4" class="p-6 text-center text-slate-400">
-              <div class="flex flex-col items-center justify-center space-y-2">
-                <span class="text-xl">🚨</span>
-                <p class="font-medium text-slate-600 dark:text-slate-300">No emergency stasis feeds logged. Keep a close eye on hydration and syringe feeding if appetite ceases.</p>
-                <button onclick="quickLogStasisFeed()" class="mt-1 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">
-                  + Log 10ml Feed
-                </button>
-              </div>
-            </td>
-          </tr>`;
-        return;
-      }
-
-      logs.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = "dark:border-slate-800";
-        tr.innerHTML = `
-          <td class="p-3 font-semibold">${item.time.replace('T', ' ')}</td>
-          <td class="p-3 font-extrabold text-emerald-600">${item.amount} ml</td>
-          <td class="p-3 text-slate-600 dark:text-slate-400">${item.notes || '—'}</td>
-          <td class="p-3 text-right"><button onclick="deleteStasisLog('${item.id}')" class="text-rose-600 font-bold hover:underline">Delete</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function handleStasisFeedSubmit(e) {
-      e.preventDefault();
-      const p = getActivePiggy();
-      if (!p) return;
-      if (!p.stasisLogs) p.stasisLogs = [];
-      p.stasisLogs.push({
-        id: 'sf_' + Date.now(),
-        time: document.getElementById('sf-time').value,
-        amount: parseFloat(document.getElementById('sf-amount').value) || 10,
-        notes: document.getElementById('sf-notes').value.trim()
-      });
-      saveData();
-      renderApp();
-      e.target.reset();
-      setDefaultStasisTime();
-      showToast("Critical care feed logged!", "🥣");
-    }
-
-    function quickLogStasisFeed() {
-      const p = getActivePiggy();
-      if (!p) return;
-      if (!p.stasisLogs) p.stasisLogs = [];
-      const nowStr = new Date().toISOString().slice(0, 16);
-      p.stasisLogs.push({
-        id: 'sf_' + Date.now(),
-        time: nowStr,
-        amount: 10,
-        notes: 'Quick 10ml Critical Care Feed'
-      });
-      saveData();
-      renderApp();
-      showToast("Logged quick 10ml feed!", "🥣");
-    }
-
-    function deleteStasisLog(id) {
-      const p = getActivePiggy();
-      if (!p || !p.stasisLogs) return;
-      p.stasisLogs = p.stasisLogs.filter(s => s.id !== id);
-      saveData();
-      renderApp();
-      showToast("Stasis log removed", "🗑️");
-    }
-
-    function setDefaultStasisTime() {
-      const nowStr = new Date().toISOString().slice(0, 16);
-      const el = document.getElementById('sf-time');
-      if (el) el.value = nowStr;
-    }
-
-    function handleHealthLogSubmit(e) {
-      e.preventDefault();
-      const p = getActivePiggy();
-      if (!p) return;
-      if (!p.healthLogs) p.healthLogs = [];
-      p.healthLogs.push({
-        id: 'hl_' + Date.now(),
-        date: document.getElementById('hl-date').value,
-        category: document.getElementById('hl-category').value,
-        severity: document.getElementById('hl-severity').value,
-        notes: document.getElementById('hl-notes').value.trim()
-      });
-      saveData();
-      renderApp();
-      e.target.reset();
-      document.getElementById('hl-date').valueAsDate = new Date();
-      showToast("Symptom observation recorded", "🩺");
-    }
-
-    function deleteHealthLog(id) {
-      const p = getActivePiggy();
-      if (!p || !p.healthLogs) return;
-      p.healthLogs = p.healthLogs.filter(h => h.id !== id);
-      saveData();
-      renderApp();
-      showToast("Symptom log removed", "🗑️");
-    }
-
-    function renderHealthLogs() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const logs = p.healthLogs || [];
-      logs.sort((a,b) => new Date(b.date) - new Date(a.date));
-      const tbody = document.getElementById('healthlog-table-body');
-      tbody.innerHTML = '';
-
-      if (logs.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5" class="p-6 text-center text-slate-400">
-              <div class="flex flex-col items-center justify-center space-y-2">
-                <span class="text-xl">🩺</span>
-                <p class="font-medium text-slate-600 dark:text-slate-300">No symptoms recorded yet. A clean bill of health!</p>
-                <button onclick="document.getElementById('hl-notes').focus();" class="mt-1 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">
-                  + Log First Symptom
-                </button>
-              </div>
-            </td>
-          </tr>`;
-        return;
-      }
-
-      logs.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = "dark:border-slate-800";
-        tr.innerHTML = `
-          <td class="p-3 font-semibold">${item.date}</td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-semibold text-slate-700 dark:text-slate-300">${item.category}</span></td>
-          <td class="p-3 font-semibold text-amber-600">${item.severity}</td>
-          <td class="p-3 text-slate-600 dark:text-slate-400">${item.notes}</td>
-          <td class="p-3 text-right"><button onclick="deleteHealthLog('${item.id}')" class="text-rose-600 font-bold hover:underline">Delete</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function handleMiteLogSubmit(e) {
-      e.preventDefault();
-      const p = getActivePiggy();
-      if (!p) return;
-      if (!p.miteLogs) p.miteLogs = [];
-      const nextDueVal = document.getElementById('m-next').value;
-      p.miteLogs.push({
-        id: 'm_' + Date.now(),
-        date: document.getElementById('m-date').value,
-        product: document.getElementById('m-product').value,
-        dose: document.getElementById('m-dose').value.trim(),
-        nextDue: nextDueVal
-      });
-      saveData();
-      renderApp();
-      e.target.reset();
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('m-date').value = todayStr;
-      autoCalculateMiteFollowup();
-      showToast(`Treatment logged! Follow-up due ${nextDueVal}.`, "🐛");
-    }
-
-    function deleteMiteLog(id) {
-      const p = getActivePiggy();
-      if (!p || !p.miteLogs) return;
-      p.miteLogs = p.miteLogs.filter(m => m.id !== id);
-      saveData();
-      renderApp();
-      showToast("Parasite record removed", "🗑️");
-    }
-
-    function renderMiteLogs() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const logs = p.miteLogs || [];
-      logs.sort((a,b) => new Date(b.date) - new Date(a.date));
-      const tbody = document.getElementById('mitelog-table-body');
-      tbody.innerHTML = '';
-
-      if (logs.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5" class="p-6 text-center text-slate-400">
-              <div class="flex flex-col items-center justify-center space-y-2">
-                <span class="text-xl">🐛</span>
-                <p class="font-medium text-slate-600 dark:text-slate-300">No parasite treatments logged. Keep track of spot-ons like Xeno here.</p>
-                <button onclick="document.getElementById('m-dose').focus();" class="mt-1 px-3.5 py-1.5 rounded-lg bg-sky-600 text-white font-semibold text-xs shadow-sm hover:bg-sky-700 transition">
-                  + Log First Treatment
-                </button>
-              </div>
-            </td>
-          </tr>`;
-        return;
-      }
-
-      logs.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = "dark:border-slate-800";
-        tr.innerHTML = `
-          <td class="p-3 font-semibold">${item.date}</td>
-          <td class="p-3 font-bold text-slate-900 dark:text-white">${item.product}</td>
-          <td class="p-3">${item.dose}</td>
-          <td class="p-3 font-semibold text-sky-600">${item.nextDue || '—'}</td>
-          <td class="p-3 text-right"><button onclick="deleteMiteLog('${item.id}')" class="text-rose-600 font-bold hover:underline">Delete</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderFoodDirectory() {
-      const q = (document.getElementById('food-search-input').value || '').toLowerCase();
-      const list = document.getElementById('food-directory-list');
-      list.innerHTML = '';
-      const filtered = FOOD_DATABASE.filter(item => {
-        const matchesCat = currentFoodFilter === 'ALL' || item.cat === currentFoodFilter;
-        const matchesQuery = item.name.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q);
-        return matchesCat && matchesQuery;
-      });
-      filtered.forEach(item => {
-        let cardStyle = 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700';
-        let badgeStyle = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
-        if (item.cat === 'TOXIC') { cardStyle = 'bg-rose-50/60 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/50'; badgeStyle = 'bg-rose-600 text-white'; }
-        if (item.cat === 'LIMIT') { cardStyle = 'bg-amber-50/60 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/50'; badgeStyle = 'bg-amber-100 text-amber-800'; }
-        const div = document.createElement('div');
-        div.className = `p-3.5 rounded-xl border ${cardStyle} space-y-1.5 interactive-card`;
-        div.innerHTML = `<div class="flex justify-between items-center"><strong class="text-slate-900 dark:text-white">${item.name}</strong><span class="text-[9px] font-bold px-2 py-0.5 rounded ${badgeStyle}">${item.badge}</span></div><p class="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">${item.desc}</p>`;
-        list.appendChild(div);
-      });
-    }
-
-    function setFoodFilter(cat) { currentFoodFilter = cat; renderFoodDirectory(); }
-
-    function renderMealPlan() {
-      const grid = document.getElementById('meal-plan-grid');
-      grid.innerHTML = '';
-      DEFAULT_MEALS.forEach(m => {
-        const d = document.createElement('div');
-        d.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex gap-2.5 items-center interactive-card';
-        d.innerHTML = `<input type="checkbox" class="accent-emerald-600 w-4 h-4 rounded"><div><strong class="text-slate-900 dark:text-white block font-bold">${m.day}</strong><span class="text-slate-600 dark:text-slate-400 text-[11px]">${m.menu}</span></div>`;
-        grid.appendChild(d);
-      });
-    }
-
-    function handleProfileSubmit(e) {
-      e.preventDefault();
-      const id = document.getElementById('p-id').value;
-      const data = {
-        name: document.getElementById('p-name').value.trim(),
-        gender: document.getElementById('p-gender').value,
-        dob: document.getElementById('p-dob').value,
-        breed: document.getElementById('p-breed').value.trim(),
-        baselineWeight: parseFloat(document.getElementById('p-baseline').value) || 1000,
-        weightThreshold: parseFloat(document.getElementById('p-threshold').value) || 60,
-        vet: document.getElementById('p-vet').value.trim()
-      };
-      if (id) {
-        const idx = appData.piggies.findIndex(p => p.id === id);
-        if (idx !== -1) appData.piggies[idx] = { ...appData.piggies[idx], ...data };
-        showToast(`Updated profile for ${data.name}!`, "🐹");
-      } else {
-        const newPig = { id: 'p_' + Date.now(), ...data, weights: [], healthLogs: [], miteLogs: [], stasisLogs: [], grooming: {}, photoFit: 'cover', stasisActive: false };
-        appData.piggies.push(newPig);
-        appData.activePiggyId = newPig.id;
-        showToast(`Created profile for ${data.name}! 🎉`, "🐹");
-      }
-      saveData();
-      closeProfileModal();
-      renderApp();
-    }
-
-    function handleHeroPhotoUpload(e) {
-      const file = e.target.files[0];
-      const p = getActivePiggy();
-      if (!file || !p) return;
-      const r = new FileReader();
-      r.onload = ev => { p.photo = ev.target.result; saveData(); renderApp(); showToast("Profile photo updated!", "📷"); };
-      r.readAsDataURL(file);
     }
 
     function openProfileModal(edit = false) {
@@ -1550,8 +652,8 @@
         document.getElementById('p-name').value = p.name;
         document.getElementById('p-dob').value = p.dob;
         document.getElementById('p-breed').value = p.breed;
-        document.getElementById('p-baseline').value = p.baselineWeight;
-        document.getElementById('p-threshold').value = p.weightThreshold || 60;
+        document.getElementById('p-baseline').value = p.baseline_weight;
+        document.getElementById('p-threshold').value = p.weight_threshold || 60;
         document.getElementById('p-vet').value = p.vet;
       } else {
         document.getElementById('p-id').value = '';
@@ -1577,35 +679,14 @@
       document.getElementById(`tab-content-${t}`).classList.remove('hidden');
       const btn = document.getElementById(`tab-btn-${t}`);
       btn.classList.remove('border-transparent', 'text-slate-400');
-      if (t === 'stasis') {
-        btn.classList.add('border-rose-600', 'text-rose-600');
-      } else if (t === 'clinics') {
-        btn.classList.add('border-sky-600', 'text-sky-600');
-      } else {
-        btn.classList.add('border-emerald-600', 'text-emerald-600');
-      }
-    }
-
-    async function handleShareApp() {
-      if (navigator.share) {
-        try { await navigator.share({ title: 'Wheekly', url: window.location.href }); return; } catch(e) {}
-      }
-      navigator.clipboard.writeText(window.location.href);
-      showToast("Link copied to clipboard!");
+      if (t === 'stasis') btn.classList.add('border-rose-600', 'text-rose-600');
+      else if (t === 'clinics') btn.classList.add('border-sky-600', 'text-sky-600');
+      else btn.classList.add('border-emerald-600', 'text-emerald-600');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('w-date').value = todayStr;
-      document.getElementById('hl-date').value = todayStr;
-      document.getElementById('m-date').value = todayStr;
-      autoCalculateMiteFollowup();
-      setDefaultStasisTime();
-      renderMealPlan();
       renderFoodDirectory();
-      loadData();
-      renderApp();
-      checkNotificationBannerState();
+      checkAuthSession();
     });
   </script>
 </body>
