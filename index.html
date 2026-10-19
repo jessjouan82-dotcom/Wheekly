@@ -14,7 +14,6 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Upgraded to Inter for a clean, serious, tech-forward aesthetic -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -114,7 +113,7 @@
       <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-6">
         Initialize your guinea pig health record below to start monitoring vital metrics, clinical weight trajectories, and emergency care logs.
       </p>
-      <button onclick="openProfileModal()" class="squish-btn w-full py-2.5 px-4 rounded-xl bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 flex items-center justify-center gap-2 transition">
+      <button onclick="openProfileModal()" class="squish-btn w-full py-2.5 px-4 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 flex items-center justify-center gap-2 transition">
         <i class="fa-solid fa-plus"></i> Add Guinea Pig Profile
       </button>
     </div>
@@ -177,6 +176,7 @@
       <button onclick="switchTab('stasis')" id="tab-btn-stasis" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-rose-600 dark:text-rose-400">🚨 Stasis Mode</button>
       <button onclick="switchTab('clinics')" id="tab-btn-clinics" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-sky-600 dark:text-sky-400">🏥 UK Vets</button>
       <button onclick="switchTab('healthlogs')" id="tab-btn-healthlogs" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🩺 Health & Mites</button>
+      <button onclick="switchTab('reminders')" id="tab-btn-reminders" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-indigo-600 dark:text-indigo-400">🔔 Alerts</button>
       <button onclick="switchTab('calculators')" id="tab-btn-calculators" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🧮 Calculators</button>
       <button onclick="switchTab('grooming')" id="tab-btn-grooming" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">✂️ Grooming</button>
       <button onclick="switchTab('meals')" id="tab-btn-meals" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🥗 Meals</button>
@@ -269,6 +269,25 @@
             </thead>
             <tbody id="stasis-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: PUSH NOTIFICATIONS & ALERTS -->
+    <div id="tab-content-reminders" class="tab-pane hidden space-y-4 text-xs">
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">🔔 Browser Push Notifications & Alerts</h3>
+            <p class="text-slate-500 dark:text-slate-400 mt-0.5">Enable native browser alerts to remind you of weekly weigh-ins or follow-up mite treatments.</p>
+          </div>
+          <button onclick="requestNotificationPermission()" id="notif-permission-btn" class="px-3.5 py-2 rounded-lg bg-indigo-600 text-white font-semibold shadow-sm hover:bg-indigo-700 transition">Enable Alerts</button>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-3">
+          <h4 class="font-bold text-slate-900 dark:text-white">Test Browser Push Notification</h4>
+          <p class="text-slate-600 dark:text-slate-300">Click below to send an instant test alert to verify your browser notification permissions are working correctly.</p>
+          <button onclick="triggerTestNotification()" class="px-3.5 py-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white font-semibold hover:bg-slate-300 transition">🚀 Send Test Notification</button>
         </div>
       </div>
     </div>
@@ -648,6 +667,38 @@
       { day: "Saturday", menu: "1/4 Orange Bell Pepper + Red Leaf Lettuce + Tiny carrot coin" },
       { day: "Sunday", menu: "1/4 Red Bell Pepper + Spring Greens + Small parsley sprig" }
     ];
+
+    // Notification Functions
+    function requestNotificationPermission() {
+      if (!("Notification" in window)) {
+        alert("This browser does not support desktop notifications.");
+        return;
+      }
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          alert("✅ Notifications enabled successfully!");
+          document.getElementById('notif-permission-btn').textContent = "Alerts Enabled ✓";
+          document.getElementById('notif-permission-btn').classList.replace('bg-indigo-600', 'bg-emerald-600');
+        } else {
+          alert("Notification permission was denied.");
+        }
+      });
+    }
+
+    function triggerTestNotification() {
+      if (!("Notification" in window)) {
+        alert("Notifications not supported.");
+        return;
+      }
+      if (Notification.permission === "granted") {
+        new Notification("Wheekly Health Alert 🐹", {
+          body: "Time for your weekly guinea pig health check and weigh-in!",
+          icon: "wheekly_logo.jpg"
+        });
+      } else {
+        requestNotificationPermission();
+      }
+    }
 
     function openVetReportModal() {
       const p = getActivePiggy();
@@ -1360,7 +1411,7 @@
     function switchTab(t) {
       document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('border-emerald-600', 'text-emerald-600', 'border-rose-600', 'text-rose-600', 'border-sky-600', 'text-sky-600');
+        b.classList.remove('border-emerald-600', 'text-emerald-600', 'border-rose-600', 'text-rose-600', 'border-sky-600', 'text-sky-600', 'border-indigo-600', 'text-indigo-600');
         b.classList.add('border-transparent', 'text-slate-400');
       });
       document.getElementById(`tab-content-${t}`).classList.remove('hidden');
@@ -1370,6 +1421,8 @@
         btn.classList.add('border-rose-600', 'text-rose-600');
       } else if (t === 'clinics') {
         btn.classList.add('border-sky-600', 'text-sky-600');
+      } else if (t === 'reminders') {
+        btn.classList.add('border-indigo-600', 'text-indigo-600');
       } else {
         btn.classList.add('border-emerald-600', 'text-emerald-600');
       }
