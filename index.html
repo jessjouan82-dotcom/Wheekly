@@ -745,7 +745,7 @@
       `;
 
       if (sLogs.length === 0) {
-        html += `<tr><td colspan="3" class="p-3 text-center text-slate-400">No stasis records.</td></tr>`;
+        html += `<tr><td colspan="3" class="p-4 text-center text-slate-400">No stasis records logged yet.</td></tr>`;
       } else {
         sLogs.forEach(s => {
           html += `<tr><td class="p-2.5 font-bold">${s.time.replace('T', ' ')}</td><td class="p-2.5 font-extrabold text-emerald-600">${s.amount} ml</td><td class="p-2.5">${s.notes || '—'}</td></tr>`;
@@ -770,7 +770,7 @@
       `;
 
       if (mLogs.length === 0) {
-        html += `<tr><td colspan="4" class="p-3 text-center text-slate-400">No parasite records.</td></tr>`;
+        html += `<tr><td colspan="4" class="p-4 text-center text-slate-400">No parasite records logged yet.</td></tr>`;
       } else {
         mLogs.forEach(m => {
           html += `<tr><td class="p-2.5 font-bold">${m.date}</td><td class="p-2.5">${m.product}</td><td class="p-2.5">${m.dose}</td><td class="p-2.5 font-semibold text-sky-600">${m.nextDue || '—'}</td></tr>`;
@@ -795,7 +795,7 @@
       `;
 
       if (hLogs.length === 0) {
-        html += `<tr><td colspan="4" class="p-3 text-center text-slate-400">No symptom records.</td></tr>`;
+        html += `<tr><td colspan="4" class="p-4 text-center text-slate-400">No symptom records logged yet.</td></tr>`;
       } else {
         hLogs.forEach(h => {
           html += `<tr><td class="p-2.5 font-bold">${h.date}</td><td class="p-2.5">${h.category}</td><td class="p-2.5 font-semibold text-amber-600">${h.severity}</td><td class="p-2.5">${h.notes}</td></tr>`;
@@ -820,7 +820,7 @@
       `;
 
       if (w.length === 0) {
-        html += `<tr><td colspan="4" class="p-3 text-center text-slate-400">No weight entries.</td></tr>`;
+        html += `<tr><td colspan="4" class="p-4 text-center text-slate-400">No weight entries logged yet.</td></tr>`;
       } else {
         w.forEach(item => {
           const diff = item.weight - p.baselineWeight;
@@ -1054,7 +1054,18 @@
         latestEl.textContent = '--';
         diffEl.textContent = '--';
         verdictEl.textContent = 'Ready for weigh-in';
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">No weight records found.</td></tr>`;
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="p-6 text-center text-slate-400">
+              <div class="flex flex-col items-center justify-center space-y-2">
+                <span class="text-xl">⚖️</span>
+                <p class="font-medium text-slate-600 dark:text-slate-300">No weights recorded yet. Weigh in weekly to catch early health drops!</p>
+                <button onclick="document.getElementById('w-val').focus(); window.scrollTo({top:150, behavior:'smooth'});" class="mt-1 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">
+                  + Record First Weigh-In
+                </button>
+              </div>
+            </td>
+          </tr>`;
         updateChart([], []);
         return;
       }
@@ -1172,7 +1183,18 @@
       const tbody = document.getElementById('stasis-table-body');
       tbody.innerHTML = '';
       if (logs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">No stasis events recorded.</td></tr>`;
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="p-6 text-center text-slate-400">
+              <div class="flex flex-col items-center justify-center space-y-2">
+                <span class="text-xl">🚨</span>
+                <p class="font-medium text-slate-600 dark:text-slate-300">No emergency stasis feeds logged. Keep a close eye on hydration and syringe feeding if appetite ceases.</p>
+                <button onclick="quickLogStasisFeed()" class="mt-1 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">
+                  + Log 10ml Feed
+                </button>
+              </div>
+            </td>
+          </tr>`;
         return;
       }
 
@@ -1270,7 +1292,18 @@
       tbody.innerHTML = '';
 
       if (logs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No symptom logs.</td></tr>`;
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="p-6 text-center text-slate-400">
+              <div class="flex flex-col items-center justify-center space-y-2">
+                <span class="text-xl">🩺</span>
+                <p class="font-medium text-slate-600 dark:text-slate-300">No symptoms recorded yet. A clean bill of health!</p>
+                <button onclick="document.getElementById('hl-notes').focus();" class="mt-1 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">
+                  + Log First Symptom
+                </button>
+              </div>
+            </td>
+          </tr>`;
         return;
       }
 
@@ -1323,7 +1356,18 @@
       tbody.innerHTML = '';
 
       if (logs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No parasite logs.</td></tr>`;
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="p-6 text-center text-slate-400">
+              <div class="flex flex-col items-center justify-center space-y-2">
+                <span class="text-xl">🐛</span>
+                <p class="font-medium text-slate-600 dark:text-slate-300">No parasite treatments logged. Keep track of spot-ons like Xeno here.</p>
+                <button onclick="document.getElementById('m-dose').focus();" class="mt-1 px-3.5 py-1.5 rounded-lg bg-sky-600 text-white font-semibold text-xs shadow-sm hover:bg-sky-700 transition">
+                  + Log First Treatment
+                </button>
+              </div>
+            </td>
+          </tr>`;
         return;
       }
 
