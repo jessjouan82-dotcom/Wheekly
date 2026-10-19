@@ -183,20 +183,16 @@
       </div>
     </div>
 
-    <!-- Main Navigation Tabs -->
-    <div id="nav-tabs-container" class="hidden flex border-b border-slate-200 dark:border-slate-800 gap-4 sm:gap-6 overflow-x-auto hide-scrollbar text-xs font-semibold mb-6">
+    <!-- Streamlined 5-Core Navigation Hubs -->
+    <div id="nav-tabs-container" class="hidden flex border-b border-slate-200 dark:border-slate-800 gap-3 sm:gap-6 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-bold mb-6">
       <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-3 text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-600 shrink-0">⚖️ Weight Log</button>
       <button onclick="switchTab('stasis')" id="tab-btn-stasis" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-rose-600 dark:text-rose-400">🚨 Stasis Mode</button>
       <button onclick="switchTab('clinics')" id="tab-btn-clinics" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-sky-600 dark:text-sky-400">🏥 UK Vets</button>
-      <button onclick="switchTab('healthlogs')" id="tab-btn-healthlogs" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🩺 Health & Mites</button>
-      <button onclick="switchTab('calculators')" id="tab-btn-calculators" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🧮 Calculators</button>
-      <button onclick="switchTab('grooming')" id="tab-btn-grooming" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">✂️ Grooming</button>
-      <button onclick="switchTab('meals')" id="tab-btn-meals" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🥗 Meals</button>
-      <button onclick="switchTab('foods')" id="tab-btn-foods" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🍎 Foods</button>
-      <button onclick="switchTab('exams')" id="tab-btn-exams" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🩺 Physical Exam</button>
+      <button onclick="switchTab('healthhub')" id="tab-btn-healthhub" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🩺 Health Hub</button>
+      <button onclick="switchTab('dietcare')" id="tab-btn-dietcare" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🥗 Diet & Care</button>
     </div>
 
-    <!-- TAB 1: WEIGHT LOG -->
+    <!-- HUB 1: WEIGHT LOG -->
     <div id="tab-content-weights" class="tab-pane space-y-4">
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -241,7 +237,7 @@
       </div>
     </div>
 
-    <!-- TAB: STASIS EMERGENCY MODE -->
+    <!-- HUB 2: STASIS EMERGENCY MODE -->
     <div id="tab-content-stasis" class="tab-pane hidden space-y-5 text-xs">
       <div class="bg-rose-50 dark:bg-rose-950/20 p-5 rounded-2xl border border-rose-200 dark:border-rose-900/50 shadow-sm space-y-4">
         <div class="flex items-start justify-between gap-3">
@@ -285,7 +281,7 @@
       </div>
     </div>
 
-    <!-- TAB: UK VET CLINIC LOCATOR & EMERGENCY CHECKLIST -->
+    <!-- HUB 3: UK VET CLINIC LOCATOR & EMERGENCY CHECKLIST -->
     <div id="tab-content-clinics" class="tab-pane hidden space-y-5 text-xs">
       <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
         <div class="flex items-center justify-between">
@@ -314,8 +310,10 @@
       </div>
     </div>
 
-    <!-- TAB: HEALTH & MITES LOG -->
-    <div id="tab-content-healthlogs" class="tab-pane hidden space-y-6 text-xs">
+    <!-- HUB 4: HEALTH HUB (Symptoms, Mites, Grooming, Physical Exam) -->
+    <div id="tab-content-healthhub" class="tab-pane hidden space-y-6 text-xs">
+      
+      <!-- Symptom Log -->
       <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">🩺 Clinical Symptom Observation Log</h3>
         <p class="text-slate-500 dark:text-slate-400">Log abnormalities regarding ocular/nasal discharge, dermatological flakes, gait, or respiration.</p>
@@ -360,9 +358,10 @@
         </div>
       </div>
 
+      <!-- Mite Log -->
       <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">🐛 Mite & Parasite Treatment Log (Ivermectin / Xeno)</h3>
-        <p class="text-slate-500 dark:text-slate-400">Track anti-parasite spot-on applications (e.g. Xeno 200/450) and schedule required multi-dose follow-up intervals (typically every 10–14 days).</p>
+        <p class="text-slate-500 dark:text-slate-400">Track anti-parasite spot-on applications and schedule follow-up intervals.</p>
         
         <form onsubmit="handleMiteLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-1">
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date Administered</label><input type="date" id="m-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
@@ -393,31 +392,8 @@
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- TAB 3: CALCULATORS -->
-    <div id="tab-content-calculators" class="tab-pane hidden space-y-4 text-xs">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Vitamin C Daily Requirement</h3>
-          <p class="text-slate-500 dark:text-slate-400">Estimated requirement (~10–20mg per kg daily).</p>
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-            <strong id="calc-vitc-result" class="text-emerald-600 dark:text-emerald-400 text-sm block font-bold">--</strong>
-          </div>
-        </div>
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🥣 Critical Care Mixing Guide</h3>
-          <p class="text-slate-500 dark:text-slate-400">Standard recovery formula reconstitution ratio.</p>
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
-            <p><strong>Ratio:</strong> 1 part Oxbow Critical Care powder to 1.5 - 2 parts warm water.</p>
-            <p class="text-slate-500">Administer approx 10ml - 15ml per 100g body weight split across 4-6 daily feeds.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 4: GROOMING -->
-    <div id="tab-content-grooming" class="tab-pane hidden space-y-4 text-xs">
+      <!-- Grooming Tracker -->
       <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">✂️ Grooming & Facility Maintenance Tracker</h3>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -438,36 +414,8 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- TAB 5: MEALS -->
-    <div id="tab-content-meals" class="tab-pane hidden space-y-4">
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-xs space-y-3">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Balanced 7-Day Low-Calcium UK Meal Plan</h3>
-        <p class="text-slate-500 dark:text-slate-400">Approx. 1 cup (~100g) fresh greens per piggy daily + unlimited high-fiber hay.</p>
-        <div id="meal-plan-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-      </div>
-    </div>
-
-    <!-- TAB 6: FOODS -->
-    <div id="tab-content-foods" class="tab-pane hidden space-y-4">
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 text-xs">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Food Safety & Nutrition Directory</h3>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food (e.g. iceberg, parsley, bell pepper)..." class="flex-grow bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 font-medium">
-          <div class="flex gap-1.5 overflow-x-auto pb-1">
-            <button onclick="setFoodFilter('ALL')" id="flt-ALL" class="px-3 py-2 rounded-lg font-bold bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shrink-0">All</button>
-            <button onclick="setFoodFilter('SAFE')" id="flt-SAFE" class="px-3 py-2 rounded-lg font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shrink-0">✅ Safe</button>
-            <button onclick="setFoodFilter('LIMIT')" id="flt-LIMIT" class="px-3 py-2 rounded-lg font-bold bg-amber-50 text-amber-600 border border-amber-200 shrink-0">⚠️ Limit</button>
-            <button onclick="setFoodFilter('TOXIC')" id="flt-TOXIC" class="px-3 py-2 rounded-lg font-bold bg-rose-50 text-rose-600 border border-rose-200 shrink-0">🚫 Toxic</button>
-          </div>
-        </div>
-        <div id="food-directory-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-      </div>
-    </div>
-
-    <!-- TAB 7: HEALTH CHECK -->
-    <div id="tab-content-exams" class="tab-pane hidden space-y-4 text-xs">
+      <!-- Weekly 8-Point Physical Exam Guide -->
       <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Weekly 8-Point Physical Examination Guide</h3>
         <p class="text-slate-500 dark:text-slate-400 mb-2">Perform this structured physical audit weekly. Expand each section for clinical assessment criteria.</p>
@@ -538,6 +486,53 @@
           </details>
         </div>
       </div>
+
+    </div>
+
+    <!-- HUB 5: DIET & CARE (Calculators, Meals, Foods) -->
+    <div id="tab-content-dietcare" class="tab-pane hidden space-y-6 text-xs">
+      
+      <!-- Calculators -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Vitamin C Daily Requirement</h3>
+          <p class="text-slate-500 dark:text-slate-400">Estimated requirement (~10–20mg per kg daily).</p>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <strong id="calc-vitc-result" class="text-emerald-600 dark:text-emerald-400 text-sm block font-bold">--</strong>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🥣 Critical Care Mixing Guide</h3>
+          <p class="text-slate-500 dark:text-slate-400">Standard recovery formula reconstitution ratio.</p>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+            <p><strong>Ratio:</strong> 1 part Oxbow Critical Care powder to 1.5 - 2 parts warm water.</p>
+            <p class="text-slate-500">Administer approx 10ml - 15ml per 100g body weight split across 4-6 daily feeds.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meal Plan -->
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Balanced 7-Day Low-Calcium UK Meal Plan</h3>
+        <p class="text-slate-500 dark:text-slate-400">Approx. 1 cup (~100g) fresh greens per piggy daily + unlimited high-fiber hay.</p>
+        <div id="meal-plan-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+      </div>
+
+      <!-- Food Directory -->
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Food Safety & Nutrition Directory</h3>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food (e.g. iceberg, parsley, bell pepper)..." class="flex-grow bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 font-medium">
+          <div class="flex gap-1.5 overflow-x-auto pb-1">
+            <button onclick="setFoodFilter('ALL')" id="flt-ALL" class="px-3 py-2 rounded-lg font-bold bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shrink-0">All</button>
+            <button onclick="setFoodFilter('SAFE')" id="flt-SAFE" class="px-3 py-2 rounded-lg font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shrink-0">✅ Safe</button>
+            <button onclick="setFoodFilter('LIMIT')" id="flt-LIMIT" class="px-3 py-2 rounded-lg font-bold bg-amber-50 text-amber-600 border border-amber-200 shrink-0">⚠️ Limit</button>
+            <button onclick="setFoodFilter('TOXIC')" id="flt-TOXIC" class="px-3 py-2 rounded-lg font-bold bg-rose-50 text-rose-600 border border-rose-200 shrink-0">🚫 Toxic</button>
+          </div>
+        </div>
+        <div id="food-directory-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </div>
+
     </div>
 
   </main>
@@ -941,15 +936,14 @@
       }
     }
 
-    // Helper to evaluate each piggy's health status for chips
     function getPiggyHealthDot(p) {
-      if (!p.weights || p.weights.length === 0) return '🟢'; // No data yet
+      if (!p.weights || p.weights.length === 0) return '🟢';
       const sorted = [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date));
       const latest = sorted[0].weight;
       const drop = p.baselineWeight - latest;
-      if (drop >= 60) return '🔴'; // Critical drop >= 60g
-      if (drop >= 30) return '🟡'; // Moderate drop 30-59g
-      return '🟢'; // Stable
+      if (drop >= 60) return '🔴';
+      if (drop >= 30) return '🟡';
+      return '🟢';
     }
 
     function renderPiggyChips() {
