@@ -361,13 +361,13 @@
         </div>
       </div>
 
-      <!-- Mite Log -->
+      <!-- Mite Log & Auto-Reminder Calculator -->
       <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">🐛 Mite & Parasite Treatment Log (Ivermectin / Xeno)</h3>
-        <p class="text-slate-500 dark:text-slate-400">Track anti-parasite spot-on applications and schedule follow-up intervals.</p>
+        <p class="text-slate-500 dark:text-slate-400">Track anti-parasite spot-on applications. Automatically schedules the vital 10–14 day follow-up dose.</p>
         
-        <form onsubmit="handleMiteLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-1">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date Administered</label><input type="date" id="m-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+        <form onsubmit="handleMiteLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date Administered</label><input type="date" id="m-date" onchange="autoCalculateMiteFollowup()" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
           <div>
             <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Product</label>
             <select id="m-product" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
@@ -375,12 +375,11 @@
               <option value="Xeno 450 Spot-On">Xeno 450 Spot-On</option>
               <option value="Vet Ivermectin Injection">Vet Ivermectin Injection</option>
               <option value="Beaphar Anti-Parasite Spot-On">Beaphar Spot-On</option>
-              <option value="Other Parasite Treatment">Other Treatment</option>
             </select>
           </div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Dose / Weight</label><input type="text" id="m-dose" required placeholder="e.g. 1050g / 1 Pipette" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Next Due Date</label><input type="date" id="m-next" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-lg bg-sky-600 text-white font-semibold shadow-sm hover:bg-sky-700 transition">+ Log Treatment</button></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Dose / Pipette</label><input type="text" id="m-dose" required placeholder="e.g. 1 Pipette" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Follow-up Due (+12 Days)</label><input type="date" id="m-next" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium text-sky-600 font-bold"></div>
+          <div class="sm:col-span-4 pt-1"><button type="submit" class="squish-btn w-full py-2.5 px-4 rounded-lg bg-sky-600 text-white font-semibold text-xs shadow-sm hover:bg-sky-700 transition">+ Log Treatment & Set Alert Reminder</button></div>
         </form>
       </div>
 
@@ -389,7 +388,7 @@
         <div class="overflow-x-auto">
           <table class="w-full text-left">
             <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
-              <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3">Dose</th><th class="p-3">Next Due</th><th class="p-3 text-right">Action</th></tr>
+              <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3">Dose</th><th class="p-3">Next Due (Follow-up)</th><th class="p-3 text-right">Action</th></tr>
             </thead>
             <tbody id="mitelog-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
           </table>
@@ -678,7 +677,6 @@
       { day: "Sunday", menu: "1/4 Red Bell Pepper + Spring Greens + Small parsley sprig" }
     ];
 
-    // Notification Functions & UI State Check
     function checkNotificationBannerState() {
       const banner = document.getElementById('top-alert-banner');
       if (!banner) return;
@@ -717,6 +715,14 @@
       } else {
         requestNotificationPermission();
       }
+    }
+
+    function autoCalculateMiteFollowup() {
+      const dateVal = document.getElementById('m-date').value;
+      if (!dateVal) return;
+      const d = new Date(dateVal);
+      d.setDate(d.getDate() + 12); // Standard 12-day follow-up window for Xeno/Ivermectin
+      document.getElementById('m-next').value = d.toISOString().split('T')[0];
     }
 
     function openVetReportModal() {
@@ -1357,17 +1363,21 @@
       const p = getActivePiggy();
       if (!p) return;
       if (!p.miteLogs) p.miteLogs = [];
+      const nextDueVal = document.getElementById('m-next').value;
       p.miteLogs.push({
         id: 'm_' + Date.now(),
         date: document.getElementById('m-date').value,
         product: document.getElementById('m-product').value,
         dose: document.getElementById('m-dose').value.trim(),
-        nextDue: document.getElementById('m-next').value
+        nextDue: nextDueVal
       });
       saveData();
       renderApp();
       e.target.reset();
-      document.getElementById('m-date').valueAsDate = new Date();
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('m-date').value = todayStr;
+      autoCalculateMiteFollowup();
+      alert(`✅ Treatment logged! Reminder set for follow-up dose on ${nextDueVal}.`);
     }
 
     function deleteMiteLog(id) {
@@ -1539,6 +1549,7 @@
       document.getElementById('w-date').value = todayStr;
       document.getElementById('hl-date').value = todayStr;
       document.getElementById('m-date').value = todayStr;
+      autoCalculateMiteFollowup();
       setDefaultStasisTime();
       renderMealPlan();
       renderFoodDirectory();
