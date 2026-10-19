@@ -172,6 +172,7 @@
             </p>
             <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-slate-500 dark:text-slate-400">
               <span>Baseline: <strong id="hero-baseline" class="text-slate-900 dark:text-white font-bold">-- g</strong></span>
+              <span>Alert Threshold: <strong id="hero-threshold" class="text-slate-900 dark:text-white font-bold">-- g loss</strong></span>
               <span class="cursor-pointer underline decoration-dotted text-sky-600 dark:text-sky-400" onclick="openExoticVetModal()">Exotic Clinic: <strong id="hero-vet" class="text-slate-900 dark:text-white font-bold">--</strong> ℹ️</span>
             </div>
           </div>
@@ -605,6 +606,11 @@
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Baseline Weight (g)</label><input type="number" id="p-baseline" required value="1000" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
         </div>
         <div>
+          <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Custom Warning Threshold (g loss)</label>
+          <input type="number" id="p-threshold" required value="60" min="10" max="200" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium" placeholder="e.g. 50">
+          <p class="text-[10px] text-slate-400 mt-0.5">Weight drop required to trigger warning status (Default is 60g).</p>
+        </div>
+        <div>
           <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1 flex justify-between items-center">
             <span>Exotic Vet Practice</span>
             <button type="button" onclick="openExoticVetModal()" class="text-sky-600 dark:text-sky-400 font-semibold underline text-[10px]">What is this?</button>
@@ -867,7 +873,7 @@
       const sLogs = p.stasisLogs ? [...p.stasisLogs].sort((a,b) => new Date(b.time) - new Date(a.time)) : [];
       
       let report = `=== VET CLINICAL SUMMARY ===\n`;
-      report += `Patient: ${p.name} | Sex: ${p.gender} | Breed: ${p.breed || 'Cavy'} | Age: ${computeAge(p.dob)}\nBaseline: ${p.baselineWeight}g | Clinic: ${p.vet || 'None'}\n\n`;
+      report += `Patient: ${p.name} | Sex: ${p.gender} | Breed: ${p.breed || 'Cavy'} | Age: ${computeAge(p.dob)}\nBaseline: ${p.baselineWeight}g | Threshold: ${p.weightThreshold || 60}g drop | Clinic: ${p.vet || 'None'}\n\n`;
       
       report += `--- STASIS FEEDS ---\n`;
       if (sLogs.length === 0) report += `No records.\n`;
@@ -959,8 +965,11 @@
       const sorted = [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date));
       const latest = sorted[0].weight;
       const drop = p.baselineWeight - latest;
-      if (drop >= 60) return '🔴';
-      if (drop >= 30) return '🟡';
+      const threshold = p.weightThreshold || 60;
+      const warningThreshold = Math.round(threshold * 0.5);
+
+      if (drop >= threshold) return '🔴';
+      if (drop >= warningThreshold) return '🟡';
       return '🟢';
     }
 
@@ -987,6 +996,7 @@
       document.getElementById('hero-dob-val').textContent = p.dob || '--';
       document.getElementById('hero-age-val').textContent = computeAge(p.dob);
       document.getElementById('hero-baseline').textContent = `${p.baselineWeight} g`;
+      document.getElementById('hero-threshold').textContent = `${p.weightThreshold || 60} g loss`;
       document.getElementById('hero-vet').textContent = p.vet || 'None Specified';
       
       const fitMode = p.photoFit || 'cover';
@@ -1093,10 +1103,13 @@
       latestEl.textContent = latest.weight;
       diffEl.textContent = delta > 0 ? `+${delta}` : delta;
       
-      if (p.baselineWeight - latest.weight >= 60) {
-        verdictEl.textContent = '🚨 Critical Drop (≥60g)';
-      } else if (p.baselineWeight - latest.weight >= 30) {
-        verdictEl.textContent = '⚠️ Monitor (30-50g loss)';
+      const threshold = p.weightThreshold || 60;
+      const warningThreshold = Math.round(threshold * 0.5);
+
+      if (p.baselineWeight - latest.weight >= threshold) {
+        verdictEl.textContent = `🚨 Critical Drop (≥${threshold}g)`;
+      } else if (p.baselineWeight - latest.weight >= warningThreshold) {
+        verdictEl.textContent = `⚠️ Monitor (${warningThreshold}-${threshold - 1}g loss)`;
       } else {
         verdictEl.textContent = '✅ Weight Stable';
       }
@@ -1446,6 +1459,7 @@
         dob: document.getElementById('p-dob').value,
         breed: document.getElementById('p-breed').value.trim(),
         baselineWeight: parseFloat(document.getElementById('p-baseline').value) || 1000,
+        weightThreshold: parseFloat(document.getElementById('p-threshold').value) || 60,
         vet: document.getElementById('p-vet').value.trim()
       };
       if (id) {
@@ -1478,6 +1492,7 @@
         document.getElementById('p-dob').value = p.dob;
         document.getElementById('p-breed').value = p.breed;
         document.getElementById('p-baseline').value = p.baselineWeight;
+        document.getElementById('p-threshold').value = p.weightThreshold || 60;
         document.getElementById('p-vet').value = p.vet;
       } else {
         document.getElementById('p-id').value = '';
@@ -1485,6 +1500,7 @@
         document.getElementById('p-dob').value = '';
         document.getElementById('p-breed').value = '';
         document.getElementById('p-baseline').value = '1000';
+        document.getElementById('p-threshold').value = '60';
         document.getElementById('p-vet').value = '';
       }
       document.getElementById('profile-modal').classList.remove('hidden');
