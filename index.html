@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Wheekly — UK Guinea Pig Care & Health Suite</title>
   
-  <!-- App Icons & PWA meta -->
   <link rel="icon" type="image/jpeg" href="wheekly_logo.jpg">
   <link rel="apple-touch-icon" href="wheekly_logo.jpg">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,8 +18,6 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Supabase JS Client SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
     tailwind.config = {
@@ -39,15 +36,6 @@
             butter: { 50: '#FEFCE8', 100: '#FEF08A', 200: '#FDE047', 500: '#EAB308', 700: '#A16207' },
             sky: { 50: '#F0F9FF', 100: '#E0F2FE', 200: '#BAE6FD', 500: '#0EA5E9', 700: '#0369A1' },
             cocoa: { 800: '#0F172A', 600: '#475569', 400: '#94A3B8', 200: '#E2E8F0', 50: '#F8FAFC' }
-          },
-          boxShadow: {
-            'squish-pink': '0 2px 4px rgba(244, 63, 94, 0.2)',
-            'squish-matcha': '0 2px 4px rgba(34, 197, 94, 0.2)',
-            'squish-card': '0 1px 3px rgba(0, 0, 0, 0.08)'
-          },
-          borderRadius: {
-            'squish': '12px',
-            'squish-lg': '16px'
           }
         }
       }
@@ -64,21 +52,17 @@
       background-color: #090D16;
       color: #F1F5F9;
     }
-    
     button, .interactive-card {
       transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease, background-color 0.15s ease;
     }
     button:active, .interactive-card:active {
       transform: scale(0.96);
     }
-
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
     #toast-notification {
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-in-out;
     }
-
     @media print {
       body * { visibility: hidden; }
       #vet-report-modal, #vet-report-modal * { visibility: visible; }
@@ -97,7 +81,7 @@
     <span id="toast-msg">Action completed successfully!</span>
   </div>
 
-  <!-- Header with Logo & Auth Status -->
+  <!-- Header -->
   <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 px-3 py-3 sm:px-6">
     <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
       <div class="flex items-center gap-3 min-w-0">
@@ -106,11 +90,8 @@
         </div>
         <div class="min-w-0">
           <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight tracking-tight">Wheekly</h1>
-          <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Cloud Health Suite</p>
+          <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Guinea Pig Health Suite</p>
         </div>
-      </div>
-      <div id="header-auth-actions" class="flex items-center gap-2 shrink-0">
-        <!-- Dynamically rendered login/logout buttons -->
       </div>
     </div>
   </header>
@@ -118,271 +99,240 @@
   <!-- Main Content -->
   <main class="flex-grow max-w-5xl mx-auto px-3 sm:px-6 py-6 w-full">
 
-    <!-- AUTHENTICATION VIEW (Shown when user is logged out) -->
-    <div id="auth-view" class="hidden my-8 max-w-md mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-      <div class="text-center mb-6">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex items-center justify-center mb-3">
-          <img src="wheekly_logo.jpg" alt="Wheekly Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='🐹'">
-        </div>
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Welcome to Wheekly Cloud</h2>
-        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Sign in or create an account to access your guinea pig health records across any device.</p>
+    <!-- Zero State -->
+    <div id="zero-state-view" class="hidden my-10 max-w-md mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center interactive-card">
+      <div class="w-20 h-20 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex items-center justify-center mb-4">
+        <img src="wheekly_logo.jpg" alt="Wheekly Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='🐹'">
       </div>
-
-      <form onsubmit="handleAuthSubmit(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Email Address</label>
-          <input type="email" id="auth-email" required placeholder="name@example.com" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium">
-        </div>
-        <div>
-          <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Password</label>
-          <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium">
-        </div>
-        <div class="pt-2 flex flex-col gap-2">
-          <button type="submit" id="auth-submit-btn" class="w-full py-2.5 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 transition">Sign In</button>
-          <button type="button" onclick="toggleAuthMode()" id="auth-toggle-mode-btn" class="w-full py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition">Need an account? Sign Up</button>
-        </div>
-      </form>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Welcome to Wheekly</h2>
+      <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-6">
+        Initialize your guinea pig health record below to start monitoring vital metrics, clinical weight trajectories, and emergency care logs.
+      </p>
+      <button onclick="openProfileModal()" class="w-full py-2.5 px-4 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 flex items-center justify-center gap-2 transition">
+        <i class="fa-solid fa-plus"></i> Add Guinea Pig Profile
+      </button>
     </div>
 
-    <!-- MAIN APP DASHBOARD VIEW (Shown when user is authenticated) -->
-    <div id="app-dashboard-view" class="hidden space-y-6">
-
-      <!-- Zero State (If user has no piggies yet) -->
-      <div id="zero-state-view" class="hidden my-10 max-w-md mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center interactive-card">
-        <div class="w-20 h-20 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex items-center justify-center mb-4">
-          <img src="wheekly_logo.jpg" alt="Wheekly Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='🐹'">
+    <!-- Active Profile Header -->
+    <div id="profile-section" class="space-y-4 mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Active Profile:</span>
+          <div id="piggy-chips-container" class="flex items-center gap-2"></div>
         </div>
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Welcome to Wheekly</h2>
-        <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-6">
-          Initialize your guinea pig health record below to start monitoring vital metrics, clinical weight trajectories, and emergency care logs in the cloud.
-        </p>
-        <button onclick="openProfileModal()" class="w-full py-2.5 px-4 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 flex items-center justify-center gap-2 transition">
-          <i class="fa-solid fa-plus"></i> Add Guinea Pig Profile
-        </button>
-      </div>
-
-      <!-- Active Profile Header -->
-      <div id="profile-section" class="space-y-4 mb-6">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div class="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">Active Profile:</span>
-            <div id="piggy-chips-container" class="flex items-center gap-2"></div>
-          </div>
-          <div class="flex flex-wrap gap-2 text-xs">
-            <button onclick="openVetReportModal()" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5">📋 Vet Report & PDF</button>
-            <button onclick="openProfileModal()" class="px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-semibold shadow-sm hover:bg-rose-700 transition"><i class="fa-solid fa-plus text-[10px]"></i> Add Piggy</button>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
-          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <div class="relative shrink-0 flex flex-col items-center gap-1.5">
-              <div id="hero-avatar-container" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center text-2xl font-bold">🐹</div>
-            </div>
-
-            <div class="flex-grow text-center sm:text-left min-w-0">
-              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
-                <h2 id="hero-name" class="text-xl font-bold text-slate-900 dark:text-white">--</h2>
-                <span id="hero-gender" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">--</span>
-                <span id="hero-breed" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800">--</span>
-              </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium">
-                DOB: <strong id="hero-dob-val" class="text-slate-700 dark:text-slate-200">--</strong> • Age: <strong id="hero-age-val" class="text-slate-700 dark:text-slate-200">--</strong>
-              </p>
-              <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-slate-500 dark:text-slate-400">
-                <span>Baseline: <strong id="hero-baseline" class="text-slate-900 dark:text-white font-bold">-- g</strong></span>
-                <span>Alert Threshold: <strong id="hero-threshold" class="text-slate-900 dark:text-white font-bold">-- g loss</strong></span>
-                <span class="cursor-pointer underline decoration-dotted text-sky-600 dark:text-sky-400" onclick="openExoticVetModal()">Exotic Clinic: <strong id="hero-vet" class="text-slate-900 dark:text-white font-bold">--</strong> ℹ️</span>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button onclick="editCurrentProfile()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Profile
-              </button>
-            </div>
-          </div>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <button onclick="openVetReportModal()" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5">📋 Vet Report & PDF</button>
+          <button onclick="openProfileModal()" class="px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-semibold shadow-sm hover:bg-rose-700 transition"><i class="fa-solid fa-plus text-[10px]"></i> Add Piggy</button>
         </div>
       </div>
 
-      <!-- 5-Core Navigation Hubs -->
-      <div id="nav-tabs-container" class="flex border-b border-slate-200 dark:border-slate-800 gap-3 sm:gap-6 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-bold mb-6">
-        <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-3 text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-600 shrink-0">⚖️ Weight Log</button>
-        <button onclick="switchTab('stasis')" id="tab-btn-stasis" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-rose-600 dark:text-rose-400">🚨 Stasis Mode</button>
-        <button onclick="switchTab('clinics')" id="tab-btn-clinics" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-sky-600 dark:text-sky-400">🏥 UK Vets</button>
-        <button onclick="switchTab('healthhub')" id="tab-btn-healthhub" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🩺 Health Hub</button>
-        <button onclick="switchTab('dietcare')" id="tab-btn-dietcare" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🥗 Diet & Care</button>
-      </div>
-
-      <!-- HUB 1: WEIGHT LOG -->
-      <div id="tab-content-weights" class="tab-pane space-y-4">
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Latest Weight</span>
-            <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-latest-weight">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+          <div class="relative shrink-0 flex flex-col items-center gap-1.5">
+            <div id="hero-avatar-container" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center text-2xl font-bold">🐹</div>
           </div>
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Baseline Delta</span>
-            <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-baseline-diff">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
+
+          <div class="flex-grow text-center sm:text-left min-w-0">
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+              <h2 id="hero-name" class="text-xl font-bold text-slate-900 dark:text-white">--</h2>
+              <span id="hero-gender" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">--</span>
+              <span id="hero-breed" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800">--</span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium">
+              DOB: <strong id="hero-dob-val" class="text-slate-700 dark:text-slate-200">--</strong> • Age: <strong id="hero-age-val" class="text-slate-700 dark:text-slate-200">--</strong>
+            </p>
+            <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-slate-500 dark:text-slate-400">
+              <span>Baseline: <strong id="hero-baseline" class="text-slate-900 dark:text-white font-bold">-- g</strong></span>
+              <span>Alert Threshold: <strong id="hero-threshold" class="text-slate-900 dark:text-white font-bold">-- g loss</strong></span>
+              <span>Exotic Clinic: <strong id="hero-vet" class="text-slate-900 dark:text-white font-bold">--</strong></span>
+            </div>
           </div>
-          <div class="col-span-2 sm:col-span-1 bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-center interactive-card">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Clinical Status</span>
-            <p id="metric-health-verdict" class="text-xs font-bold text-slate-900 dark:text-white mt-0.5">Ready for weigh-in</p>
-          </div>
-        </div>
 
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Record Scale Weigh-In</h3>
-          <form onsubmit="handleWeightSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
-            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Weight (Grams)</label><input type="number" id="w-val" required placeholder="e.g. 1040" min="100" max="2500" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
-            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes</label><input type="text" id="w-notes" placeholder="e.g. Morning pre-veg" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
-            <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Record Scale Entry</button></div>
-          </form>
-        </div>
-
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-xs">
-          <h4 class="font-bold text-slate-700 dark:text-slate-300 mb-2">Weight Progression Curve</h4>
-          <div class="h-48 sm:h-56 w-full"><canvas id="weightHistoryChart"></canvas></div>
-        </div>
-
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden text-xs">
-          <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Historical Weigh-Ins</div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left">
-              <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
-                <tr><th class="p-3">Date</th><th class="p-3">Weight</th><th class="p-3">Notes</th><th class="p-3 text-right">Action</th></tr>
-              </thead>
-              <tbody id="weight-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-            </table>
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button onclick="editCurrentProfile()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+              <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Profile
+            </button>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- HUB 2: STASIS EMERGENCY MODE -->
-      <div id="tab-content-stasis" class="tab-pane hidden space-y-5 text-xs">
-        <div class="bg-rose-50 dark:bg-rose-950/20 p-5 rounded-2xl border border-rose-200 dark:border-rose-900/50 shadow-sm space-y-4">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <h3 class="text-sm font-bold text-rose-700 dark:text-rose-400">🚨 GI Stasis & Critical Care Emergency Protocol</h3>
-              <p class="text-slate-600 dark:text-slate-300 mt-1">If your guinea pig stops eating, immediate intervention is critical. Track syringe-feeding volume and maintain accurate fluid logs.</p>
-            </div>
-            <button onclick="toggleStasisEmergencyActive()" id="stasis-toggle-btn" class="px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold shadow-sm hover:bg-rose-700 transition shrink-0">Activate Mode</button>
-          </div>
+    <!-- Navigation Hubs -->
+    <div id="nav-tabs-container" class="flex border-b border-slate-200 dark:border-slate-800 gap-3 sm:gap-6 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-bold mb-6">
+      <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-3 text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-600 shrink-0">⚖️ Weight Log</button>
+      <button onclick="switchTab('stasis')" id="tab-btn-stasis" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-rose-600 dark:text-rose-400">🚨 Stasis Mode</button>
+      <button onclick="switchTab('clinics')" id="tab-btn-clinics" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-sky-600 dark:text-sky-400">🏥 UK Vets</button>
+      <button onclick="switchTab('healthhub')" id="tab-btn-healthhub" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🩺 Health Hub</button>
+      <button onclick="switchTab('dietcare')" id="tab-btn-dietcare" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0">🥗 Diet & Care</button>
+    </div>
 
-          <div id="stasis-active-banner" class="hidden p-4 rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="space-y-1 text-center sm:text-left">
-              <span class="inline-block px-2 py-0.5 rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 font-bold text-[10px] uppercase">Protocol Active</span>
-              <h4 class="font-bold text-slate-900 dark:text-white">Next Syringe Feeding Due: <span id="stasis-next-due-time" class="text-rose-600 font-extrabold">--</span></h4>
-              <p class="text-slate-500 dark:text-slate-400 text-[11px]">24-Hour Critical Care Delivered: <strong id="stasis-total-24h" class="text-slate-900 dark:text-white">0 ml</strong></p>
-            </div>
-            <button onclick="quickLogStasisFeed()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold shadow-sm hover:bg-emerald-700 transition">+ Log 10ml Feed</button>
-          </div>
+    <!-- HUB 1: WEIGHT LOG -->
+    <div id="tab-content-weights" class="tab-pane space-y-4">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Latest Weight</span>
+          <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-latest-weight">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
         </div>
-
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-          <h4 class="font-bold text-slate-900 dark:text-white">Log Feed / Hydration Event</h4>
-          <form onsubmit="handleStasisFeedSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Timestamp</label><input type="datetime-local" id="sf-time" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Amount (mL)</label><input type="number" id="sf-amount" required placeholder="e.g. 12" min="1" max="50" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes / Mix</label><input type="text" id="sf-notes" placeholder="e.g. Critical Care formula" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-            <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Save Entry</button></div>
-          </form>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Baseline Delta</span>
+          <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-baseline-diff">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
         </div>
-
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Emergency Stasis History</div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left">
-              <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
-                <tr><th class="p-3">Timestamp</th><th class="p-3">Volume</th><th class="p-3">Notes</th><th class="p-3 text-right">Action</th></tr>
-              </thead>
-              <tbody id="stasis-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-            </table>
-          </div>
+        <div class="col-span-2 sm:col-span-1 bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-center interactive-card">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Clinical Status</span>
+          <p id="metric-health-verdict" class="text-xs font-bold text-slate-900 dark:text-white mt-0.5">Ready for weigh-in</p>
         </div>
       </div>
 
-      <!-- HUB 3: UK VETS -->
-      <div id="tab-content-clinics" class="tab-pane hidden space-y-5 text-xs">
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white">🏥 UK Exotic Veterinary Care & Triage Guide</h3>
-            <button onclick="openExoticVetModal()" class="px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 font-semibold border border-sky-200 dark:border-sky-800">Why Exotic Vet?</button>
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Record Scale Weigh-In</h3>
+        <form onsubmit="handleWeightSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Weight (Grams)</label><input type="number" id="w-val" required placeholder="e.g. 1040" min="100" max="2500" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes</label><input type="text" id="w-notes" placeholder="e.g. Morning pre-veg" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
+          <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Record Scale Entry</button></div>
+        </form>
+      </div>
+
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-xs">
+        <h4 class="font-bold text-slate-700 dark:text-slate-300 mb-2">Weight Progression Curve</h4>
+        <div class="h-48 sm:h-56 w-full"><canvas id="weightHistoryChart"></canvas></div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden text-xs">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Historical Weigh-Ins</div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
+              <tr><th class="p-3">Date</th><th class="p-3">Weight</th><th class="p-3">Notes</th><th class="p-3 text-right">Action</th></tr>
+            </thead>
+            <tbody id="weight-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUB 2: STASIS EMERGENCY MODE -->
+    <div id="tab-content-stasis" class="tab-pane hidden space-y-5 text-xs">
+      <div class="bg-rose-50 dark:bg-rose-950/20 p-5 rounded-2xl border border-rose-200 dark:border-rose-900/50 shadow-sm space-y-4">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h3 class="text-sm font-bold text-rose-700 dark:text-rose-400">🚨 GI Stasis & Critical Care Emergency Protocol</h3>
+            <p class="text-slate-600 dark:text-slate-300 mt-1">If your guinea pig stops eating, immediate intervention is critical. Track syringe-feeding volume and maintain accurate fluid logs.</p>
           </div>
-          <div class="p-4 rounded-xl bg-sky-50/50 dark:bg-slate-800/50 border border-sky-200 dark:border-slate-700 space-y-2">
-            <h4 class="font-bold text-sky-900 dark:text-sky-300">RCVS-Accredited Specialists Directory</h4>
-            <a href="https://findavet.rcvs.org.uk" target="_blank" class="px-3.5 py-2 rounded-lg bg-sky-600 text-white font-semibold inline-flex items-center gap-1.5 shadow-sm hover:bg-sky-700 transition">🌐 RCVS Find a Vet Portal <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+          <button onclick="toggleStasisEmergencyActive()" id="stasis-toggle-btn" class="px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold shadow-sm hover:bg-rose-700 transition shrink-0">Activate Mode</button>
+        </div>
+
+        <div id="stasis-active-banner" class="hidden p-4 rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="inline-block px-2 py-0.5 rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 font-bold text-[10px] uppercase">Protocol Active</span>
+            <h4 class="font-bold text-slate-900 dark:text-white">Next Syringe Feeding Due: <span id="stasis-next-due-time" class="text-rose-600 font-extrabold">--</span></h4>
+            <p class="text-slate-500 dark:text-slate-400 text-[11px]">24-Hour Critical Care Delivered: <strong id="stasis-total-24h" class="text-slate-900 dark:text-white">0 ml</strong></p>
           </div>
+          <button onclick="quickLogStasisFeed()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold shadow-sm hover:bg-emerald-700 transition">+ Log 10ml Feed</button>
         </div>
       </div>
 
-      <!-- HUB 4: HEALTH HUB -->
-      <div id="tab-content-healthhub" class="tab-pane hidden space-y-6 text-xs">
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🩺 Clinical Symptom Observation Log</h3>
-          <form onsubmit="handleHealthLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-1">
-            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="hl-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-            <div>
-              <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Category</label>
-              <select id="hl-category" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
-                <option value="Eyes / Nose">Eyes / Nose</option>
-                <option value="Skin / Coat">Skin / Coat</option>
-                <option value="Paws / Footpads">Paws / Footpads</option>
-                <option value="Teeth / Eating / Chin">Teeth / Eating / Chin</option>
-                <option value="Breathing / Chest">Breathing / Chest</option>
-                <option value="Bottom / Droppings">Bottom / Droppings</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Severity / Status</label>
-              <select id="hl-severity" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
-                <option value="Mild / Monitoring">Mild / Monitoring</option>
-                <option value="Moderate">Moderate</option>
-                <option value="Urgent / Vet Booked">Urgent / Vet Booked</option>
-                <option value="Resolved">Resolved</option>
-              </select>
-            </div>
-            <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Observation</label><input type="text" id="hl-notes" required placeholder="e.g. Mild flaking" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-            <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">+ Log Symptom</button></div>
-          </form>
-        </div>
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Recorded Symptoms</div>
-          <div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800"><tr><th class="p-3">Date</th><th class="p-3">Category</th><th class="p-3">Status</th><th class="p-3">Details</th><th class="p-3 text-right">Action</th></tr></thead><tbody id="healthlog-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table></div>
-        </div>
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <h4 class="font-bold text-slate-900 dark:text-white">Log Feed / Hydration Event</h4>
+        <form onsubmit="handleStasisFeedSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Timestamp</label><input type="datetime-local" id="sf-time" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Amount (mL)</label><input type="number" id="sf-amount" required placeholder="e.g. 12" min="1" max="50" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes / Mix</label><input type="text" id="sf-notes" placeholder="e.g. Critical Care formula" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Save Entry</button></div>
+        </form>
       </div>
 
-      <!-- HUB 5: DIET & CARE -->
-      <div id="tab-content-dietcare" class="tab-pane hidden space-y-6 text-xs">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Vitamin C Daily Requirement</h3>
-            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-              <strong id="calc-vitc-result" class="text-emerald-600 dark:text-emerald-400 text-sm block font-bold">--</strong>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white">🥣 Critical Care Mixing Guide</h3>
-            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
-              <p><strong>Ratio:</strong> 1 part Oxbow Critical Care powder to 1.5 - 2 parts warm water.</p>
-            </div>
-          </div>
-        </div>
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white">Food Safety & Nutrition Directory</h3>
-          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 font-medium">
-          <div id="food-directory-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Emergency Stasis History</div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
+              <tr><th class="p-3">Timestamp</th><th class="p-3">Volume</th><th class="p-3">Notes</th><th class="p-3 text-right">Action</th></tr>
+            </thead>
+            <tbody id="stasis-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
+    <!-- HUB 3: UK VETS -->
+    <div id="tab-content-clinics" class="tab-pane hidden space-y-5 text-xs">
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🏥 UK Exotic Veterinary Care & Triage Guide</h3>
+          <button onclick="openExoticVetModal()" class="px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 font-semibold border border-sky-200 dark:border-sky-800">Why Exotic Vet?</button>
+        </div>
+        <div class="p-4 rounded-xl bg-sky-50/50 dark:bg-slate-800/50 border border-sky-200 dark:border-slate-700 space-y-2">
+          <h4 class="font-bold text-sky-900 dark:text-sky-300">RCVS-Accredited Specialists Directory</h4>
+          <a href="https://findavet.rcvs.org.uk" target="_blank" class="px-3.5 py-2 rounded-lg bg-sky-600 text-white font-semibold inline-flex items-center gap-1.5 shadow-sm hover:bg-sky-700 transition">🌐 RCVS Find a Vet Portal <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUB 4: HEALTH HUB -->
+    <div id="tab-content-healthhub" class="tab-pane hidden space-y-6 text-xs">
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white">🩺 Clinical Symptom Observation Log</h3>
+        <form onsubmit="handleHealthLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-1">
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="hl-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div>
+            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Category</label>
+            <select id="hl-category" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
+              <option value="Eyes / Nose">Eyes / Nose</option>
+              <option value="Skin / Coat">Skin / Coat</option>
+              <option value="Paws / Footpads">Paws / Footpads</option>
+              <option value="Teeth / Eating / Chin">Teeth / Eating / Chin</option>
+              <option value="Breathing / Chest">Breathing / Chest</option>
+              <option value="Bottom / Droppings">Bottom / Droppings</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Severity / Status</label>
+            <select id="hl-severity" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
+              <option value="Mild / Monitoring">Mild / Monitoring</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Urgent / Vet Booked">Urgent / Vet Booked</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Observation</label><input type="text" id="hl-notes" required placeholder="e.g. Mild flaking" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">+ Log Symptom</button></div>
+        </form>
+      </div>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Recorded Symptoms</div>
+        <div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800"><tr><th class="p-3">Date</th><th class="p-3">Category</th><th class="p-3">Status</th><th class="p-3">Details</th><th class="p-3 text-right">Action</th></tr></thead><tbody id="healthlog-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- HUB 5: DIET & CARE -->
+    <div id="tab-content-dietcare" class="tab-pane hidden space-y-6 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Vitamin C Daily Requirement</h3>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <strong id="calc-vitc-result" class="text-emerald-600 dark:text-emerald-400 text-sm block font-bold">--</strong>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🥣 Critical Care Mixing Guide</h3>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+            <p><strong>Ratio:</strong> 1 part Oxbow Critical Care powder to 1.5 - 2 parts warm water.</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Food Safety & Nutrition Directory</h3>
+        <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 font-medium">
+        <div id="food-directory-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </div>
     </div>
 
   </main>
 
   <!-- Floating Quick-Action Bar -->
-  <div id="quick-action-bar" class="hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 shadow-lg flex items-center gap-4 text-xs font-semibold">
+  <div id="quick-action-bar" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 shadow-lg flex items-center gap-4 text-xs font-semibold">
     <button onclick="switchTab('weights'); window.scrollTo({top:0, behavior:'smooth'});" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 transition">
       <i class="fa-solid fa-weight-scale"></i> <span>+ Weight</span>
     </button>
@@ -433,24 +383,23 @@
   </div>
 
   <script>
-        // --- SUPABASE CLOUD CONFIGURATION ---
-    const SUPABASE_URL = 'https://xlshcsblvyanydlsguy.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsc2hjc2Jsdnlhbnl5ZGxzZ3V5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MzUyMzgsImV4cCI6MjEwODAxMTIzOH0.wb8x1PU_dRrdvythnwRp2NujQebH5KdSE8Jz0K3SrdE'; // Keep your eyJ... key here
-    
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
-      }
-    });
+    // --- LOCAL STORAGE APPLICATION LOGIC ---
+    let appData = JSON.parse(localStorage.getItem('wheekly_data')) || {
+      piggies: [
+        { id: '1', name: 'Pip', gender: 'Boar (Male)', dob: '2024-01-15', breed: 'Abyssinian', baseline_weight: 1050, weight_threshold: 60, vet: 'Cราบ Exotic Vets' }
+      ],
+      activePiggyId: '1',
+      weights: { '1': [{ date: '2026-03-01', weight: 1050, notes: 'Initial weight' }] },
+      stasis: { '1': [] },
+      healthLogs: { '1': [] }
+    };
 
-
-    let currentUser = null;
-    let appData = { piggies: [], activePiggyId: null };
     let weightChartInstance = null;
-    let isSignUpMode = false;
     let toastTimer = null;
+
+    function saveData() {
+      localStorage.setItem('wheekly_data', JSON.stringify(appData));
+    }
 
     function showToast(message, icon = '✅') {
       const toast = document.getElementById('toast-notification');
@@ -465,123 +414,6 @@
       }, 3000);
     }
 
-    // --- AUTHENTICATION FLOW ---
-    async function checkAuthSession() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      currentUser = session ? session.user : null;
-      renderAuthUI();
-      if (currentUser) {
-        await fetchCloudData();
-      }
-    }
-
-    function renderAuthUI() {
-      const authView = document.getElementById('auth-view');
-      const dashboardView = document.getElementById('app-dashboard-view');
-      const quickActionBar = document.getElementById('quick-action-bar');
-      const headerActions = document.getElementById('header-auth-actions');
-
-      if (!currentUser) {
-        authView.classList.remove('hidden');
-        dashboardView.classList.add('hidden');
-        quickActionBar.classList.add('hidden');
-        headerActions.innerHTML = '';
-      } else {
-        authView.classList.add('hidden');
-        dashboardView.classList.remove('hidden');
-        quickActionBar.classList.remove('hidden');
-        headerActions.innerHTML = `
-          <span class="text-xs text-slate-500 hidden sm:inline">${currentUser.email}</span>
-          <button onclick="handleLogout()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Sign Out</button>
-        `;
-      }
-    }
-
-    function toggleAuthMode() {
-      isSignUpMode = !isSignUpMode;
-      document.getElementById('auth-submit-btn').textContent = isSignUpMode ? 'Create Account' : 'Sign In';
-      document.getElementById('auth-toggle-mode-btn').textContent = isSignUpMode ? 'Already have an account? Sign In' : 'Need an account? Sign Up';
-    }
-
-    async function handleAuthSubmit(e) {
-      e.preventDefault();
-      const email = document.getElementById('auth-email').value.trim();
-      const password = document.getElementById('auth-password').value;
-
-      if (isSignUpMode) {
-        const { data, error } = await supabaseClient.auth.signUp({ email, password });
-        if (error) { showToast(error.message, "⚠️"); return; }
-        showToast("Account created! You can now sign in.", "🎉");
-        toggleAuthMode();
-      } else {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) { showToast(error.message, "⚠️"); return; }
-        currentUser = data.user;
-        showToast("Welcome back to Wheekly! 🐹");
-        renderAuthUI();
-        await fetchCloudData();
-      }
-    }
-
-    async function handleLogout() {
-      await supabaseClient.auth.signOut();
-      currentUser = null;
-      appData = { piggies: [], activePiggyId: null };
-      renderAuthUI();
-      showToast("Signed out successfully");
-    }
-
-    // --- CLOUD DATA FETCHING & SAVING ---
-    async function fetchCloudData() {
-      if (!currentUser) return;
-      const { data: piggiesData, error } = await supabaseClient
-        .from('piggies')
-        .select('*')
-        .eq('user_id', currentUser.id);
-
-      if (error) {
-        showToast("Error loading cloud data", "⚠️");
-        return;
-      }
-
-      appData.piggies = piggiesData || [];
-      if (appData.piggies.length > 0 && !appData.activePiggyId) {
-        appData.activePiggyId = appData.piggies[0].id;
-      }
-      renderApp();
-    }
-
-    async function handleProfileSubmit(e) {
-      e.preventDefault();
-      if (!currentUser) return;
-      const id = document.getElementById('p-id').value;
-      const profileData = {
-        user_id: currentUser.id,
-        name: document.getElementById('p-name').value.trim(),
-        gender: document.getElementById('p-gender').value,
-        dob: document.getElementById('p-dob').value,
-        breed: document.getElementById('p-breed').value.trim(),
-        baseline_weight: parseFloat(document.getElementById('p-baseline').value) || 1000,
-        weight_threshold: parseFloat(document.getElementById('p-threshold').value) || 60,
-        vet: document.getElementById('p-vet').value.trim()
-      };
-
-      if (id) {
-        const { error } = await supabaseClient.from('piggies').update(profileData).eq('id', id);
-        if (error) { showToast("Error updating profile", "⚠️"); return; }
-        showToast("Profile updated successfully!", "🐹");
-      } else {
-        const { data, error } = await supabaseClient.from('piggies').insert([profileData]).select();
-        if (error) { showToast("Error creating profile", "⚠️"); return; }
-        if (data && data.length > 0) appData.activePiggyId = data[0].id;
-        showToast("Guinea pig profile created! 🎉", "🐹");
-      }
-
-      closeProfileModal();
-      await fetchCloudData();
-    }
-
-    // Standard static data helpers
     const FOOD_DATABASE = [
       { name: "Timothy & Orchard Hay", cat: "SAFE", badge: "Unlimited 24/7", desc: "Must constitute 85%+ of total diet." },
       { name: "Bell Peppers (Red/Yellow)", cat: "SAFE", badge: "1/4 Daily", desc: "Exceptional source of daily Vitamin C." },
@@ -624,6 +456,7 @@
       if (hasPiggies) {
         renderPiggyChips();
         renderHero();
+        renderWeightsTab();
       }
     }
 
@@ -653,6 +486,103 @@
       document.getElementById('hero-vet').textContent = p.vet || 'None Specified';
     }
 
+    function renderWeightsTab() {
+      const p = getActivePiggy();
+      if (!p) return;
+      const list = appData.weights[p.id] || [];
+      list.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+      const latest = list.length > 0 ? list[0].weight : p.baseline_weight;
+      const diff = latest - p.baseline_weight;
+      document.getElementById('metric-latest-weight').textContent = latest;
+      document.getElementById('metric-baseline-diff').textContent = (diff >= 0 ? '+' : '') + diff;
+      document.getElementById('metric-health-verdict').textContent = diff <= -(p.weight_threshold || 60) ? '⚠️ Weight drop alert!' : 'Stable trajectory';
+
+      const tbody = document.getElementById('weight-table-body');
+      tbody.innerHTML = '';
+      list.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="p-3">${item.date}</td><td class="p-3 font-bold">${item.weight} g</td><td class="p-3 text-slate-500">${item.notes || '-'}</td><td class="p-3 text-right"><button onclick="deleteWeight('${item.date}')" class="text-rose-500 hover:underline">Delete</button></td>`;
+        tbody.appendChild(tr);
+      });
+
+      renderChart(list);
+    }
+
+    function handleWeightSubmit(e) {
+      e.preventDefault();
+      const p = getActivePiggy();
+      if (!p) return;
+      const date = document.getElementById('w-date').value;
+      const weight = parseFloat(document.getElementById('w-val').value);
+      const notes = document.getElementById('w-notes').value;
+
+      if (!appData.weights[p.id]) appData.weights[p.id] = [];
+      appData.weights[p.id] = appData.weights[p.id].filter(w => w.date !== date);
+      appData.weights[p.id].push({ date, weight, notes });
+      saveData();
+      renderWeightsTab();
+      showToast("Weight logged successfully!");
+      e.target.reset();
+      document.getElementById('w-date').valueAsDate = new Date();
+    }
+
+    function deleteWeight(date) {
+      const p = getActivePiggy();
+      if (!p) return;
+      appData.weights[p.id] = appData.weights[p.id].filter(w => w.date !== date);
+      saveData();
+      renderWeightsTab();
+      showToast("Entry removed", "🗑️");
+    }
+
+    function renderChart(list) {
+      const ctx = document.getElementById('weightHistoryChart').getContext('2d');
+      const sorted = [...list].sort((a,b) => new Date(a.date) - new Date(b.date));
+      const labels = sorted.map(i => i.date);
+      const data = sorted.map(i => i.weight);
+
+      if (weightChartInstance) weightChartInstance.destroy();
+      weightChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{ label: 'Weight (g)', data: data, borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.2 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    function handleProfileSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('p-id').value;
+      const name = document.getElementById('p-name').value.trim();
+      const gender = document.getElementById('p-gender').value;
+      const dob = document.getElementById('p-dob').value;
+      const breed = document.getElementById('p-breed').value.trim();
+      const baseline_weight = parseFloat(document.getElementById('p-baseline').value) || 1000;
+      const weight_threshold = parseFloat(document.getElementById('p-threshold').value) || 60;
+      const vet = document.getElementById('p-vet').value.trim();
+
+      if (id) {
+        const p = appData.piggies.find(item => item.id === id);
+        if (p) {
+          p.name = name; p.gender = gender; p.dob = dob; p.breed = breed;
+          p.baseline_weight = baseline_weight; p.weight_threshold = weight_threshold; p.vet = vet;
+        }
+        showToast("Profile updated!");
+      } else {
+        const newId = Date.now().toString();
+        appData.piggies.push({ id: newId, name, gender, dob, breed, baseline_weight, weight_threshold, vet });
+        appData.activePiggyId = newId;
+        appData.weights[newId] = [{ date: new Date().toISOString().split('T')[0], weight: baseline_weight, notes: 'Baseline' }];
+        showToast("Profile created! 🎉", "🐹");
+      }
+      saveData();
+      closeProfileModal();
+      renderApp();
+    }
+
     function openProfileModal(edit = false) {
       const p = getActivePiggy();
       if (edit && p) {
@@ -666,7 +596,7 @@
       } else {
         document.getElementById('p-id').value = '';
         document.getElementById('p-name').value = '';
-        document.getElementById('p-dob').value = '';
+        document.getElementById('p-dob').value = new Date().toISOString().split('T')[0];
         document.getElementById('p-breed').value = '';
         document.getElementById('p-baseline').value = '1000';
         document.getElementById('p-threshold').value = '60';
@@ -694,7 +624,10 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       renderFoodDirectory();
-      checkAuthSession();
+      const today = new Date().toISOString().split('T')[0];
+      const wDateInput = document.getElementById('w-date');
+      if (wDateInput) wDateInput.value = today;
+      renderApp();
     });
   </script>
 </body>
