@@ -103,14 +103,14 @@
     </div>
   </header>
 
-  <!-- Top Global Alert Banner -->
-  <div id="top-alert-banner" class="bg-indigo-600 text-white px-4 py-2.5 text-xs font-medium flex flex-wrap items-center justify-between gap-2 shadow-inner border-b border-indigo-700">
-    <div class="flex items-center gap-2">
+  <!-- Top Global Alert Banner (Hidden automatically once notifications are enabled) -->
+  <div id="top-alert-banner" class="hidden bg-indigo-600 text-white px-4 py-2 text-xs font-medium flex items-center justify-between gap-2 shadow-inner border-b border-indigo-700">
+    <div class="flex items-center gap-2 truncate">
       <span>🔔</span>
-      <span>Never miss a weigh-in or mite treatment reminder!</span>
+      <span class="truncate">Never miss a weigh-in or mite treatment reminder!</span>
     </div>
-    <div class="flex items-center gap-2">
-      <button onclick="requestNotificationPermission()" id="top-notif-btn" class="px-3 py-1 rounded bg-white text-indigo-700 font-bold hover:bg-indigo-50 transition">Enable Alerts</button>
+    <div class="flex items-center gap-2 shrink-0">
+      <button onclick="requestNotificationPermission()" class="px-2.5 py-1 rounded bg-white text-indigo-700 font-bold hover:bg-indigo-50 transition">Enable Alerts</button>
       <button onclick="triggerTestNotification()" class="px-2.5 py-1 rounded bg-indigo-700 text-white font-semibold hover:bg-indigo-800 transition">Test</button>
     </div>
   </div>
@@ -660,7 +660,17 @@
       { day: "Sunday", menu: "1/4 Red Bell Pepper + Spring Greens + Small parsley sprig" }
     ];
 
-    // Notification Functions
+    // Notification Functions & UI State Check
+    function checkNotificationBannerState() {
+      const banner = document.getElementById('top-alert-banner');
+      if (!banner) return;
+      if (!("Notification" in window) || Notification.permission === "granted") {
+        banner.classList.add('hidden');
+      } else {
+        banner.classList.remove('hidden');
+      }
+    }
+
     function requestNotificationPermission() {
       if (!("Notification" in window)) {
         alert("This browser does not support desktop notifications.");
@@ -669,12 +679,7 @@
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
           alert("✅ Notifications enabled successfully!");
-          const btn = document.getElementById('top-notif-btn');
-          if (btn) {
-            btn.textContent = "Enabled ✓";
-            btn.classList.replace('bg-white', 'bg-emerald-500');
-            btn.classList.replace('text-indigo-700', 'text-white');
-          }
+          checkNotificationBannerState();
         } else {
           alert("Notification permission was denied.");
         }
@@ -1439,6 +1444,7 @@
       renderFoodDirectory();
       loadData();
       renderApp();
+      checkNotificationBannerState();
     });
   </script>
 </body>
