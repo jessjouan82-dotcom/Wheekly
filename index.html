@@ -68,6 +68,11 @@
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+    /* Toast Slide Animation */
+    #toast-notification {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-in-out;
+    }
+
     @media print {
       body * { visibility: hidden; }
       #vet-report-modal, #vet-report-modal * { visibility: visible; }
@@ -79,6 +84,12 @@
 </head>
 
 <body class="text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans antialiased transition-colors">
+
+  <!-- Toast Notification Banner (Floating Bottom-Center) -->
+  <div id="toast-notification" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none translate-y-10 opacity-0 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-slate-100/95 text-white dark:text-slate-900 shadow-xl border border-slate-700/50 dark:border-slate-300 text-xs font-semibold backdrop-blur-md">
+    <span id="toast-icon" class="text-sm">✅</span>
+    <span id="toast-msg">Action completed successfully!</span>
+  </div>
 
   <!-- Header with Logo -->
   <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 px-3 py-3 sm:px-6">
@@ -648,6 +659,23 @@
     let appData = { piggies: [], activePiggyId: null, darkMode: false };
     let weightChartInstance = null;
     let currentFoodFilter = 'ALL';
+    let toastTimer = null;
+
+    // Sleek Toast Notification Function
+    function showToast(message, icon = '✅') {
+      const toast = document.getElementById('toast-notification');
+      document.getElementById('toast-msg').textContent = message;
+      document.getElementById('toast-icon').textContent = icon;
+      
+      toast.classList.remove('translate-y-10', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-10', 'opacity-0');
+      }, 3000);
+    }
 
     const FOOD_DATABASE = [
       { name: "Timothy, Orchard & Meadow Hay", cat: "SAFE", badge: "Unlimited 24/7", desc: "Must constitute 85%+ of total diet. Long-strand fiber ensures digestive motility and proper incisor/molar attrition." },
@@ -689,22 +717,22 @@
 
     function requestNotificationPermission() {
       if (!("Notification" in window)) {
-        alert("This browser does not support desktop notifications.");
+        showToast("Browser does not support notifications.", "⚠️");
         return;
       }
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
-          alert("✅ Notifications enabled successfully!");
+          showToast("Notifications enabled successfully!");
           checkNotificationBannerState();
         } else {
-          alert("Notification permission was denied.");
+          showToast("Notification permission denied.", "⚠️");
         }
       });
     }
 
     function triggerTestNotification() {
       if (!("Notification" in window)) {
-        alert("Notifications not supported.");
+        showToast("Notifications not supported.", "⚠️");
         return;
       }
       if (Notification.permission === "granted") {
@@ -712,6 +740,7 @@
           body: "Time for your weekly guinea pig health check and weigh-in!",
           icon: "wheekly_logo.jpg"
         });
+        showToast("Test notification dispatched!");
       } else {
         requestNotificationPermission();
       }
@@ -721,13 +750,13 @@
       const dateVal = document.getElementById('m-date').value;
       if (!dateVal) return;
       const d = new Date(dateVal);
-      d.setDate(d.getDate() + 12); // Standard 12-day follow-up window for Xeno/Ivermectin
+      d.setDate(d.getDate() + 12);
       document.getElementById('m-next').value = d.toISOString().split('T')[0];
     }
 
     function openVetReportModal() {
       const p = getActivePiggy();
-      if (!p) { alert("No piggy profile selected!"); return; }
+      if (!p) { showToast("No piggy profile selected!", "⚠️"); return; }
       const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       const mLogs = p.miteLogs ? [...p.miteLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
@@ -861,7 +890,7 @@
       const p = getActivePiggy();
       if (!p) return;
       const report = generateReportPlainText(p);
-      navigator.clipboard.writeText(report).then(() => alert("📋 Copied text report to clipboard!"));
+      navigator.clipboard.writeText(report).then(() => showToast("Copied text report to clipboard!"));
     }
 
     function emailVetReport() {
@@ -870,6 +899,7 @@
       const subject = encodeURIComponent(`Clinical Summary Report: ${p.name} (Wheekly Health Suite)`);
       const body = encodeURIComponent(generateReportPlainText(p));
       window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      showToast("Opening email client...");
     }
 
     function generateReportPlainText(p) {
@@ -922,6 +952,7 @@
       appData.darkMode = !appData.darkMode;
       document.documentElement.classList.toggle('dark', appData.darkMode);
       saveData();
+      showToast(appData.darkMode ? "Dark mode enabled" : "Light mode enabled", appData.darkMode ? "🌙" : "☀️");
     }
 
     function openExoticVetModal() {
@@ -1019,6 +1050,7 @@
       p.photoFit = p.photoFit === 'contain' ? 'cover' : 'contain';
       saveData();
       renderHero();
+      showToast("Avatar fit updated");
     }
 
     function renderCalculators() {
@@ -1037,6 +1069,7 @@
       p.grooming[type] = new Date().toISOString().split('T')[0];
       saveData();
       renderGrooming();
+      showToast(`Logged ${type.toUpperCase()} maintenance!`, "✂️");
     }
 
     function renderGrooming() {
@@ -1055,6 +1088,7 @@
       document.body.appendChild(dlAnchor);
       dlAnchor.click();
       dlAnchor.remove();
+      showToast("Data backup exported successfully!");
     }
 
     function importDataBackup(e) {
@@ -1066,8 +1100,8 @@
           appData = JSON.parse(ev.target.result);
           saveData();
           renderApp();
-          alert("Backup successfully restored.");
-        } catch(err) { alert("Invalid backup file."); }
+          showToast("Backup successfully restored!");
+        } catch(err) { showToast("Invalid backup file.", "⚠️"); }
       };
       r.readAsDataURL(file);
     }
@@ -1163,6 +1197,7 @@
       renderApp();
       e.target.reset();
       document.getElementById('w-date').valueAsDate = new Date();
+      showToast("Scale entry recorded successfully!", "⚖️");
     }
 
     function deleteWeight(id) {
@@ -1171,6 +1206,7 @@
       p.weights = p.weights.filter(w => w.id !== id);
       saveData();
       renderApp();
+      showToast("Weight entry removed", "🗑️");
     }
 
     function toggleStasisEmergencyActive() {
@@ -1179,6 +1215,7 @@
       p.stasisActive = !p.stasisActive;
       saveData();
       renderStasisTab();
+      showToast(p.stasisActive ? "🚨 Stasis Protocol Activated!" : "Stasis protocol deactivated", p.stasisActive ? "🚨" : "ℹ️");
     }
 
     function renderStasisTab() {
@@ -1263,6 +1300,7 @@
       renderApp();
       e.target.reset();
       setDefaultStasisTime();
+      showToast("Critical care feed logged!", "🥣");
     }
 
     function quickLogStasisFeed() {
@@ -1278,6 +1316,7 @@
       });
       saveData();
       renderApp();
+      showToast("Logged quick 10ml feed!", "🥣");
     }
 
     function deleteStasisLog(id) {
@@ -1286,6 +1325,7 @@
       p.stasisLogs = p.stasisLogs.filter(s => s.id !== id);
       saveData();
       renderApp();
+      showToast("Stasis log removed", "🗑️");
     }
 
     function setDefaultStasisTime() {
@@ -1310,6 +1350,7 @@
       renderApp();
       e.target.reset();
       document.getElementById('hl-date').valueAsDate = new Date();
+      showToast("Symptom observation recorded", "🩺");
     }
 
     function deleteHealthLog(id) {
@@ -1318,6 +1359,7 @@
       p.healthLogs = p.healthLogs.filter(h => h.id !== id);
       saveData();
       renderApp();
+      showToast("Symptom log removed", "🗑️");
     }
 
     function renderHealthLogs() {
@@ -1377,7 +1419,7 @@
       const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('m-date').value = todayStr;
       autoCalculateMiteFollowup();
-      alert(`✅ Treatment logged! Reminder set for follow-up dose on ${nextDueVal}.`);
+      showToast(`Treatment logged! Follow-up due ${nextDueVal}.`, "🐛");
     }
 
     function deleteMiteLog(id) {
@@ -1386,6 +1428,7 @@
       p.miteLogs = p.miteLogs.filter(m => m.id !== id);
       saveData();
       renderApp();
+      showToast("Parasite record removed", "🗑️");
     }
 
     function renderMiteLogs() {
@@ -1475,10 +1518,12 @@
       if (id) {
         const idx = appData.piggies.findIndex(p => p.id === id);
         if (idx !== -1) appData.piggies[idx] = { ...appData.piggies[idx], ...data };
+        showToast(`Updated profile for ${data.name}!`, "🐹");
       } else {
         const newPig = { id: 'p_' + Date.now(), ...data, weights: [], healthLogs: [], miteLogs: [], stasisLogs: [], grooming: {}, photoFit: 'cover', stasisActive: false };
         appData.piggies.push(newPig);
         appData.activePiggyId = newPig.id;
+        showToast(`Created profile for ${data.name}! 🎉`, "🐹");
       }
       saveData();
       closeProfileModal();
@@ -1490,7 +1535,7 @@
       const p = getActivePiggy();
       if (!file || !p) return;
       const r = new FileReader();
-      r.onload = ev => { p.photo = ev.target.result; saveData(); renderApp(); };
+      r.onload = ev => { p.photo = ev.target.result; saveData(); renderApp(); showToast("Profile photo updated!", "📷"); };
       r.readAsDataURL(file);
     }
 
@@ -1541,7 +1586,8 @@
       if (navigator.share) {
         try { await navigator.share({ title: 'Wheekly', url: window.location.href }); return; } catch(e) {}
       }
-      alert(window.location.href);
+      navigator.clipboard.writeText(window.location.href);
+      showToast("Link copied to clipboard!");
     }
 
     window.addEventListener('DOMContentLoaded', () => {
