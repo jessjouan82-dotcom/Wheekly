@@ -62,13 +62,18 @@
       background-color: #090D16;
       color: #F1F5F9;
     }
-    .squish-btn:active {
-      transform: translateY(1px);
+    
+    /* Tactile Micro-Interactions */
+    button, .interactive-card {
+      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease, background-color 0.15s ease;
     }
+    button:active, .interactive-card:active {
+      transform: scale(0.96);
+    }
+
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Toast Slide Animation */
     #toast-notification {
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-in-out;
     }
@@ -105,10 +110,10 @@
       </div>
       <div class="flex items-center gap-2 shrink-0">
         <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">🌙</button>
-        <button onclick="handleShareApp()" class="squish-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 transition">
+        <button onclick="handleShareApp()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 transition">
           <i class="fa-solid fa-share-nodes text-xs"></i> <span>Share</span>
         </button>
-        <button onclick="openProfileModal()" class="squish-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm hover:bg-rose-700 transition">
+        <button onclick="openProfileModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white shadow-sm hover:bg-rose-700 transition">
           <i class="fa-solid fa-plus text-[10px]"></i> <span>Add Piggy</span>
         </button>
       </div>
@@ -131,7 +136,7 @@
   <main class="flex-grow max-w-5xl mx-auto px-3 sm:px-6 py-6 w-full">
 
     <!-- Zero State with Logo -->
-    <div id="zero-state-view" class="my-10 max-w-md mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center">
+    <div id="zero-state-view" class="my-10 max-w-md mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center interactive-card">
       <div class="w-20 h-20 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex items-center justify-center mb-4">
         <img src="wheekly_logo.jpg" alt="Wheekly Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='🐹'">
       </div>
@@ -139,7 +144,7 @@
       <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-6">
         Initialize your guinea pig health record below to start monitoring vital metrics, clinical weight trajectories, and emergency care logs.
       </p>
-      <button onclick="openProfileModal()" class="squish-btn w-full py-2.5 px-4 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 flex items-center justify-center gap-2 transition">
+      <button onclick="openProfileModal()" class="w-full py-2.5 px-4 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 flex items-center justify-center gap-2 transition">
         <i class="fa-solid fa-plus"></i> Add Guinea Pig Profile
       </button>
     </div>
@@ -160,7 +165,7 @@
         </div>
       </div>
 
-      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
           <div class="relative shrink-0 flex flex-col items-center gap-1.5">
             <div id="hero-avatar-container" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center text-2xl font-bold">🐹</div>
@@ -209,15 +214,15 @@
     <!-- HUB 1: WEIGHT LOG -->
     <div id="tab-content-weights" class="tab-pane space-y-4">
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
           <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Latest Weight</span>
           <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-latest-weight">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
           <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Baseline Delta</span>
           <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-baseline-diff">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
         </div>
-        <div class="col-span-2 sm:col-span-1 bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-center">
+        <div class="col-span-2 sm:col-span-1 bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-center interactive-card">
           <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Clinical Status</span>
           <p id="metric-health-verdict" class="text-xs font-bold text-slate-900 dark:text-white mt-0.5">Ready for weigh-in</p>
         </div>
@@ -229,7 +234,7 @@
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Weight (Grams)</label><input type="number" id="w-val" required placeholder="e.g. 1040" min="100" max="2500" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes</label><input type="text" id="w-notes" placeholder="e.g. Morning pre-veg" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
-          <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Record Scale Entry</button></div>
+          <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Record Scale Entry</button></div>
         </form>
       </div>
 
@@ -268,7 +273,7 @@
             <h4 class="font-bold text-slate-900 dark:text-white">Next Syringe Feeding Due: <span id="stasis-next-due-time" class="text-rose-600 font-extrabold">--</span></h4>
             <p class="text-slate-500 dark:text-slate-400 text-[11px]">24-Hour Critical Care Delivered: <strong id="stasis-total-24h" class="text-slate-900 dark:text-white">0 ml</strong></p>
           </div>
-          <button onclick="quickLogStasisFeed()" class="squish-btn w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold shadow-sm hover:bg-emerald-700 transition">+ Log 10ml Feed</button>
+          <button onclick="quickLogStasisFeed()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold shadow-sm hover:bg-emerald-700 transition">+ Log 10ml Feed</button>
         </div>
       </div>
 
@@ -278,7 +283,7 @@
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Timestamp</label><input type="datetime-local" id="sf-time" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Amount (mL)</label><input type="number" id="sf-amount" required placeholder="e.g. 12" min="1" max="50" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes / Mix</label><input type="text" id="sf-notes" placeholder="e.g. Critical Care formula" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Save Entry</button></div>
+          <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Save Entry</button></div>
         </form>
       </div>
 
@@ -356,7 +361,7 @@
             </select>
           </div>
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Observation</label><input type="text" id="hl-notes" required placeholder="e.g. Mild flaking near left ear" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div class="flex items-end"><button type="submit" class="squish-btn w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Log Symptom</button></div>
+          <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Log Symptom</button></div>
         </form>
       </div>
 
@@ -390,7 +395,7 @@
           </div>
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Dose / Pipette</label><input type="text" id="m-dose" required placeholder="e.g. 1 Pipette" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Follow-up Due (+12 Days)</label><input type="date" id="m-next" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium text-sky-600 font-bold"></div>
-          <div class="sm:col-span-4 pt-1"><button type="submit" class="squish-btn w-full py-2.5 px-4 rounded-lg bg-sky-600 text-white font-semibold text-xs shadow-sm hover:bg-sky-700 transition">+ Log Treatment & Set Alert Reminder</button></div>
+          <div class="sm:col-span-4 pt-1"><button type="submit" class="w-full py-2.5 px-4 rounded-lg bg-sky-600 text-white font-semibold text-xs shadow-sm hover:bg-sky-700 transition">+ Log Treatment & Set Alert Reminder</button></div>
         </form>
       </div>
 
@@ -507,14 +512,14 @@
       
       <!-- Calculators -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Vitamin C Daily Requirement</h3>
           <p class="text-slate-500 dark:text-slate-400">Estimated requirement (~10–20mg per kg daily).</p>
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
             <strong id="calc-vitc-result" class="text-emerald-600 dark:text-emerald-400 text-sm block font-bold">--</strong>
           </div>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white">🥣 Critical Care Mixing Guide</h3>
           <p class="text-slate-500 dark:text-slate-400">Standard recovery formula reconstitution ratio.</p>
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
@@ -627,7 +632,7 @@
           </label>
           <input type="text" id="p-vet" placeholder="Clinic Name & Phone" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium">
         </div>
-        <div class="pt-2"><button type="submit" class="squish-btn w-full py-2.5 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 transition">Save Profile</button></div>
+        <div class="pt-2"><button type="submit" class="w-full py-2.5 rounded-lg bg-rose-600 text-white font-semibold text-xs shadow-sm hover:bg-rose-700 transition">Save Profile</button></div>
       </form>
     </div>
   </div>
@@ -661,7 +666,6 @@
     let currentFoodFilter = 'ALL';
     let toastTimer = null;
 
-    // Sleek Toast Notification Function
     function showToast(message, icon = '✅') {
       const toast = document.getElementById('toast-notification');
       document.getElementById('toast-msg').textContent = message;
@@ -1484,7 +1488,7 @@
         if (item.cat === 'TOXIC') { cardStyle = 'bg-rose-50/60 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/50'; badgeStyle = 'bg-rose-600 text-white'; }
         if (item.cat === 'LIMIT') { cardStyle = 'bg-amber-50/60 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/50'; badgeStyle = 'bg-amber-100 text-amber-800'; }
         const div = document.createElement('div');
-        div.className = `p-3.5 rounded-xl border ${cardStyle} space-y-1.5`;
+        div.className = `p-3.5 rounded-xl border ${cardStyle} space-y-1.5 interactive-card`;
         div.innerHTML = `<div class="flex justify-between items-center"><strong class="text-slate-900 dark:text-white">${item.name}</strong><span class="text-[9px] font-bold px-2 py-0.5 rounded ${badgeStyle}">${item.badge}</span></div><p class="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">${item.desc}</p>`;
         list.appendChild(div);
       });
@@ -1497,7 +1501,7 @@
       grid.innerHTML = '';
       DEFAULT_MEALS.forEach(m => {
         const d = document.createElement('div');
-        d.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex gap-2.5 items-center';
+        d.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex gap-2.5 items-center interactive-card';
         d.innerHTML = `<input type="checkbox" class="accent-emerald-600 w-4 h-4 rounded"><div><strong class="text-slate-900 dark:text-white block font-bold">${m.day}</strong><span class="text-slate-600 dark:text-slate-400 text-[11px]">${m.menu}</span></div>`;
         grid.appendChild(d);
       });
