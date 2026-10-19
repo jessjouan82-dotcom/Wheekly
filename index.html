@@ -539,18 +539,14 @@
 
   </main>
 
-  <!-- Sleek Floating Quick-Action Bar -->
-  <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200 dark:border-slate-800 shadow-lg flex items-center gap-3 text-xs font-semibold">
+  <!-- Clean Streamlined Floating Quick-Action Bar -->
+  <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 shadow-lg flex items-center gap-4 text-xs font-semibold">
     <button onclick="switchTab('weights'); window.scrollTo({top:0, behavior:'smooth'});" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 transition">
       <i class="fa-solid fa-weight-scale"></i> <span>+ Weight</span>
     </button>
     <div class="w-px h-4 bg-slate-200 dark:bg-slate-800"></div>
     <button onclick="switchTab('stasis'); window.scrollTo({top:0, behavior:'smooth'});" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 transition">
       <i class="fa-solid fa-triangle-exclamation"></i> <span>🚨 Stasis Mode</span>
-    </button>
-    <div class="w-px h-4 bg-slate-200 dark:bg-slate-800"></div>
-    <button onclick="openVetReportModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 hover:bg-sky-100 transition">
-      <i class="fa-solid fa-file-lines"></i> <span>PDF</span>
     </button>
   </div>
 
@@ -577,9 +573,12 @@
 
       <!-- Modal Footer Actions -->
       <div class="no-print pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
-        <button onclick="copyVetReportText()" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition">📋 Copy Text Summary</button>
-        <div class="flex gap-2">
-          <button onclick="window.print()" class="px-5 py-2.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5">🖨️ Print / Save PDF</button>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="copyVetReportText()" class="px-3.5 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition">📋 Copy Text</button>
+          <button onclick="emailVetReport()" class="px-3.5 py-2 rounded-lg bg-sky-600 text-white font-semibold shadow-sm hover:bg-sky-700 transition flex items-center gap-1.5">📧 Email Vet</button>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="window.print()" class="px-4 py-2.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5">🖨️ Print / Save PDF</button>
           <button onclick="closeVetReportModal()" class="px-4 py-2.5 rounded-lg bg-slate-900 text-white dark:bg-slate-800 font-semibold">Close</button>
         </div>
       </div>
@@ -849,6 +848,19 @@
     function copyVetReportText() {
       const p = getActivePiggy();
       if (!p) return;
+      const report = generateReportPlainText(p);
+      navigator.clipboard.writeText(report).then(() => alert("📋 Copied text report to clipboard!"));
+    }
+
+    function emailVetReport() {
+      const p = getActivePiggy();
+      if (!p) return;
+      const subject = encodeURIComponent(`Clinical Summary Report: ${p.name} (Wheekly Health Suite)`);
+      const body = encodeURIComponent(generateReportPlainText(p));
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    }
+
+    function generateReportPlainText(p) {
       const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
       const mLogs = p.miteLogs ? [...p.miteLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
@@ -858,18 +870,22 @@
       report += `Patient: ${p.name} | Sex: ${p.gender} | Breed: ${p.breed || 'Cavy'} | Age: ${computeAge(p.dob)}\nBaseline: ${p.baselineWeight}g | Clinic: ${p.vet || 'None'}\n\n`;
       
       report += `--- STASIS FEEDS ---\n`;
+      if (sLogs.length === 0) report += `No records.\n`;
       sLogs.forEach(s => { report += `[${s.time}] ${s.amount}ml — ${s.notes || ''}\n`; });
 
       report += `\n--- PARASITE TREATMENTS ---\n`;
+      if (mLogs.length === 0) report += `No records.\n`;
       mLogs.forEach(m => { report += `[${m.date}] ${m.product} (${m.dose}) | Next Due: ${m.nextDue || 'N/A'}\n`; });
 
       report += `\n--- SYMPTOMS ---\n`;
+      if (hLogs.length === 0) report += `No records.\n`;
       hLogs.forEach(h => { report += `[${h.date}] ${h.category} (${h.severity}): ${h.notes}\n`; });
 
       report += `\n--- WEIGHT HISTORY ---\n`;
+      if (w.length === 0) report += `No records.\n`;
       w.forEach(item => { report += `${item.date}: ${item.weight}g (${item.weight - p.baselineWeight}g delta)\n`; });
 
-      navigator.clipboard.writeText(report).then(() => alert("📋 Copied text report to clipboard!"));
+      return report;
     }
 
     function loadData() {
