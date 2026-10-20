@@ -658,6 +658,12 @@
           <button onclick="accountSignUp()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition">Create account</button>
         </div>
         <button onclick="accountMagicLink()" class="w-full px-3 py-2 rounded-lg text-xs font-semibold text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/40 transition">Email me a sign-in link instead</button>
+        <button onclick="accountResetPassword()" class="w-full mt-2 text-xs text-slate-500 dark:text-slate-400 underline">Forgot password?</button>
+      </div>
+      <div id="account-recovery" class="hidden">
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Choose a new password for your account.</p>
+        <input id="account-new-password" type="password" autocomplete="new-password" placeholder="New password (min 8 characters)" class="w-full mb-3 px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+        <button onclick="accountSetNewPassword()" class="w-full px-3 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 transition">Save new password</button>
       </div>
       <div id="account-signed-in" class="hidden">
         <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Signed in as</p>
@@ -998,6 +1004,7 @@
     let sb = null;
     let cloudUser = null;
     let pushTimer = null;
+    let recoveringPassword = false;
 
     function initCloud() {
       if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !window.supabase) return;
@@ -1005,7 +1012,9 @@
       document.getElementById('account-btn').classList.remove('hidden');
       sb.auth.onAuthStateChange((event, session) => {
         cloudUser = session ? session.user : null;
+        if (event === 'PASSWORD_RECOVERY') recoveringPassword = true;
         renderAccountState();
+        if (event === 'PASSWORD_RECOVERY') openAccountModal();
         if (cloudUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
           // Defer: supabase-js must not be awaited inside this callback.
           setTimeout(syncOnLogin, 0);
@@ -1023,8 +1032,9 @@
 
     function renderAccountState() {
       const label = document.getElementById('account-btn-label');
-      document.getElementById('account-signed-out').classList.toggle('hidden', !!cloudUser);
-      document.getElementById('account-signed-in').classList.toggle('hidden', !cloudUser);
+      document.getElementById('account-recovery').classList.toggle('hidden', !recoveringPassword);
+      document.getElementById('account-signed-out').classList.toggle('hidden', !!cloudUser || recoveringPassword);
+      document.getElementById('account-signed-in').classList.toggle('hidden', !cloudUser || recoveringPassword);
       if (cloudUser) {
         label.textContent = 'Synced';
         document.getElementById('account-user-email').textContent = cloudUser.email || '';
@@ -1067,6 +1077,25 @@
       const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
       if (error) { showToast(error.message, "⚠️"); return; }
       showToast("Sign-in link sent. Check your email.", "📧");
+    }
+
+    async function accountResetPassword() {
+      const { email } = readCredentials();
+      if (!email) { showToast("Enter your email first.", "⚠️"); return; }
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+      if (error) { showToast(error.message, "⚠️"); return; }
+      showToast("Password reset link sent. Check your email.", "📧");
+    }
+
+    async function accountSetNewPassword() {
+      const password = document.getElementById('account-new-password').value;
+      if (password.length < 8) { showToast("Use a password of 8+ characters.", "⚠️"); return; }
+      const { error } = await sb.auth.updateUser({ password });
+      if (error) { showToast(error.message, "⚠️"); return; }
+      document.getElementById('account-new-password').value = '';
+      recoveringPassword = false;
+      renderAccountState();
+      showToast("Password updated.");
     }
 
     async function accountSignOut() {
