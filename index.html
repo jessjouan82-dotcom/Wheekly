@@ -106,7 +106,8 @@
       </div>
       <div class="flex items-center gap-2 shrink-0">
         <button id="account-btn" onclick="openAccountModal()" class="hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition hover:bg-slate-200 dark:hover:bg-slate-700">
-          <i class="fa-solid fa-cloud text-xs"></i> <span id="account-btn-label">Sign in</span>
+          <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-slate-400 inline-block"></span>
+          <span id="account-btn-label">Sign in</span>
         </button>
         <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">🌙</button>
         <button onclick="handleShareApp()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 transition">
@@ -400,11 +401,14 @@
       </div>
 
       <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">Parasite Treatment Records</div>
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white flex justify-between items-center">
+          <span>Parasite Treatment Records</span>
+          <span class="text-[10px] text-slate-400 font-normal">Click (.ics) to add reminder to calendar</span>
+        </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left">
             <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
-              <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3">Dose</th><th class="p-3">Next Due (Follow-up)</th><th class="p-3 text-right">Action</th></tr>
+              <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3">Dose</th><th class="p-3">Next Due</th><th class="p-3 text-right">Action</th></tr>
             </thead>
             <tbody id="mitelog-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
           </table>
@@ -739,6 +743,21 @@
       document.getElementById('m-next').value = getLocalIsoDate(d);
     }
 
+    function downloadMiteICS(product, dateStr) {
+      const d = new Date(dateStr);
+      if (isNaN(d)) return;
+      const dtStr = d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      const icstext = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Wheekly//Guinea Pig Health Suite//EN\nBEGIN:VEVENT\nSUMMARY:🐹 Mite Treatment Follow-up (${product})\nDESCRIPTION:Time for the vital follow-up spot-on treatment as prescribed by your exotic vet.\nDTSTART:${dtStr}\nDTEND:${dtStr}\nEND:VEVENT\nEND:VCALENDAR`;
+      const blob = new Blob([icstext], { type: 'text/calendar;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.setAttribute('download', `mite_followup_${dateStr}.ics`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showToast("Calendar reminder (.ics) downloaded!");
+    }
+
     function openVetReportModal() {
       const p = getActivePiggy();
       if (!p) { showToast("No piggy profile selected!", "⚠️"); return; }
@@ -859,9 +878,13 @@
       });
     }
 
-    function setSyncStatus(msg) {
+    function setSyncStatus(msg, state = 'idle') {
       const el = document.getElementById('account-sync-status');
       if (el) el.textContent = msg;
+      const dot = document.getElementById('sync-status-dot');
+      if (dot) {
+        dot.className = 'w-2 h-2 rounded-full inline-block ' + (state === 'synced' ? 'bg-emerald-500' : state === 'syncing' ? 'bg-sky-500 animate-pulse' : state === 'error' ? 'bg-rose-500' : 'bg-slate-400');
+      }
     }
 
     function renderAccountState() {
@@ -871,8 +894,10 @@
       if (cloudUser) {
         label.textContent = 'Synced';
         document.getElementById('account-user-email').textContent = cloudUser.email || '';
+        setSyncStatus('Connected', 'synced');
       } else {
         label.textContent = 'Sign in';
+        setSyncStatus('Local storage mode', 'idle');
       }
     }
 
@@ -907,24 +932,34 @@
     function scheduleCloudPush() {
       if (!sb || !cloudUser) return;
       clearTimeout(pushTimer);
+      setSyncStatus('Pending changes...', 'syncing');
       pushTimer = setTimeout(pushToCloud, 1500);
     }
 
     async function pushToCloud() {
       if (!sb || !cloudUser) return;
+      setSyncStatus('Syncing...', 'syncing');
       const updatedAt = localStorage.getItem(LOCAL_UPDATED_KEY) || new Date().toISOString();
-      await sb.from('user_data').upsert({ user_id: cloudUser.id, data: appData, updated_at: updatedAt });
+      const { error } = await sb.from('user_data').upsert({ user_id: cloudUser.id, data: appData, updated_at: updatedAt });
+      if (error) {
+        setSyncStatus('Sync error', 'error');
+      } else {
+        setSyncStatus('Synced', 'synced');
+      }
     }
 
     async function syncOnLogin() {
       if (!sb || !cloudUser) return;
-      setSyncStatus('Syncing…');
-      const { data: row } = await sb.from('user_data').select('data, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+      setSyncStatus('Syncing…', 'syncing');
+      const { data: row, error } = await sb.from('user_data').select('data, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+      if (error) { setSyncStatus('Sync failed', 'error'); return; }
       if (row && row.data) {
         appData = row.data;
         saveData();
         renderApp();
-        setSyncStatus('Synced successfully.');
+        setSyncStatus('Synced', 'synced');
+      } else {
+        await pushToCloud();
       }
     }
 
@@ -982,10 +1017,14 @@
     function getPiggyHealthDot(p) {
       if (!p.weights || p.weights.length === 0) return '🟢';
       const sorted = [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date));
-      const drop = p.baselineWeight - sorted[0].weight;
+      const latest = sorted[0].weight;
+      const drop = p.baselineWeight - latest;
       const threshold = p.weightThreshold || 60;
-      if (drop >= threshold) return '🔴';
-      if (drop >= Math.round(threshold * 0.5)) return '🟡';
+      
+      // Smart percentage drop check (>6% drop)
+      const percentDrop = (drop / p.baselineWeight) * 100;
+      if (drop >= threshold || percentDrop >= 6.5) return '🔴';
+      if (drop >= Math.round(threshold * 0.5) || percentDrop >= 4) return '🟡';
       return '🟢';
     }
 
@@ -1079,7 +1118,7 @@
           showToast("Backup successfully restored!");
         } catch(err) { showToast("Invalid backup file.", "⚠️"); }
       };
-      r.readAsText(file); // Fixed readAsDataURL to readAsText for valid JSON parsing
+      r.readAsText(file);
     }
 
     function renderWeights() {
@@ -1109,8 +1148,10 @@
       diffEl.textContent = delta > 0 ? `+${delta}` : delta;
       
       const threshold = p.weightThreshold || 60;
-      if (p.baselineWeight - latest.weight >= threshold) {
-        verdictEl.textContent = `🚨 Critical Drop (≥${threshold}g)`;
+      const percentDrop = (p.baselineWeight - latest.weight) / p.baselineWeight * 100;
+
+      if (p.baselineWeight - latest.weight >= threshold || percentDrop >= 6.5) {
+        verdictEl.textContent = `🚨 Critical Drop Detected!`;
       } else {
         verdictEl.textContent = '✅ Weight Stable';
       }
@@ -1355,7 +1396,10 @@
           <td class="p-3 font-semibold">${escapeHtml(item.date)}</td>
           <td class="p-3 font-bold text-slate-900 dark:text-white">${escapeHtml(item.product)}</td>
           <td class="p-3">${escapeHtml(item.dose)}</td>
-          <td class="p-3 font-semibold text-sky-600">${escapeHtml(item.nextDue || '—')}</td>
+          <td class="p-3 font-semibold text-sky-600">
+            ${escapeHtml(item.nextDue || '—')} 
+            ${item.nextDue ? `<button onclick="downloadMiteICS('${escapeHtml(item.product)}', '${item.nextDue}')" class="ml-2 px-1.5 py-0.5 rounded bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 text-[10px] border border-sky-200">📥 .ics</button>` : ''}
+          </td>
           <td class="p-3 text-right"><button onclick="deleteMiteLog('${item.id}')" class="text-rose-600 font-bold hover:underline">Delete</button></td>
         `;
         tbody.appendChild(tr);
@@ -1428,7 +1472,6 @@
       if (!file || !p) return;
       const r = new FileReader();
       r.onload = ev => {
-        // Compress image using canvas to prevent localStorage bloat (>5MB limit)
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
@@ -1456,7 +1499,7 @@
       if (edit && p) {
         document.getElementById('p-id').value = p.id;
         document.getElementById('p-name').value = p.name;
-        document.getElementById('p-gender').value = p.gender || 'Boar (Male)'; // Fixed gender reset bug
+        document.getElementById('p-gender').value = p.gender || 'Boar (Male)';
         document.getElementById('p-dob').value = p.dob;
         document.getElementById('p-breed').value = p.breed;
         document.getElementById('p-baseline').value = p.baselineWeight;
