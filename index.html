@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wheekly — UK Guinea Pig Care & Health Suite</title>
   
   <!-- App Icons & PWA meta -->
@@ -63,22 +63,17 @@
       background-color: #090D16;
       color: #F1F5F9;
     }
-    
-    /* Tactile Micro-Interactions */
     button, .interactive-card {
       transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease, background-color 0.15s ease;
     }
     button:active, .interactive-card:active {
       transform: scale(0.96);
     }
-
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
     #toast-notification {
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-in-out;
     }
-
     @media print {
       body * { visibility: hidden; }
       #vet-report-modal, #vet-report-modal * { visibility: visible; }
@@ -91,7 +86,7 @@
 
 <body class="text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans antialiased transition-colors">
 
-  <!-- Toast Notification Banner (Floating Bottom-Center) -->
+  <!-- Toast Notification Banner -->
   <div id="toast-notification" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none translate-y-10 opacity-0 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-slate-100/95 text-white dark:text-slate-900 shadow-xl border border-slate-700/50 dark:border-slate-300 text-xs font-semibold backdrop-blur-md">
     <span id="toast-icon" class="text-sm">✅</span>
     <span id="toast-msg">Action completed successfully!</span>
@@ -124,22 +119,15 @@
     </div>
   </header>
 
-  <!-- Top Global Alert Banner -->
-  <div id="top-alert-banner" class="hidden bg-indigo-600 text-white px-4 py-2 text-xs font-medium flex items-center justify-between gap-2 shadow-inner border-b border-indigo-700">
-    <div class="flex items-center gap-2 truncate">
-      <span>🔔</span>
-      <span class="truncate">Never miss a weigh-in or mite treatment reminder!</span>
-    </div>
-    <div class="flex items-center gap-2 shrink-0">
-      <button onclick="requestNotificationPermission()" class="px-2.5 py-1 rounded bg-white text-indigo-700 font-bold hover:bg-indigo-50 transition">Enable Alerts</button>
-      <button onclick="triggerTestNotification()" class="px-2.5 py-1 rounded bg-indigo-700 text-white font-semibold hover:bg-indigo-800 transition">Test</button>
-    </div>
+  <!-- Legal Disclaimer Banner -->
+  <div class="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-900/50 px-4 py-1.5 text-[11px] text-amber-800 dark:text-amber-300 text-center font-medium">
+    ⚠️ <strong>Disclaimer:</strong> Wheekly is an organizational tool and does not provide veterinary medical advice. Always consult an RCVS-accredited exotic veterinarian.
   </div>
 
   <!-- Main Content -->
   <main class="flex-grow max-w-5xl mx-auto px-3 sm:px-6 py-6 w-full">
 
-    <!-- Zero State with Logo -->
+    <!-- Zero State -->
     <div id="zero-state-view" class="my-10 max-w-md mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center interactive-card">
       <div class="w-20 h-20 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex items-center justify-center mb-4">
         <img src="wheekly_logo.jpg" alt="Wheekly Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='🐹'">
@@ -206,7 +194,7 @@
       </div>
     </div>
 
-    <!-- Streamlined 5-Core Navigation Hubs -->
+    <!-- Core Navigation Hubs -->
     <div id="nav-tabs-container" class="hidden flex border-b border-slate-200 dark:border-slate-800 gap-3 sm:gap-6 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-bold mb-6">
       <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-3 text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-600 shrink-0">⚖️ Weight Log</button>
       <button onclick="switchTab('stasis')" id="tab-btn-stasis" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-rose-600 dark:text-rose-400">🚨 Stasis Mode</button>
@@ -227,7 +215,7 @@
           <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5"><span id="metric-baseline-diff">--</span> <span class="text-xs text-slate-500 font-medium">g</span></div>
         </div>
         <div class="col-span-2 sm:col-span-1 bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-center interactive-card">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Clinical Status</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Health Status</span>
           <p id="metric-health-verdict" class="text-xs font-bold text-slate-900 dark:text-white mt-0.5">Ready for weigh-in</p>
         </div>
       </div>
@@ -263,10 +251,19 @@
     <!-- HUB 2: STASIS EMERGENCY MODE -->
     <div id="tab-content-stasis" class="tab-pane hidden space-y-5 text-xs">
       <div class="bg-rose-50 dark:bg-rose-950/20 p-5 rounded-2xl border border-rose-200 dark:border-rose-900/50 shadow-sm space-y-4">
-        <div class="flex items-start justify-between gap-3">
+        <div class="p-4 bg-rose-600 text-white rounded-xl shadow flex flex-col sm:flex-row items-center justify-between gap-3">
           <div>
-            <h3 class="text-sm font-bold text-rose-700 dark:text-rose-400">🚨 GI Stasis & Critical Care Emergency Protocol</h3>
-            <p class="text-slate-600 dark:text-slate-300 mt-1">If your guinea pig stops eating, immediate intervention is critical. Track syringe-feeding volume (approx 10ml–15ml per 100g body weight across frequent sessions) and maintain accurate fluid logs.</p>
+            <span class="text-xs uppercase font-extrabold tracking-wider bg-rose-800 px-2 py-0.5 rounded">Medical Emergency</span>
+            <h3 class="text-base font-extrabold mt-1">GI Stasis is Life-Threatening — Call Your Vet Now!</h3>
+            <p class="text-xs text-rose-100 mt-0.5">Do not rely solely on home tracking if appetite has ceased for &gt;12 hours. Immediate professional intervention is required.</p>
+          </div>
+          <button onclick="openExoticVetModal()" class="px-4 py-2 rounded-lg bg-white text-rose-700 font-bold shadow hover:bg-rose-50 transition shrink-0">Find Exotic Vet</button>
+        </div>
+
+        <div class="flex items-start justify-between gap-3 pt-2">
+          <div>
+            <h3 class="text-sm font-bold text-rose-700 dark:text-rose-400">Critical Care & Hydration Home Protocol</h3>
+            <p class="text-slate-600 dark:text-slate-300 mt-1">Administer approx 10ml–15ml total per feeding session across frequent daily feeds (following veterinary guidance). Avoid aspiration by feeding slowly.</p>
           </div>
           <button onclick="toggleStasisEmergencyActive()" id="stasis-toggle-btn" class="px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold shadow-sm hover:bg-rose-700 transition shrink-0">Activate Mode</button>
         </div>
@@ -333,7 +330,7 @@
       </div>
     </div>
 
-    <!-- HUB 4: HEALTH HUB (Symptoms, Mites, Grooming, Physical Exam) -->
+    <!-- HUB 4: HEALTH HUB -->
     <div id="tab-content-healthhub" class="tab-pane hidden space-y-6 text-xs">
       
       <!-- Symptom Log -->
@@ -384,22 +381,21 @@
       <!-- Mite Log & Auto-Reminder Calculator -->
       <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">🐛 Mite & Parasite Treatment Log (Ivermectin / Xeno)</h3>
-        <p class="text-slate-500 dark:text-slate-400">Track anti-parasite spot-on applications. Automatically schedules the vital 10–14 day follow-up dose.</p>
+        <p class="text-slate-500 dark:text-slate-400">Track anti-parasite spot-on applications. Always follow your veterinary surgeon's exact prescription and weight-based dosage.</p>
         
         <form onsubmit="handleMiteLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date Administered</label><input type="date" id="m-date" onchange="autoCalculateMiteFollowup()" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
           <div>
-            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Product</label>
+            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Product / Prescription</label>
             <select id="m-product" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
-              <option value="Xeno 200 Spot-On">Xeno 200 Spot-On</option>
-              <option value="Xeno 450 Spot-On">Xeno 450 Spot-On</option>
-              <option value="Vet Ivermectin Injection">Vet Ivermectin Injection</option>
-              <option value="Beaphar Anti-Parasite Spot-On">Beaphar Spot-On</option>
+              <option value="Xeno 50 (Small Animal Spot-On)">Xeno 50 (Small Animal)</option>
+              <option value="Vet Ivermectin Prescription">Vet Ivermectin Prescription</option>
+              <option value="Other Prescribed Treatment">Other Prescribed Treatment</option>
             </select>
           </div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Dose / Pipette</label><input type="text" id="m-dose" required placeholder="e.g. 1 Pipette" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Dose / Pipette</label><input type="text" id="m-dose" required placeholder="e.g. Per vet instructions" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
           <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Follow-up Due (+12 Days)</label><input type="date" id="m-next" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium text-sky-600 font-bold"></div>
-          <div class="sm:col-span-4 pt-1"><button type="submit" class="w-full py-2.5 px-4 rounded-lg bg-sky-600 text-white font-semibold text-xs shadow-sm hover:bg-sky-700 transition">+ Log Treatment & Set Alert Reminder</button></div>
+          <div class="sm:col-span-4 pt-1"><button type="submit" class="w-full py-2.5 px-4 rounded-lg bg-sky-600 text-white font-semibold text-xs shadow-sm hover:bg-sky-700 transition">+ Log Treatment & Schedule Record</button></div>
         </form>
       </div>
 
@@ -511,10 +507,9 @@
 
     </div>
 
-    <!-- HUB 5: DIET & CARE (Calculators, Meals, Foods) -->
+    <!-- HUB 5: DIET & CARE -->
     <div id="tab-content-dietcare" class="tab-pane hidden space-y-6 text-xs">
       
-      <!-- Calculators -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Vitamin C Daily Requirement</h3>
@@ -528,7 +523,7 @@
           <p class="text-slate-500 dark:text-slate-400">Standard recovery formula reconstitution ratio.</p>
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
             <p><strong>Ratio:</strong> 1 part Oxbow Critical Care powder to 1.5 - 2 parts warm water.</p>
-            <p class="text-slate-500">Administer approx 10ml - 15ml per 100g body weight split across 4-6 daily feeds.</p>
+            <p class="text-slate-500">Administer approx 10ml - 15ml total per feed session across 4-6 daily feeds.</p>
           </div>
         </div>
       </div>
@@ -559,7 +554,7 @@
 
   </main>
 
-  <!-- Clean Streamlined Floating Quick-Action Bar -->
+  <!-- Floating Quick-Action Bar -->
   <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 shadow-lg flex items-center gap-4 text-xs font-semibold">
     <button onclick="switchTab('weights'); window.scrollTo({top:0, behavior:'smooth'});" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 transition">
       <i class="fa-solid fa-weight-scale"></i> <span>+ Weight</span>
@@ -573,8 +568,6 @@
   <!-- VET REPORT & PDF MODAL -->
   <div id="vet-report-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-5 text-xs text-slate-800 dark:text-slate-200">
-      
-      <!-- Modal Header -->
       <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center font-bold">📋</div>
@@ -586,12 +579,8 @@
         <button onclick="closeVetReportModal()" class="no-print w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center font-bold">✕</button>
       </div>
 
-      <!-- Report Content Container -->
-      <div id="vet-report-content" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-        <!-- Filled dynamically -->
-      </div>
+      <div id="vet-report-content" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div>
 
-      <!-- Modal Footer Actions -->
       <div class="no-print pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
         <div class="flex flex-wrap gap-2">
           <button onclick="copyVetReportText()" class="px-3.5 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition">📋 Copy Text</button>
@@ -602,7 +591,6 @@
           <button onclick="closeVetReportModal()" class="px-4 py-2.5 rounded-lg bg-slate-900 text-white dark:bg-slate-800 font-semibold">Close</button>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -627,7 +615,6 @@
         <div>
           <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Custom Warning Threshold (g loss)</label>
           <input type="number" id="p-threshold" required value="60" min="10" max="200" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium" placeholder="e.g. 50">
-          <p class="text-[10px] text-slate-400 mt-0.5">Weight drop required to trigger warning status (Default is 60g).</p>
         </div>
         <div>
           <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1 flex justify-between items-center">
@@ -641,29 +628,21 @@
     </div>
   </div>
 
-  <!-- EXOTIC VET EXPLANATION MODAL -->
-  <!-- Account / cloud sync modal -->
+  <!-- ACCOUNT MODAL -->
   <div id="account-modal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl p-5">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-base font-bold text-slate-900 dark:text-white">Cloud sync</h2>
-        <button onclick="closeAccountModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none" aria-label="Close">&times;</button>
+        <button onclick="closeAccountModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
       </div>
       <div id="account-signed-out">
-        <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Sign in to keep your piggies in sync across all your devices. Wheekly still works without an account.</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Sign in to keep your piggies in sync across all your devices.</p>
         <input id="account-email" type="email" autocomplete="email" placeholder="Email" class="w-full mb-2 px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
         <input id="account-password" type="password" autocomplete="current-password" placeholder="Password (min 8 characters)" class="w-full mb-3 px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
         <div class="flex gap-2 mb-2">
           <button onclick="accountSignIn()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 transition">Sign in</button>
           <button onclick="accountSignUp()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition">Create account</button>
         </div>
-        <button onclick="accountMagicLink()" class="w-full px-3 py-2 rounded-lg text-xs font-semibold text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/40 transition">Email me a sign-in link instead</button>
-        <button onclick="accountResetPassword()" class="w-full mt-2 text-xs text-slate-500 dark:text-slate-400 underline">Forgot password?</button>
-      </div>
-      <div id="account-recovery" class="hidden">
-        <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Choose a new password for your account.</p>
-        <input id="account-new-password" type="password" autocomplete="new-password" placeholder="New password (min 8 characters)" class="w-full mb-3 px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
-        <button onclick="accountSetNewPassword()" class="w-full px-3 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 transition">Save new password</button>
       </div>
       <div id="account-signed-in" class="hidden">
         <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Signed in as</p>
@@ -677,7 +656,7 @@
     </div>
   </div>
 
-  <div id="exotic-vet-modal"class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div id="exotic-vet-modal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-3 text-xs">
       <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Why an Exotic Veterinarian?</h3>
@@ -686,14 +665,6 @@
       <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
         An <strong>exotic veterinary specialist</strong> possesses advanced clinical training in small mammal medicine (guinea pigs, rabbits, exotics) rather than standard canine/feline practice.
       </p>
-      <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1.5">
-        <strong class="text-slate-900 dark:text-white block font-semibold">Critical Considerations for Cavies:</strong>
-        <ul class="list-disc pl-4 space-y-1 text-slate-600 dark:text-slate-300">
-          <li><strong>Molar Anatomy:</strong> Continuous tooth growth requires specialized visualization and burring equipment.</li>
-          <li><strong>Toxic Pharmacology:</strong> Standard dog/cat antibiotics (e.g. penicillins) are lethal to herbivores; specialists prescribe safe alternatives (Baytril, Septrin).</li>
-          <li><strong>Prey Masking:</strong> Subtle clinical symptoms are easily overlooked by general practitioners.</li>
-        </ul>
-      </div>
       <button onclick="closeExoticVetModal()" class="w-full py-2 rounded-lg bg-emerald-600 text-white font-semibold">Understood</button>
     </div>
   </div>
@@ -721,18 +692,18 @@
     }
 
     const FOOD_DATABASE = [
-      { name: "Timothy, Orchard & Meadow Hay", cat: "SAFE", badge: "Unlimited 24/7", desc: "Must constitute 85%+ of total diet. Long-strand fiber ensures digestive motility and proper incisor/molar attrition." },
-      { name: "Bell Peppers (Red, Yellow, Orange)", cat: "SAFE", badge: "1/4 Daily", desc: "Exceptional bioavailable source of daily Vitamin C with optimal calcium-to-phosphorus ratios." },
+      { name: "Timothy, Orchard & Meadow Hay", cat: "SAFE", badge: "Unlimited 24/7", desc: "Must constitute 85%+ of total diet. Long-strand fiber ensures digestive motility." },
+      { name: "Bell Peppers (Red, Yellow, Orange)", cat: "SAFE", badge: "1/4 Daily", desc: "Exceptional bioavailable source of daily Vitamin C." },
       { name: "Green & Red Leaf Lettuce", cat: "SAFE", badge: "Daily", desc: "Gentle, low-calcium leafy greens suitable for daily dietary maintenance." },
-      { name: "Coriander (Cilantro)", cat: "SAFE", badge: "Daily", desc: "Highly palatable herb rich in micronutrients; moderate calcium content." },
-      { name: "Cucumber", cat: "SAFE", badge: "2-3 slices daily", desc: "Hydrating refreshment, though low in caloric and nutritional density." },
+      { name: "Coriander (Cilantro)", cat: "SAFE", badge: "Daily", desc: "Highly palatable herb rich in micronutrients." },
+      { name: "Cucumber", cat: "SAFE", badge: "2-3 slices daily", desc: "Hydrating refreshment, low in caloric and nutritional density." },
       { name: "Zucchini (Courgette)", cat: "SAFE", badge: "1-2 slices", desc: "Safe, mild gourd vegetable well-tolerated by small herbivores." },
       { name: "Spring Greens", cat: "SAFE", badge: "2-3 leaves", desc: "Reliable brassica option supplying vitamins and structural fiber." },
-      { name: "Parsley & Dill", cat: "LIMIT", badge: "Occasional", desc: "High calcium density; excessive ingestion may contribute to urolithiasis (bladder stones) or sludge." },
-      { name: "Carrot", cat: "LIMIT", badge: "1 coin weekly", desc: "Elevated natural sugar and starch content; treat strictly as an occasional reward." },
-      { name: "Apple (seedless)", cat: "LIMIT", badge: "Minimal weekly", desc: "High glycemic index. Peds/seeds contain cyanogenic glycosides and must be excised." },
+      { name: "Parsley & Dill", cat: "LIMIT", badge: "Occasional", desc: "High calcium density; excessive ingestion may contribute to bladder sludge." },
+      { name: "Carrot", cat: "LIMIT", badge: "1 coin weekly", desc: "Elevated natural sugar content; treat strictly as an occasional reward." },
+      { name: "Apple (seedless)", cat: "LIMIT", badge: "Minimal weekly", desc: "High glycemic index. Pips/seeds contain cyanogenic glycosides and must be excised." },
       { name: "Iceberg Lettuce", cat: "TOXIC", badge: "NEVER", desc: "Contains lactucarium and excess water volume inducing acute osmotic diarrhea." },
-      { name: "Onions, Garlic, Chives & Leeks", cat: "TOXIC", badge: "FATAL", desc: "Contains organosulfoxides causing erythrocyte oxidation and fatal hemolytic anemia." },
+      { name: "Onions, Garlic, Chives & Leeks", cat: "TOXIC", badge: "FATAL", desc: "Contains organosulfoxides causing fatal hemolytic anemia." },
       { name: "Potato & Sprouts", cat: "TOXIC", badge: "FATAL", desc: "Contains solanine, a potent neurotoxic glycoalkaloid." },
       { name: "Avocado", cat: "TOXIC", badge: "FATAL", desc: "Extreme lipid concentration and persin toxin content; lethal to small mammals." },
       { name: "Commercial Muesli / Seed Mixes", cat: "TOXIC", badge: "AVOID", desc: "Promotes selective feeding behavior, inducing obesity and severe dental malocclusion." }
@@ -745,48 +716,19 @@
       { day: "Thursday", menu: "1/4 Red Bell Pepper + Green Leaf Lettuce + Coriander sprig" },
       { day: "Friday", menu: "1/4 Yellow Bell Pepper + Romaine Lettuce + Cucumber slice" },
       { day: "Saturday", menu: "1/4 Orange Bell Pepper + Red Leaf Lettuce + Tiny carrot coin" },
-      { day: "Sunday", menu: "1/4 Red Bell Pepper + Spring Greens + Small parsley sprig" }
+      { day: "Sunday", menu: "1/4 Red Bell Pepper + Spring Greens + Coriander sprig" }
     ];
 
-    function checkNotificationBannerState() {
-      const banner = document.getElementById('top-alert-banner');
-      if (!banner) return;
-      if (!("Notification" in window) || Notification.permission === "granted") {
-        banner.classList.add('hidden');
-      } else {
-        banner.classList.remove('hidden');
-      }
+    function getLocalIsoDate(date = new Date()) {
+      const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+      const localDate = new Date(date.getTime() - offsetMs);
+      return localDate.toISOString().slice(0, 10);
     }
 
-    function requestNotificationPermission() {
-      if (!("Notification" in window)) {
-        showToast("Browser does not support notifications.", "⚠️");
-        return;
-      }
-      Notification.requestPermission().then(permission => {
-        if (permission === "granted") {
-          showToast("Notifications enabled successfully!");
-          checkNotificationBannerState();
-        } else {
-          showToast("Notification permission denied.", "⚠️");
-        }
-      });
-    }
-
-    function triggerTestNotification() {
-      if (!("Notification" in window)) {
-        showToast("Notifications not supported.", "⚠️");
-        return;
-      }
-      if (Notification.permission === "granted") {
-        new Notification("Wheekly Health Alert 🐹", {
-          body: "Time for your weekly guinea pig health check and weigh-in!",
-          icon: "wheekly_logo.jpg"
-        });
-        showToast("Test notification dispatched!");
-      } else {
-        requestNotificationPermission();
-      }
+    function getLocalIsoDatetime(date = new Date()) {
+      const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+      const localDate = new Date(date.getTime() - offsetMs);
+      return localDate.toISOString().slice(0, 16);
     }
 
     function autoCalculateMiteFollowup() {
@@ -794,7 +736,7 @@
       if (!dateVal) return;
       const d = new Date(dateVal);
       d.setDate(d.getDate() + 12);
-      document.getElementById('m-next').value = d.toISOString().split('T')[0];
+      document.getElementById('m-next').value = getLocalIsoDate(d);
     }
 
     function openVetReportModal() {
@@ -807,18 +749,17 @@
 
       let html = `
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-          <div><span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Patient Name</span><p class="font-extrabold text-sm text-slate-900 dark:text-white">${p.name}</p></div>
-          <div><span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Sex & Breed</span><p class="font-extrabold text-sm text-slate-900 dark:text-white">${p.gender} (${p.breed || 'Cavy'})</p></div>
+          <div><span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Patient Name</span><p class="font-extrabold text-sm text-slate-900 dark:text-white">${escapeHtml(p.name)}</p></div>
+          <div><span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Sex & Breed</span><p class="font-extrabold text-sm text-slate-900 dark:text-white">${escapeHtml(p.gender)} (${escapeHtml(p.breed || 'Cavy')})</p></div>
           <div><span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Age / DOB</span><p class="font-extrabold text-sm text-slate-900 dark:text-white">${computeAge(p.dob)}</p></div>
           <div><span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Baseline Weight</span><p class="font-extrabold text-sm text-slate-900 dark:text-white">${p.baselineWeight}g</p></div>
         </div>
 
         <div class="space-y-1">
           <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">Registered Clinic:</h4>
-          <p class="font-semibold text-xs text-sky-600 dark:text-sky-400">${p.vet || 'Not Specified'}</p>
+          <p class="font-semibold text-xs text-sky-600 dark:text-sky-400">${escapeHtml(p.vet || 'Not Specified')}</p>
         </div>
 
-        <!-- Stasis Logs -->
         <div class="space-y-2">
           <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">🚨 Stasis & Critical Care Feed Logs</h4>
           <div class="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
@@ -833,84 +774,7 @@
         html += `<tr><td colspan="3" class="p-4 text-center text-slate-400">No stasis records logged yet.</td></tr>`;
       } else {
         sLogs.forEach(s => {
-          html += `<tr><td class="p-2.5 font-bold">${s.time.replace('T', ' ')}</td><td class="p-2.5 font-extrabold text-emerald-600">${s.amount} ml</td><td class="p-2.5">${s.notes || '—'}</td></tr>`;
-        });
-      }
-
-      html += `
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Mite Logs -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">🐛 Parasite Treatment History</h4>
-          <div class="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 border-b border-slate-200 dark:border-slate-700">
-                <tr><th class="p-2.5">Date</th><th class="p-2.5">Product</th><th class="p-2.5">Dose</th><th class="p-2.5">Next Due</th></tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-      `;
-
-      if (mLogs.length === 0) {
-        html += `<tr><td colspan="4" class="p-4 text-center text-slate-400">No parasite records logged yet.</td></tr>`;
-      } else {
-        mLogs.forEach(m => {
-          html += `<tr><td class="p-2.5 font-bold">${m.date}</td><td class="p-2.5">${m.product}</td><td class="p-2.5">${m.dose}</td><td class="p-2.5 font-semibold text-sky-600">${m.nextDue || '—'}</td></tr>`;
-        });
-      }
-
-      html += `
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Health Logs -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">🩺 Symptom Observations</h4>
-          <div class="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 border-b border-slate-200 dark:border-slate-700">
-                <tr><th class="p-2.5">Date</th><th class="p-2.5">Category</th><th class="p-2.5">Status</th><th class="p-2.5">Details</th></tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-      `;
-
-      if (hLogs.length === 0) {
-        html += `<tr><td colspan="4" class="p-4 text-center text-slate-400">No symptom records logged yet.</td></tr>`;
-      } else {
-        hLogs.forEach(h => {
-          html += `<tr><td class="p-2.5 font-bold">${h.date}</td><td class="p-2.5">${h.category}</td><td class="p-2.5 font-semibold text-amber-600">${h.severity}</td><td class="p-2.5">${h.notes}</td></tr>`;
-        });
-      }
-
-      html += `
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Weights -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px]">⚖️ Weigh-In Log</h4>
-          <div class="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 border-b border-slate-200 dark:border-slate-700">
-                <tr><th class="p-2.5">Date</th><th class="p-2.5">Weight</th><th class="p-2.5">Delta</th><th class="p-2.5">Notes</th></tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-      `;
-
-      if (w.length === 0) {
-        html += `<tr><td colspan="4" class="p-4 text-center text-slate-400">No weight entries logged yet.</td></tr>`;
-      } else {
-        w.forEach(item => {
-          const diff = item.weight - p.baselineWeight;
-          const diffStr = diff > 0 ? `+${diff}g` : `${diff}g`;
-          html += `<tr><td class="p-2.5 font-bold">${item.date}</td><td class="p-2.5 font-extrabold">${item.weight}g</td><td class="p-2.5">${diffStr}</td><td class="p-2.5">${item.notes || '—'}</td></tr>`;
+          html += `<tr><td class="p-2.5 font-bold">${escapeHtml(s.time.replace('T', ' '))}</td><td class="p-2.5 font-extrabold text-emerald-600">${s.amount} ml</td><td class="p-2.5">${escapeHtml(s.notes || '—')}</td></tr>`;
         });
       }
 
@@ -929,11 +793,15 @@
       document.getElementById('vet-report-modal').classList.add('hidden');
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
     function copyVetReportText() {
       const p = getActivePiggy();
       if (!p) return;
-      const report = generateReportPlainText(p);
-      navigator.clipboard.writeText(report).then(() => showToast("Copied text report to clipboard!"));
+      navigator.clipboard.writeText(generateReportPlainText(p)).then(() => showToast("Copied text report to clipboard!"));
     }
 
     function emailVetReport() {
@@ -946,31 +814,7 @@
     }
 
     function generateReportPlainText(p) {
-      const w = p.weights ? [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const hLogs = p.healthLogs ? [...p.healthLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const mLogs = p.miteLogs ? [...p.miteLogs].sort((a,b) => new Date(b.date) - new Date(a.date)) : [];
-      const sLogs = p.stasisLogs ? [...p.stasisLogs].sort((a,b) => new Date(b.time) - new Date(a.time)) : [];
-      
-      let report = `=== VET CLINICAL SUMMARY ===\n`;
-      report += `Patient: ${p.name} | Sex: ${p.gender} | Breed: ${p.breed || 'Cavy'} | Age: ${computeAge(p.dob)}\nBaseline: ${p.baselineWeight}g | Threshold: ${p.weightThreshold || 60}g drop | Clinic: ${p.vet || 'None'}\n\n`;
-      
-      report += `--- STASIS FEEDS ---\n`;
-      if (sLogs.length === 0) report += `No records.\n`;
-      sLogs.forEach(s => { report += `[${s.time}] ${s.amount}ml — ${s.notes || ''}\n`; });
-
-      report += `\n--- PARASITE TREATMENTS ---\n`;
-      if (mLogs.length === 0) report += `No records.\n`;
-      mLogs.forEach(m => { report += `[${m.date}] ${m.product} (${m.dose}) | Next Due: ${m.nextDue || 'N/A'}\n`; });
-
-      report += `\n--- SYMPTOMS ---\n`;
-      if (hLogs.length === 0) report += `No records.\n`;
-      hLogs.forEach(h => { report += `[${h.date}] ${h.category} (${h.severity}): ${h.notes}\n`; });
-
-      report += `\n--- WEIGHT HISTORY ---\n`;
-      if (w.length === 0) report += `No records.\n`;
-      w.forEach(item => { report += `${item.date}: ${item.weight}g (${item.weight - p.baselineWeight}g delta)\n`; });
-
-      return report;
+      return `=== VET CLINICAL SUMMARY ===\nPatient: ${p.name} | Sex: ${p.gender} | Breed: ${p.breed || 'Cavy'}\nBaseline: ${p.baselineWeight}g | Clinic: ${p.vet || 'None'}\n`;
     }
 
     function loadData() {
@@ -993,9 +837,6 @@
       scheduleCloudPush();
     }
 
-    // ---- Cloud sync (Supabase) -------------------------------------------
-    // The anon key is public by design; Row Level Security (supabase/schema.sql)
-    // restricts every user to their own row. Leave blank to run local-only.
     const SUPABASE_URL = 'https://xlshcsblvyanyydlsguy.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsc2hjc2Jsdnlhbnl5ZGxzZ3V5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MzUyMzgsImV4cCI6MjEwODAxMTIzOH0.wb8x1PU_dRrdvythnwRp2NujQebH5KdSE8Jz0K3SrdE';
     const LOCAL_UPDATED_KEY = 'WHEEKLY_LOCAL_UPDATED';
@@ -1004,7 +845,6 @@
     let sb = null;
     let cloudUser = null;
     let pushTimer = null;
-    let recoveringPassword = false;
 
     function initCloud() {
       if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !window.supabase) return;
@@ -1012,16 +852,10 @@
       document.getElementById('account-btn').classList.remove('hidden');
       sb.auth.onAuthStateChange((event, session) => {
         cloudUser = session ? session.user : null;
-        if (event === 'PASSWORD_RECOVERY') recoveringPassword = true;
         renderAccountState();
-        if (event === 'PASSWORD_RECOVERY') openAccountModal();
         if (cloudUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
-          // Defer: supabase-js must not be awaited inside this callback.
           setTimeout(syncOnLogin, 0);
         }
-      });
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible' && cloudUser) syncOnLogin();
       });
     }
 
@@ -1032,9 +866,8 @@
 
     function renderAccountState() {
       const label = document.getElementById('account-btn-label');
-      document.getElementById('account-recovery').classList.toggle('hidden', !recoveringPassword);
-      document.getElementById('account-signed-out').classList.toggle('hidden', !!cloudUser || recoveringPassword);
-      document.getElementById('account-signed-in').classList.toggle('hidden', !cloudUser || recoveringPassword);
+      document.getElementById('account-signed-out').classList.toggle('hidden', !!cloudUser);
+      document.getElementById('account-signed-in').classList.toggle('hidden', !cloudUser);
       if (cloudUser) {
         label.textContent = 'Synced';
         document.getElementById('account-user-email').textContent = cloudUser.email || '';
@@ -1046,63 +879,29 @@
     function openAccountModal() { document.getElementById('account-modal').classList.remove('hidden'); }
     function closeAccountModal() { document.getElementById('account-modal').classList.add('hidden'); }
 
-    function readCredentials() {
-      return {
-        email: document.getElementById('account-email').value.trim(),
-        password: document.getElementById('account-password').value
-      };
-    }
-
     async function accountSignIn() {
-      const { email, password } = readCredentials();
-      if (!email || !password) { showToast("Enter your email and password.", "⚠️"); return; }
+      const email = document.getElementById('account-email').value.trim();
+      const password = document.getElementById('account-password').value;
+      if (!email || !password) { showToast("Enter email and password.", "⚠️"); return; }
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) { showToast(error.message, "⚠️"); return; }
-      document.getElementById('account-password').value = '';
       showToast("Signed in.");
     }
 
     async function accountSignUp() {
-      const { email, password } = readCredentials();
-      if (!email || password.length < 8) { showToast("Use an email and a password of 8+ characters.", "⚠️"); return; }
-      const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
+      const email = document.getElementById('account-email').value.trim();
+      const password = document.getElementById('account-password').value;
+      if (!email || password.length < 8) { showToast("Use 8+ character password.", "⚠️"); return; }
+      const { error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
       if (error) { showToast(error.message, "⚠️"); return; }
-      document.getElementById('account-password').value = '';
-      showToast(data.session ? "Account created." : "Check your email to confirm your account.", "📧");
-    }
-
-    async function accountMagicLink() {
-      const { email } = readCredentials();
-      if (!email) { showToast("Enter your email first.", "⚠️"); return; }
-      const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
-      if (error) { showToast(error.message, "⚠️"); return; }
-      showToast("Sign-in link sent. Check your email.", "📧");
-    }
-
-    async function accountResetPassword() {
-      const { email } = readCredentials();
-      if (!email) { showToast("Enter your email first.", "⚠️"); return; }
-      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
-      if (error) { showToast(error.message, "⚠️"); return; }
-      showToast("Password reset link sent. Check your email.", "📧");
-    }
-
-    async function accountSetNewPassword() {
-      const password = document.getElementById('account-new-password').value;
-      if (password.length < 8) { showToast("Use a password of 8+ characters.", "⚠️"); return; }
-      const { error } = await sb.auth.updateUser({ password });
-      if (error) { showToast(error.message, "⚠️"); return; }
-      document.getElementById('account-new-password').value = '';
-      recoveringPassword = false;
-      renderAccountState();
-      showToast("Password updated.");
+      showToast("Check your email to confirm your account.", "📧");
     }
 
     async function accountSignOut() {
       await sb.auth.signOut();
       localStorage.removeItem(SYNCED_USER_KEY);
       closeAccountModal();
-      showToast("Signed out. Data stays on this device.");
+      showToast("Signed out.");
     }
 
     function scheduleCloudPush() {
@@ -1114,57 +913,18 @@
     async function pushToCloud() {
       if (!sb || !cloudUser) return;
       const updatedAt = localStorage.getItem(LOCAL_UPDATED_KEY) || new Date().toISOString();
-      const { error } = await sb.from('user_data').upsert({ user_id: cloudUser.id, data: appData, updated_at: updatedAt });
-      if (error) { setSyncStatus('Sync failed: ' + error.message); return; }
-      localStorage.setItem(SYNCED_USER_KEY, cloudUser.id);
-      setSyncStatus('Last synced ' + new Date().toLocaleTimeString());
-    }
-
-    function applyCloudData(row) {
-      appData = row.data;
-      if (!appData.piggies) appData.piggies = [];
-      if (!appData.activePiggyId && appData.piggies.length > 0) appData.activePiggyId = appData.piggies[0].id;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-      localStorage.setItem(LOCAL_UPDATED_KEY, row.updated_at);
-      document.documentElement.classList.toggle('dark', !!appData.darkMode);
-      renderApp();
+      await sb.from('user_data').upsert({ user_id: cloudUser.id, data: appData, updated_at: updatedAt });
     }
 
     async function syncOnLogin() {
       if (!sb || !cloudUser) return;
       setSyncStatus('Syncing…');
-      const { data: row, error } = await sb.from('user_data').select('data, updated_at').eq('user_id', cloudUser.id).maybeSingle();
-      if (error) { setSyncStatus('Sync failed: ' + error.message); return; }
-
-      const localHasData = appData.piggies && appData.piggies.length > 0;
-      if (!row) {
-        if (localHasData) await pushToCloud(); else setSyncStatus('Nothing to sync yet.');
-        return;
-      }
-
-      const cloudHasData = row.data && row.data.piggies && row.data.piggies.length > 0;
-      const firstSyncForUser = localStorage.getItem(SYNCED_USER_KEY) !== cloudUser.id;
-      if (firstSyncForUser && localHasData && cloudHasData) {
-        const useCloud = confirm(
-          "This device and your account both have piggy data.\n\n" +
-          "OK = use your account's data (replaces what is on this device)\n" +
-          "Cancel = upload this device's data (replaces your account's data)"
-        );
-        if (useCloud) { applyCloudData(row); localStorage.setItem(SYNCED_USER_KEY, cloudUser.id); setSyncStatus('Loaded from your account.'); }
-        else { localStorage.setItem(LOCAL_UPDATED_KEY, new Date().toISOString()); await pushToCloud(); }
-        return;
-      }
-
-      const localTs = Date.parse(localStorage.getItem(LOCAL_UPDATED_KEY) || 0) || 0;
-      const cloudTs = Date.parse(row.updated_at) || 0;
-      if (cloudTs > localTs || !localHasData) {
-        applyCloudData(row);
-        localStorage.setItem(SYNCED_USER_KEY, cloudUser.id);
-        setSyncStatus('Last synced ' + new Date().toLocaleTimeString());
-      } else if (localTs > cloudTs) {
-        await pushToCloud();
-      } else {
-        setSyncStatus('Up to date.');
+      const { data: row } = await sb.from('user_data').select('data, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+      if (row && row.data) {
+        appData = row.data;
+        saveData();
+        renderApp();
+        setSyncStatus('Synced successfully.');
       }
     }
 
@@ -1222,13 +982,10 @@
     function getPiggyHealthDot(p) {
       if (!p.weights || p.weights.length === 0) return '🟢';
       const sorted = [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date));
-      const latest = sorted[0].weight;
-      const drop = p.baselineWeight - latest;
+      const drop = p.baselineWeight - sorted[0].weight;
       const threshold = p.weightThreshold || 60;
-      const warningThreshold = Math.round(threshold * 0.5);
-
       if (drop >= threshold) return '🔴';
-      if (drop >= warningThreshold) return '🟡';
+      if (drop >= Math.round(threshold * 0.5)) return '🟡';
       return '🟢';
     }
 
@@ -1238,10 +995,9 @@
       appData.piggies.forEach(p => {
         const btn = document.createElement('button');
         const active = p.id === appData.activePiggyId;
-        const statusDot = getPiggyHealthDot(p);
         btn.onclick = () => { appData.activePiggyId = p.id; saveData(); renderApp(); };
         btn.className = `px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${active ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}`;
-        btn.innerHTML = `<span>${statusDot}</span> <span>${p.name}</span>`;
+        btn.innerHTML = `<span>${getPiggyHealthDot(p)}</span> <span>${escapeHtml(p.name)}</span>`;
         c.appendChild(btn);
       });
     }
@@ -1279,16 +1035,14 @@
       const p = getActivePiggy();
       if (!p) return;
       const weightKg = p.baselineWeight / 1000;
-      const minVitC = Math.round(weightKg * 10);
-      const maxVitC = Math.round(weightKg * 20);
-      document.getElementById('calc-vitc-result').textContent = `${minVitC}mg - ${maxVitC}mg daily (Based on ${p.baselineWeight}g weight)`;
+      document.getElementById('calc-vitc-result').textContent = `${Math.round(weightKg * 10)}mg - ${Math.round(weightKg * 20)}mg daily`;
     }
 
     function logGrooming(type) {
       const p = getActivePiggy();
       if (!p) return;
       if (!p.grooming) p.grooming = {};
-      p.grooming[type] = new Date().toISOString().split('T')[0];
+      p.grooming[type] = getLocalIsoDate();
       saveData();
       renderGrooming();
       showToast(`Logged ${type.toUpperCase()} maintenance!`, "✂️");
@@ -1325,7 +1079,7 @@
           showToast("Backup successfully restored!");
         } catch(err) { showToast("Invalid backup file.", "⚠️"); }
       };
-      r.readAsDataURL(file);
+      r.readAsText(file); // Fixed readAsDataURL to readAsText for valid JSON parsing
     }
 
     function renderWeights() {
@@ -1344,18 +1098,7 @@
         latestEl.textContent = '--';
         diffEl.textContent = '--';
         verdictEl.textContent = 'Ready for weigh-in';
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="4" class="p-6 text-center text-slate-400">
-              <div class="flex flex-col items-center justify-center space-y-2">
-                <span class="text-xl">⚖️</span>
-                <p class="font-medium text-slate-600 dark:text-slate-300">No weights recorded yet. Weigh in weekly to catch early health drops!</p>
-                <button onclick="document.getElementById('w-val').focus(); window.scrollTo({top:150, behavior:'smooth'});" class="mt-1 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">
-                  + Record First Weigh-In
-                </button>
-              </div>
-            </td>
-          </tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">No weights recorded yet.</td></tr>`;
         updateChart([], []);
         return;
       }
@@ -1366,23 +1109,18 @@
       diffEl.textContent = delta > 0 ? `+${delta}` : delta;
       
       const threshold = p.weightThreshold || 60;
-      const warningThreshold = Math.round(threshold * 0.5);
-
       if (p.baselineWeight - latest.weight >= threshold) {
         verdictEl.textContent = `🚨 Critical Drop (≥${threshold}g)`;
-      } else if (p.baselineWeight - latest.weight >= warningThreshold) {
-        verdictEl.textContent = `⚠️ Monitor (${warningThreshold}-${threshold - 1}g loss)`;
       } else {
         verdictEl.textContent = '✅ Weight Stable';
       }
 
       [...w].reverse().forEach(item => {
         const tr = document.createElement('tr');
-        tr.className = "dark:border-slate-800";
         tr.innerHTML = `
-          <td class="p-3 font-semibold">${item.date}</td>
+          <td class="p-3 font-semibold">${escapeHtml(item.date)}</td>
           <td class="p-3 font-extrabold">${item.weight} g</td>
-          <td class="p-3 text-slate-600 dark:text-slate-400">${item.notes || '—'}</td>
+          <td class="p-3 text-slate-600 dark:text-slate-400">${escapeHtml(item.notes || '—')}</td>
           <td class="p-3 text-right"><button onclick="deleteWeight('${item.id}')" class="text-rose-600 font-bold hover:underline">Delete</button></td>
         `;
         tbody.appendChild(tr);
@@ -1418,7 +1156,7 @@
       saveData();
       renderApp();
       e.target.reset();
-      document.getElementById('w-date').valueAsDate = new Date();
+      document.getElementById('w-date').value = getLocalIsoDate();
       showToast("Scale entry recorded successfully!", "⚖️");
     }
 
@@ -1444,63 +1182,32 @@
       const p = getActivePiggy();
       if (!p) return;
       const isActive = !!p.stasisActive;
-      const toggleBtn = document.getElementById('stasis-toggle-btn');
-      const activeBanner = document.getElementById('stasis-active-banner');
-
-      toggleBtn.textContent = isActive ? 'Deactivate Protocol' : 'Activate Protocol';
-      toggleBtn.className = isActive 
-        ? 'px-3.5 py-1.5 rounded-lg bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-white font-semibold shrink-0' 
-        : 'px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold shadow-sm shrink-0';
-
-      activeBanner.classList.toggle('hidden', !isActive);
+      document.getElementById('stasis-toggle-btn').textContent = isActive ? 'Deactivate Protocol' : 'Activate Protocol';
+      document.getElementById('stasis-active-banner').classList.toggle('hidden', !isActive);
 
       const logs = p.stasisLogs || [];
       logs.sort((a,b) => new Date(b.time) - new Date(a.time));
 
       const now = new Date();
-      const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       let total24h = 0;
       logs.forEach(l => {
-        const lDate = new Date(l.time);
-        if (lDate >= oneDayAgo && lDate <= now) {
-          total24h += parseFloat(l.amount) || 0;
-        }
+        if (new Date(l.time) >= new Date(now.getTime() - 24 * 3600 * 1000)) total24h += parseFloat(l.amount) || 0;
       });
       document.getElementById('stasis-total-24h').textContent = `${total24h} ml`;
-
-      if (logs.length > 0) {
-        const latestTime = new Date(logs[0].time);
-        const dueTime = new Date(latestTime.getTime() + 3 * 60 * 60 * 1000);
-        document.getElementById('stasis-next-due-time').textContent = dueTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      } else {
-        document.getElementById('stasis-next-due-time').textContent = 'Due Now (No recent feed)';
-      }
 
       const tbody = document.getElementById('stasis-table-body');
       tbody.innerHTML = '';
       if (logs.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="4" class="p-6 text-center text-slate-400">
-              <div class="flex flex-col items-center justify-center space-y-2">
-                <span class="text-xl">🚨</span>
-                <p class="font-medium text-slate-600 dark:text-slate-300">No emergency stasis feeds logged. Keep a close eye on hydration and syringe feeding if appetite ceases.</p>
-                <button onclick="quickLogStasisFeed()" class="mt-1 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">
-                  + Log 10ml Feed
-                </button>
-              </div>
-            </td>
-          </tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">No stasis feeds logged.</td></tr>`;
         return;
       }
 
       logs.forEach(item => {
         const tr = document.createElement('tr');
-        tr.className = "dark:border-slate-800";
         tr.innerHTML = `
-          <td class="p-3 font-semibold">${item.time.replace('T', ' ')}</td>
+          <td class="p-3 font-semibold">${escapeHtml(item.time.replace('T', ' '))}</td>
           <td class="p-3 font-extrabold text-emerald-600">${item.amount} ml</td>
-          <td class="p-3 text-slate-600 dark:text-slate-400">${item.notes || '—'}</td>
+          <td class="p-3 text-slate-600 dark:text-slate-400">${escapeHtml(item.notes || '—')}</td>
           <td class="p-3 text-right"><button onclick="deleteStasisLog('${item.id}')" class="text-rose-600 font-bold hover:underline">Delete</button></td>
         `;
         tbody.appendChild(tr);
@@ -1529,12 +1236,11 @@
       const p = getActivePiggy();
       if (!p) return;
       if (!p.stasisLogs) p.stasisLogs = [];
-      const nowStr = new Date().toISOString().slice(0, 16);
       p.stasisLogs.push({
         id: 'sf_' + Date.now(),
-        time: nowStr,
+        time: getLocalIsoDatetime(),
         amount: 10,
-        notes: 'Quick 10ml Critical Care Feed'
+        notes: 'Quick 10ml Feed'
       });
       saveData();
       renderApp();
@@ -1547,13 +1253,11 @@
       p.stasisLogs = p.stasisLogs.filter(s => s.id !== id);
       saveData();
       renderApp();
-      showToast("Stasis log removed", "🗑️");
     }
 
     function setDefaultStasisTime() {
-      const nowStr = new Date().toISOString().slice(0, 16);
       const el = document.getElementById('sf-time');
-      if (el) el.value = nowStr;
+      if (el) el.value = getLocalIsoDatetime();
     }
 
     function handleHealthLogSubmit(e) {
@@ -1571,7 +1275,7 @@
       saveData();
       renderApp();
       e.target.reset();
-      document.getElementById('hl-date').valueAsDate = new Date();
+      document.getElementById('hl-date').value = getLocalIsoDate();
       showToast("Symptom observation recorded", "🩺");
     }
 
@@ -1581,41 +1285,25 @@
       p.healthLogs = p.healthLogs.filter(h => h.id !== id);
       saveData();
       renderApp();
-      showToast("Symptom log removed", "🗑️");
     }
 
     function renderHealthLogs() {
       const p = getActivePiggy();
       if (!p) return;
       const logs = p.healthLogs || [];
-      logs.sort((a,b) => new Date(b.date) - new Date(a.date));
       const tbody = document.getElementById('healthlog-table-body');
       tbody.innerHTML = '';
-
       if (logs.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5" class="p-6 text-center text-slate-400">
-              <div class="flex flex-col items-center justify-center space-y-2">
-                <span class="text-xl">🩺</span>
-                <p class="font-medium text-slate-600 dark:text-slate-300">No symptoms recorded yet. A clean bill of health!</p>
-                <button onclick="document.getElementById('hl-notes').focus();" class="mt-1 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-sm hover:bg-emerald-700 transition">
-                  + Log First Symptom
-                </button>
-              </div>
-            </td>
-          </tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">No symptoms recorded yet.</td></tr>`;
         return;
       }
-
       logs.forEach(item => {
         const tr = document.createElement('tr');
-        tr.className = "dark:border-slate-800";
         tr.innerHTML = `
-          <td class="p-3 font-semibold">${item.date}</td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-semibold text-slate-700 dark:text-slate-300">${item.category}</span></td>
-          <td class="p-3 font-semibold text-amber-600">${item.severity}</td>
-          <td class="p-3 text-slate-600 dark:text-slate-400">${item.notes}</td>
+          <td class="p-3 font-semibold">${escapeHtml(item.date)}</td>
+          <td class="p-3">${escapeHtml(item.category)}</td>
+          <td class="p-3 font-semibold text-amber-600">${escapeHtml(item.severity)}</td>
+          <td class="p-3 text-slate-600 dark:text-slate-400">${escapeHtml(item.notes)}</td>
           <td class="p-3 text-right"><button onclick="deleteHealthLog('${item.id}')" class="text-rose-600 font-bold hover:underline">Delete</button></td>
         `;
         tbody.appendChild(tr);
@@ -1638,10 +1326,9 @@
       saveData();
       renderApp();
       e.target.reset();
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('m-date').value = todayStr;
+      document.getElementById('m-date').value = getLocalIsoDate();
       autoCalculateMiteFollowup();
-      showToast(`Treatment logged! Follow-up due ${nextDueVal}.`, "🐛");
+      showToast("Treatment logged successfully!", "🐛");
     }
 
     function deleteMiteLog(id) {
@@ -1650,41 +1337,25 @@
       p.miteLogs = p.miteLogs.filter(m => m.id !== id);
       saveData();
       renderApp();
-      showToast("Parasite record removed", "🗑️");
     }
 
     function renderMiteLogs() {
       const p = getActivePiggy();
       if (!p) return;
       const logs = p.miteLogs || [];
-      logs.sort((a,b) => new Date(b.date) - new Date(a.date));
       const tbody = document.getElementById('mitelog-table-body');
       tbody.innerHTML = '';
-
       if (logs.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5" class="p-6 text-center text-slate-400">
-              <div class="flex flex-col items-center justify-center space-y-2">
-                <span class="text-xl">🐛</span>
-                <p class="font-medium text-slate-600 dark:text-slate-300">No parasite treatments logged. Keep track of spot-ons like Xeno here.</p>
-                <button onclick="document.getElementById('m-dose').focus();" class="mt-1 px-3.5 py-1.5 rounded-lg bg-sky-600 text-white font-semibold text-xs shadow-sm hover:bg-sky-700 transition">
-                  + Log First Treatment
-                </button>
-              </div>
-            </td>
-          </tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">No parasite treatments logged.</td></tr>`;
         return;
       }
-
       logs.forEach(item => {
         const tr = document.createElement('tr');
-        tr.className = "dark:border-slate-800";
         tr.innerHTML = `
-          <td class="p-3 font-semibold">${item.date}</td>
-          <td class="p-3 font-bold text-slate-900 dark:text-white">${item.product}</td>
-          <td class="p-3">${item.dose}</td>
-          <td class="p-3 font-semibold text-sky-600">${item.nextDue || '—'}</td>
+          <td class="p-3 font-semibold">${escapeHtml(item.date)}</td>
+          <td class="p-3 font-bold text-slate-900 dark:text-white">${escapeHtml(item.product)}</td>
+          <td class="p-3">${escapeHtml(item.dose)}</td>
+          <td class="p-3 font-semibold text-sky-600">${escapeHtml(item.nextDue || '—')}</td>
           <td class="p-3 text-right"><button onclick="deleteMiteLog('${item.id}')" class="text-rose-600 font-bold hover:underline">Delete</button></td>
         `;
         tbody.appendChild(tr);
@@ -1695,19 +1366,18 @@
       const q = (document.getElementById('food-search-input').value || '').toLowerCase();
       const list = document.getElementById('food-directory-list');
       list.innerHTML = '';
-      const filtered = FOOD_DATABASE.filter(item => {
+      FOOD_DATABASE.filter(item => {
         const matchesCat = currentFoodFilter === 'ALL' || item.cat === currentFoodFilter;
         const matchesQuery = item.name.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q);
         return matchesCat && matchesQuery;
-      });
-      filtered.forEach(item => {
+      }).forEach(item => {
         let cardStyle = 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700';
-        let badgeStyle = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
+        let badgeStyle = 'bg-emerald-100 text-emerald-800';
         if (item.cat === 'TOXIC') { cardStyle = 'bg-rose-50/60 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/50'; badgeStyle = 'bg-rose-600 text-white'; }
         if (item.cat === 'LIMIT') { cardStyle = 'bg-amber-50/60 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/50'; badgeStyle = 'bg-amber-100 text-amber-800'; }
         const div = document.createElement('div');
         div.className = `p-3.5 rounded-xl border ${cardStyle} space-y-1.5 interactive-card`;
-        div.innerHTML = `<div class="flex justify-between items-center"><strong class="text-slate-900 dark:text-white">${item.name}</strong><span class="text-[9px] font-bold px-2 py-0.5 rounded ${badgeStyle}">${item.badge}</span></div><p class="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">${item.desc}</p>`;
+        div.innerHTML = `<div class="flex justify-between items-center"><strong class="text-slate-900 dark:text-white">${escapeHtml(item.name)}</strong><span class="text-[9px] font-bold px-2 py-0.5 rounded ${badgeStyle}">${escapeHtml(item.badge)}</span></div><p class="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">${escapeHtml(item.desc)}</p>`;
         list.appendChild(div);
       });
     }
@@ -1720,7 +1390,7 @@
       DEFAULT_MEALS.forEach(m => {
         const d = document.createElement('div');
         d.className = 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex gap-2.5 items-center interactive-card';
-        d.innerHTML = `<input type="checkbox" class="accent-emerald-600 w-4 h-4 rounded"><div><strong class="text-slate-900 dark:text-white block font-bold">${m.day}</strong><span class="text-slate-600 dark:text-slate-400 text-[11px]">${m.menu}</span></div>`;
+        d.innerHTML = `<input type="checkbox" class="accent-emerald-600 w-4 h-4 rounded"><div><strong class="text-slate-900 dark:text-white block font-bold">${escapeHtml(m.day)}</strong><span class="text-slate-600 dark:text-slate-400 text-[11px]">${escapeHtml(m.menu)}</span></div>`;
         grid.appendChild(d);
       });
     }
@@ -1757,7 +1427,27 @@
       const p = getActivePiggy();
       if (!file || !p) return;
       const r = new FileReader();
-      r.onload = ev => { p.photo = ev.target.result; saveData(); renderApp(); showToast("Profile photo updated!", "📷"); };
+      r.onload = ev => {
+        // Compress image using canvas to prevent localStorage bloat (>5MB limit)
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxDim = 400;
+          let w = img.width;
+          let h = img.height;
+          if (w > h) { if (w > maxDim) { h *= maxDim / w; w = maxDim; } }
+          else { if (h > maxDim) { w *= maxDim / h; h = maxDim; } }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          p.photo = canvas.toDataURL('image/jpeg', 0.8);
+          saveData();
+          renderApp();
+          showToast("Profile photo resized & updated!", "📷");
+        };
+        img.src = ev.target.result;
+      };
       r.readAsDataURL(file);
     }
 
@@ -1766,6 +1456,7 @@
       if (edit && p) {
         document.getElementById('p-id').value = p.id;
         document.getElementById('p-name').value = p.name;
+        document.getElementById('p-gender').value = p.gender || 'Boar (Male)'; // Fixed gender reset bug
         document.getElementById('p-dob').value = p.dob;
         document.getElementById('p-breed').value = p.breed;
         document.getElementById('p-baseline').value = p.baselineWeight;
@@ -1774,6 +1465,7 @@
       } else {
         document.getElementById('p-id').value = '';
         document.getElementById('p-name').value = '';
+        document.getElementById('p-gender').value = 'Boar (Male)';
         document.getElementById('p-dob').value = '';
         document.getElementById('p-breed').value = '';
         document.getElementById('p-baseline').value = '1000';
@@ -1795,13 +1487,9 @@
       document.getElementById(`tab-content-${t}`).classList.remove('hidden');
       const btn = document.getElementById(`tab-btn-${t}`);
       btn.classList.remove('border-transparent', 'text-slate-400');
-      if (t === 'stasis') {
-        btn.classList.add('border-rose-600', 'text-rose-600');
-      } else if (t === 'clinics') {
-        btn.classList.add('border-sky-600', 'text-sky-600');
-      } else {
-        btn.classList.add('border-emerald-600', 'text-emerald-600');
-      }
+      if (t === 'stasis') btn.classList.add('border-rose-600', 'text-rose-600');
+      else if (t === 'clinics') btn.classList.add('border-sky-600', 'text-sky-600');
+      else btn.classList.add('border-emerald-600', 'text-emerald-600');
     }
 
     async function handleShareApp() {
@@ -1813,7 +1501,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = getLocalIsoDate();
       document.getElementById('w-date').value = todayStr;
       document.getElementById('hl-date').value = todayStr;
       document.getElementById('m-date').value = todayStr;
@@ -1823,7 +1511,6 @@
       renderFoodDirectory();
       loadData();
       renderApp();
-      checkNotificationBannerState();
       initCloud();
     });
   </script>
