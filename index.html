@@ -19,6 +19,7 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
     tailwind.config = {
@@ -109,6 +110,9 @@
         </div>
       </div>
       <div class="flex items-center gap-2 shrink-0">
+        <button id="account-btn" onclick="openAccountModal()" class="hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition hover:bg-slate-200 dark:hover:bg-slate-700">
+          <i class="fa-solid fa-cloud text-xs"></i> <span id="account-btn-label">Sign in</span>
+        </button>
         <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">🌙</button>
         <button onclick="handleShareApp()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 transition">
           <i class="fa-solid fa-share-nodes text-xs"></i> <span>Share</span>
@@ -638,7 +642,36 @@
   </div>
 
   <!-- EXOTIC VET EXPLANATION MODAL -->
-  <div id="exotic-vet-modal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <!-- Account / cloud sync modal -->
+  <div id="account-modal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-bold text-slate-900 dark:text-white">Cloud sync</h2>
+        <button onclick="closeAccountModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none" aria-label="Close">&times;</button>
+      </div>
+      <div id="account-signed-out">
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Sign in to keep your piggies in sync across all your devices. Wheekly still works without an account.</p>
+        <input id="account-email" type="email" autocomplete="email" placeholder="Email" class="w-full mb-2 px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+        <input id="account-password" type="password" autocomplete="current-password" placeholder="Password (min 8 characters)" class="w-full mb-3 px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+        <div class="flex gap-2 mb-2">
+          <button onclick="accountSignIn()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 transition">Sign in</button>
+          <button onclick="accountSignUp()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition">Create account</button>
+        </div>
+        <button onclick="accountMagicLink()" class="w-full px-3 py-2 rounded-lg text-xs font-semibold text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/40 transition">Email me a sign-in link instead</button>
+      </div>
+      <div id="account-signed-in" class="hidden">
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Signed in as</p>
+        <p id="account-user-email" class="text-sm font-semibold text-slate-900 dark:text-white mb-3 break-all"></p>
+        <p id="account-sync-status" class="text-xs text-slate-500 dark:text-slate-400 mb-3"></p>
+        <div class="flex gap-2">
+          <button onclick="cloudSyncNow()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition">Sync now</button>
+          <button onclick="accountSignOut()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 transition">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="exotic-vet-modal"class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-3 text-xs">
       <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Why an Exotic Veterinarian?</h3>
@@ -950,7 +983,163 @@
 
     function saveData() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      localStorage.setItem(LOCAL_UPDATED_KEY, new Date().toISOString());
+      scheduleCloudPush();
     }
+
+    // ---- Cloud sync (Supabase) -------------------------------------------
+    // The anon key is public by design; Row Level Security (supabase/schema.sql)
+    // restricts every user to their own row. Leave blank to run local-only.
+    const SUPABASE_URL = 'https://xlshcsblvyanyydlsguy.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsc2hjc2Jsdnlhbnl5ZGxzZ3V5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MzUyMzgsImV4cCI6MjEwODAxMTIzOH0.wb8x1PU_dRrdvythnwRp2NujQebH5KdSE8Jz0K3SrdE';
+    const LOCAL_UPDATED_KEY = 'WHEEKLY_LOCAL_UPDATED';
+    const SYNCED_USER_KEY = 'WHEEKLY_SYNCED_USER';
+
+    let sb = null;
+    let cloudUser = null;
+    let pushTimer = null;
+
+    function initCloud() {
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !window.supabase) return;
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      document.getElementById('account-btn').classList.remove('hidden');
+      sb.auth.onAuthStateChange((event, session) => {
+        cloudUser = session ? session.user : null;
+        renderAccountState();
+        if (cloudUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+          // Defer: supabase-js must not be awaited inside this callback.
+          setTimeout(syncOnLogin, 0);
+        }
+      });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && cloudUser) syncOnLogin();
+      });
+    }
+
+    function setSyncStatus(msg) {
+      const el = document.getElementById('account-sync-status');
+      if (el) el.textContent = msg;
+    }
+
+    function renderAccountState() {
+      const label = document.getElementById('account-btn-label');
+      document.getElementById('account-signed-out').classList.toggle('hidden', !!cloudUser);
+      document.getElementById('account-signed-in').classList.toggle('hidden', !cloudUser);
+      if (cloudUser) {
+        label.textContent = 'Synced';
+        document.getElementById('account-user-email').textContent = cloudUser.email || '';
+      } else {
+        label.textContent = 'Sign in';
+      }
+    }
+
+    function openAccountModal() { document.getElementById('account-modal').classList.remove('hidden'); }
+    function closeAccountModal() { document.getElementById('account-modal').classList.add('hidden'); }
+
+    function readCredentials() {
+      return {
+        email: document.getElementById('account-email').value.trim(),
+        password: document.getElementById('account-password').value
+      };
+    }
+
+    async function accountSignIn() {
+      const { email, password } = readCredentials();
+      if (!email || !password) { showToast("Enter your email and password.", "⚠️"); return; }
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) { showToast(error.message, "⚠️"); return; }
+      document.getElementById('account-password').value = '';
+      showToast("Signed in.");
+    }
+
+    async function accountSignUp() {
+      const { email, password } = readCredentials();
+      if (!email || password.length < 8) { showToast("Use an email and a password of 8+ characters.", "⚠️"); return; }
+      const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
+      if (error) { showToast(error.message, "⚠️"); return; }
+      document.getElementById('account-password').value = '';
+      showToast(data.session ? "Account created." : "Check your email to confirm your account.", "📧");
+    }
+
+    async function accountMagicLink() {
+      const { email } = readCredentials();
+      if (!email) { showToast("Enter your email first.", "⚠️"); return; }
+      const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
+      if (error) { showToast(error.message, "⚠️"); return; }
+      showToast("Sign-in link sent. Check your email.", "📧");
+    }
+
+    async function accountSignOut() {
+      await sb.auth.signOut();
+      localStorage.removeItem(SYNCED_USER_KEY);
+      closeAccountModal();
+      showToast("Signed out. Data stays on this device.");
+    }
+
+    function scheduleCloudPush() {
+      if (!sb || !cloudUser) return;
+      clearTimeout(pushTimer);
+      pushTimer = setTimeout(pushToCloud, 1500);
+    }
+
+    async function pushToCloud() {
+      if (!sb || !cloudUser) return;
+      const updatedAt = localStorage.getItem(LOCAL_UPDATED_KEY) || new Date().toISOString();
+      const { error } = await sb.from('user_data').upsert({ user_id: cloudUser.id, data: appData, updated_at: updatedAt });
+      if (error) { setSyncStatus('Sync failed: ' + error.message); return; }
+      localStorage.setItem(SYNCED_USER_KEY, cloudUser.id);
+      setSyncStatus('Last synced ' + new Date().toLocaleTimeString());
+    }
+
+    function applyCloudData(row) {
+      appData = row.data;
+      if (!appData.piggies) appData.piggies = [];
+      if (!appData.activePiggyId && appData.piggies.length > 0) appData.activePiggyId = appData.piggies[0].id;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      localStorage.setItem(LOCAL_UPDATED_KEY, row.updated_at);
+      document.documentElement.classList.toggle('dark', !!appData.darkMode);
+      renderApp();
+    }
+
+    async function syncOnLogin() {
+      if (!sb || !cloudUser) return;
+      setSyncStatus('Syncing…');
+      const { data: row, error } = await sb.from('user_data').select('data, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+      if (error) { setSyncStatus('Sync failed: ' + error.message); return; }
+
+      const localHasData = appData.piggies && appData.piggies.length > 0;
+      if (!row) {
+        if (localHasData) await pushToCloud(); else setSyncStatus('Nothing to sync yet.');
+        return;
+      }
+
+      const cloudHasData = row.data && row.data.piggies && row.data.piggies.length > 0;
+      const firstSyncForUser = localStorage.getItem(SYNCED_USER_KEY) !== cloudUser.id;
+      if (firstSyncForUser && localHasData && cloudHasData) {
+        const useCloud = confirm(
+          "This device and your account both have piggy data.\n\n" +
+          "OK = use your account's data (replaces what is on this device)\n" +
+          "Cancel = upload this device's data (replaces your account's data)"
+        );
+        if (useCloud) { applyCloudData(row); localStorage.setItem(SYNCED_USER_KEY, cloudUser.id); setSyncStatus('Loaded from your account.'); }
+        else { localStorage.setItem(LOCAL_UPDATED_KEY, new Date().toISOString()); await pushToCloud(); }
+        return;
+      }
+
+      const localTs = Date.parse(localStorage.getItem(LOCAL_UPDATED_KEY) || 0) || 0;
+      const cloudTs = Date.parse(row.updated_at) || 0;
+      if (cloudTs > localTs || !localHasData) {
+        applyCloudData(row);
+        localStorage.setItem(SYNCED_USER_KEY, cloudUser.id);
+        setSyncStatus('Last synced ' + new Date().toLocaleTimeString());
+      } else if (localTs > cloudTs) {
+        await pushToCloud();
+      } else {
+        setSyncStatus('Up to date.');
+      }
+    }
+
+    function cloudSyncNow() { syncOnLogin(); }
 
     function toggleDarkMode() {
       appData.darkMode = !appData.darkMode;
@@ -1606,6 +1795,7 @@
       loadData();
       renderApp();
       checkNotificationBannerState();
+      initCloud();
     });
   </script>
 </body>
