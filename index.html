@@ -162,6 +162,8 @@
         </div>
       </div>
 
+      <div id="household-alerts" role="status" class="hidden rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 px-3 py-2 text-[11px] text-amber-900 dark:text-amber-200 space-y-0.5"></div>
+
       <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm interactive-card">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
           <div class="relative shrink-0 flex flex-col items-center gap-1.5">
@@ -1105,17 +1107,76 @@
       }
     }
 
-    function getPiggyHealthDot(p) {
-      if (!p.weights || p.weights.length === 0) return '🟢';
-      const sorted = [...p.weights].sort((a,b) => new Date(b.date) - new Date(a.date));
-      const latest = sorted[0].weight;
-      const drop = p.baselineWeight - latest;
+    const WEIGHT_TREND_WINDOW_DAYS = 7;
+    const WEIGHIN_DUE_DAYS = 7;
+
+    // level: 0 ok, 1 watch, 2 critical. Checks the drop against baseline AND against the
+    // heaviest weigh-in in the 7 days before the latest one, so a sudden slide is flagged
+    // even when the animal is still above its (possibly outdated) baseline.
+    function getWeightStatus(p) {
+      const w = [...(p.weights || [])].sort((a,b) => new Date(a.date) - new Date(b.date));
+      if (w.length === 0) return { level: 0, reason: '' };
+      const latest = w[w.length - 1];
       const threshold = p.weightThreshold || 60;
-      
-      const percentDrop = (drop / p.baselineWeight) * 100;
-      if (drop >= threshold || percentDrop >= 6.5) return '🔴';
-      if (drop >= Math.round(threshold * 0.5) || percentDrop >= 4) return '🟡';
-      return '🟢';
+      const drop = p.baselineWeight - latest.weight;
+      const pct = (drop / p.baselineWeight) * 100;
+      let level = 0, reason = '';
+      if (drop >= threshold || pct >= 6.5) { level = 2; reason = `${Math.round(drop)} g below baseline`; }
+      else if (drop >= Math.round(threshold * 0.5) || pct >= 4) { level = 1; reason = `${Math.round(drop)} g below baseline`; }
+
+      const cutoff = new Date(latest.date).getTime() - WEIGHT_TREND_WINDOW_DAYS * 86400000;
+      const recent = w.slice(0, -1).filter(x => new Date(x.date).getTime() >= cutoff);
+      if (recent.length) {
+        const peak = Math.max(...recent.map(x => x.weight));
+        const tpct = ((peak - latest.weight) / peak) * 100;
+        const tlevel = tpct >= 6.5 ? 2 : tpct >= 4 ? 1 : 0;
+        if (tlevel > level) {
+          level = tlevel;
+          reason = `down ${Math.round(peak - latest.weight)} g (${tpct.toFixed(1)}%) in the last ${WEIGHT_TREND_WINDOW_DAYS} days`;
+        }
+      }
+      return { level, reason };
+    }
+
+    function getPiggyHealthDot(p) {
+      return ['🟢', '🟡', '🔴'][getWeightStatus(p).level];
+    }
+
+    function daysSinceLastWeighIn(p) {
+      if (!p.weights || p.weights.length === 0) return null;
+      const last = Math.max(...p.weights.map(x => new Date(x.date).getTime()));
+      return Math.floor((Date.now() - last) / 86400000);
+    }
+
+    // Short, plain-text reasons a piggy needs attention; drives chip badges and the household strip.
+    function getPiggyAttention(p) {
+      const items = [];
+      if (p.stasisActive) items.push('stasis protocol active');
+      const ws = getWeightStatus(p);
+      if (ws.level > 0) items.push(ws.reason);
+      const d = daysSinceLastWeighIn(p);
+      if (d === null) items.push('no weigh-ins yet');
+      else if (d >= WEIGHIN_DUE_DAYS) items.push(`weigh-in due (last ${d} days ago)`);
+      return items;
+    }
+
+    function renderHouseholdAlerts() {
+      const box = document.getElementById('household-alerts');
+      const rows = appData.piggies
+        .map(p => ({ p, items: getPiggyAttention(p) }))
+        .filter(r => r.items.length > 0);
+      box.innerHTML = '';
+      box.classList.toggle('hidden', rows.length === 0);
+      rows.forEach(({ p, items }) => {
+        const line = document.createElement('div');
+        const btn = document.createElement('button');
+        btn.className = 'font-bold underline';
+        btn.textContent = p.name;
+        btn.onclick = () => { appData.activePiggyId = p.id; saveData(); renderApp(); };
+        line.appendChild(btn);
+        line.appendChild(document.createTextNode(': ' + items.join('; ')));
+        box.appendChild(line);
+      });
     }
 
     function renderPiggyChips() {
@@ -1126,9 +1187,13 @@
         const active = p.id === appData.activePiggyId;
         btn.onclick = () => { appData.activePiggyId = p.id; saveData(); renderApp(); };
         btn.className = `px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${active ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}`;
-        btn.innerHTML = `<span>${getPiggyHealthDot(p)}</span> <span>${escapeHtml(p.name)}</span>`;
+        const needs = getPiggyAttention(p);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        btn.setAttribute('aria-label', needs.length ? `${p.name}: ${needs.join('; ')}` : p.name);
+        btn.innerHTML = `<span>${getPiggyHealthDot(p)}</span> <span>${escapeHtml(p.name)}</span>${needs.length ? '<span aria-hidden="true">•</span>' : ''}`;
         c.appendChild(btn);
       });
+      renderHouseholdAlerts();
     }
 
     function renderHero() {
@@ -1241,11 +1306,11 @@
       latestEl.textContent = latest.weight;
       diffEl.textContent = delta > 0 ? `+${delta}` : delta;
       
-      const threshold = p.weightThreshold || 60;
-      const percentDrop = (p.baselineWeight - latest.weight) / p.baselineWeight * 100;
-
-      if (p.baselineWeight - latest.weight >= threshold || percentDrop >= 6.5) {
-        verdictEl.textContent = `🚨 Critical Drop Detected!`;
+      const status = getWeightStatus(p);
+      if (status.level === 2) {
+        verdictEl.textContent = `🚨 Critical Drop Detected! (${status.reason})`;
+      } else if (status.level === 1) {
+        verdictEl.textContent = `⚠️ Watch weight (${status.reason})`;
       } else {
         verdictEl.textContent = '✅ Weight Stable';
       }
