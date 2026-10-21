@@ -279,7 +279,12 @@
             <h4 class="font-bold text-slate-900 dark:text-white">Next Syringe Feeding Due: <span id="stasis-next-due-time" class="text-rose-600 font-extrabold">--</span></h4>
             <p class="text-slate-500 dark:text-slate-400 text-[11px]">24-Hour Critical Care Delivered: <strong id="stasis-total-24h" class="text-slate-900 dark:text-white">0 ml</strong></p>
           </div>
-          <button onclick="quickLogStasisFeed()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold shadow-sm hover:bg-emerald-700 transition">+ Log 10ml Feed</button>
+          <div class="w-full sm:w-auto flex flex-col gap-2">
+            <button onclick="quickLogStasisFeed()" class="w-full px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold shadow-sm hover:bg-emerald-700 transition">+ Log 10ml Feed</button>
+            <button id="stasis-remind-btn" onclick="toggleStasisReminders()" class="w-full px-4 py-2 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition">🔔 Remind me when due</button>
+            <button onclick="downloadStasisFeedsICS()" class="w-full px-4 py-2 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition">📅 Add next 6 feeds to calendar</button>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 max-w-[14rem]">In-app reminders only fire while Wheekly is open in your browser. For reliable alerts, also add the feeds to your calendar.</p>
+          </div>
         </div>
       </div>
 
@@ -1297,6 +1302,77 @@
       showToast("Weight entry removed", "🗑️");
     }
 
+    const STASIS_FEED_INTERVAL_MS = 3 * 60 * 60 * 1000;
+    let stasisReminderTimer = null;
+    let lastStasisNotifiedDue = 0;
+
+    function getNextStasisDue(p) {
+      const logs = (p.stasisLogs || []).slice().sort((a,b) => new Date(b.time) - new Date(a.time));
+      return logs.length ? new Date(new Date(logs[0].time).getTime() + STASIS_FEED_INTERVAL_MS) : new Date();
+    }
+
+    // Schedules one notification for the active piggy's next feed. Re-run after every feed/render.
+    function scheduleStasisReminder() {
+      if (stasisReminderTimer) { clearTimeout(stasisReminderTimer); stasisReminderTimer = null; }
+      const p = getActivePiggy();
+      const btn = document.getElementById('stasis-remind-btn');
+      const on = !!(p && p.stasisActive && p.stasisReminders && 'Notification' in window && Notification.permission === 'granted');
+      if (btn) btn.textContent = on ? '🔔 Reminders on (tap to turn off)' : '🔔 Remind me when due';
+      if (!on) return;
+      if (!(p.stasisLogs || []).length) return; // nothing logged yet: the banner already says "Due Now"
+      const dueMs = getNextStasisDue(p).getTime();
+      if (dueMs === lastStasisNotifiedDue) return;
+      const delay = Math.max(dueMs - Date.now(), 0);
+      stasisReminderTimer = setTimeout(() => {
+        lastStasisNotifiedDue = dueMs;
+        const name = p.name || 'your piggy';
+        try { new Notification('Wheekly: feed due', { body: `Time for ${name}'s next syringe feed.`, icon: 'wheekly_logo.jpg', tag: 'wheekly-stasis' }); } catch (err) {}
+        showToast(`Feed due for ${name}`, '🥣');
+      }, Math.min(delay, 2147483647));
+    }
+
+    async function toggleStasisReminders() {
+      const p = getActivePiggy();
+      if (!p) return;
+      if (p.stasisReminders) {
+        p.stasisReminders = false;
+        saveData();
+        scheduleStasisReminder();
+        showToast('Reminders turned off', 'ℹ️');
+        return;
+      }
+      if (!('Notification' in window)) { showToast('This browser does not support notifications. Use the calendar button.', '⚠️'); return; }
+      const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+      if (perm !== 'granted') { showToast('Notifications blocked. Allow them in browser settings, or use the calendar button.', '⚠️'); return; }
+      p.stasisReminders = true;
+      saveData();
+      scheduleStasisReminder();
+      showToast('Reminder set for the next feed', '🔔');
+    }
+
+    function downloadStasisFeedsICS() {
+      const p = getActivePiggy();
+      if (!p) return;
+      const fmt = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      const first = getNextStasisDue(p);
+      const events = [];
+      for (let i = 0; i < 6; i++) {
+        const start = new Date(first.getTime() + i * STASIS_FEED_INTERVAL_MS);
+        events.push('BEGIN:VEVENT', `UID:stasis-${Date.now()}-${i}@wheekly`, `DTSTAMP:${fmt(new Date())}`,
+          `DTSTART:${fmt(start)}`, `DTEND:${fmt(new Date(start.getTime() + 15 * 60 * 1000))}`,
+          `SUMMARY:🥣 Syringe feed due (${(p.name || 'piggy').replace(/[\r\n,;]/g, ' ')})`,
+          'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Syringe feed due', 'TRIGGER:PT0M', 'END:VALARM', 'END:VEVENT');
+      }
+      const icstext = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Wheekly//EN', ...events, 'END:VCALENDAR'].join('\r\n');
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(new Blob([icstext], { type: 'text/calendar;charset=utf-8' }));
+      link.setAttribute('download', 'wheekly_stasis_feeds.ics');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showToast('Next 6 feeds downloaded. Open the file to add them to your calendar.');
+    }
+
     function toggleStasisEmergencyActive() {
       const p = getActivePiggy();
       if (!p) return;
@@ -1322,6 +1398,7 @@
         if (new Date(l.time) >= new Date(now.getTime() - 24 * 3600 * 1000)) total24h += parseFloat(l.amount) || 0;
       });
       document.getElementById('stasis-total-24h').textContent = `${total24h} ml`;
+      scheduleStasisReminder();
 
       if (logs.length > 0) {
         const latestTime = new Date(logs[0].time);
