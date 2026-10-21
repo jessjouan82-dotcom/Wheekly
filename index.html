@@ -86,9 +86,11 @@
 
 <body class="text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans antialiased transition-colors">
 
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:px-3 focus:py-2 focus:rounded-lg focus:bg-white focus:text-slate-900 focus:shadow-lg">Skip to main content</a>
+
   <!-- Toast Notification Banner -->
-  <div id="toast-notification" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none translate-y-10 opacity-0 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-slate-100/95 text-white dark:text-slate-900 shadow-xl border border-slate-700/50 dark:border-slate-300 text-xs font-semibold backdrop-blur-md">
-    <span id="toast-icon" class="text-sm">✅</span>
+  <div id="toast-notification" role="status" aria-live="polite" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none translate-y-10 opacity-0 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-slate-100/95 text-white dark:text-slate-900 shadow-xl border border-slate-700/50 dark:border-slate-300 text-xs font-semibold backdrop-blur-md">
+    <span id="toast-icon" class="text-sm" aria-hidden="true">✅</span>
     <span id="toast-msg">Action completed successfully!</span>
   </div>
 
@@ -109,7 +111,7 @@
           <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-slate-400 inline-block"></span>
           <span id="account-btn-label">Sign in</span>
         </button>
-        <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">🌙</button>
+        <button onclick="toggleDarkMode()" aria-label="Toggle dark mode" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">🌙</button>
         <button onclick="handleShareApp()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 transition">
           <i class="fa-solid fa-share-nodes text-xs"></i> <span>Share</span>
         </button>
@@ -126,7 +128,7 @@
   </div>
 
   <!-- Main Content -->
-  <main class="flex-grow max-w-5xl mx-auto px-3 sm:px-6 py-6 w-full">
+  <main id="main-content" class="flex-grow max-w-5xl mx-auto px-3 sm:px-6 py-6 w-full">
 
     <!-- Zero State -->
     <div id="zero-state-view" class="my-10 max-w-md mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center interactive-card">
@@ -196,7 +198,7 @@
     </div>
 
     <!-- Core Navigation Hubs -->
-    <div id="nav-tabs-container" class="hidden flex border-b border-slate-200 dark:border-slate-800 gap-3 sm:gap-6 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-bold mb-6">
+    <div id="nav-tabs-container" role="navigation" aria-label="Sections" class="hidden flex border-b border-slate-200 dark:border-slate-800 gap-3 sm:gap-6 overflow-x-auto hide-scrollbar text-xs sm:text-sm font-bold mb-6">
       <button onclick="switchTab('weights')" id="tab-btn-weights" class="tab-btn pb-3 text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-600 shrink-0">⚖️ Weight Log</button>
       <button onclick="switchTab('stasis')" id="tab-btn-stasis" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-rose-600 dark:text-rose-400">🚨 Stasis Mode</button>
       <button onclick="switchTab('clinics')" id="tab-btn-clinics" class="tab-btn pb-3 text-slate-400 border-b-2 border-transparent shrink-0 text-sky-600 dark:text-sky-400">🏥 UK Vets</button>
@@ -224,9 +226,9 @@
       <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Record Scale Weigh-In</h3>
         <form onsubmit="handleWeightSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Weight (Grams)</label><input type="number" id="w-val" required placeholder="e.g. 1040" min="100" max="2500" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes</label><input type="text" id="w-notes" placeholder="e.g. Morning pre-veg" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
+          <div><label for="w-date" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="w-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
+          <div><label for="w-val" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Weight (Grams)</label><input type="number" id="w-val" required placeholder="e.g. 1040" min="100" max="2500" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
+          <div><label for="w-notes" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes</label><input type="text" id="w-notes" placeholder="e.g. Morning pre-veg" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white font-medium"></div>
           <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Record Scale Entry</button></div>
         </form>
       </div>
@@ -265,6 +267,8 @@
           <div>
             <h3 class="text-sm font-bold text-rose-700 dark:text-rose-400">Critical Care & Hydration Home Protocol</h3>
             <p class="text-slate-600 dark:text-slate-300 mt-1">Administer approx 10ml–15ml total per feeding session across frequent daily feeds (following veterinary guidance). Avoid aspiration by feeding slowly.</p>
+            <!-- TODO(source): cite vet-reviewed reference for feed volumes before removing the note below -->
+            <p class="text-[11px] text-rose-700 dark:text-rose-300 mt-1.5 font-semibold">Your vet's instructions always override these figures. They are general guidance and have not yet been vet-reviewed.</p>
           </div>
           <button onclick="toggleStasisEmergencyActive()" id="stasis-toggle-btn" class="px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold shadow-sm hover:bg-rose-700 transition shrink-0">Activate Mode</button>
         </div>
@@ -282,9 +286,9 @@
       <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <h4 class="font-bold text-slate-900 dark:text-white">Log Feed / Hydration Event</h4>
         <form onsubmit="handleStasisFeedSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Timestamp</label><input type="datetime-local" id="sf-time" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Amount (mL)</label><input type="number" id="sf-amount" required placeholder="e.g. 12" min="1" max="50" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes / Mix</label><input type="text" id="sf-notes" placeholder="e.g. Critical Care formula" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label for="sf-time" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Timestamp</label><input type="datetime-local" id="sf-time" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label for="sf-amount" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Amount (mL)</label><input type="number" id="sf-amount" required placeholder="e.g. 12" min="1" max="50" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label for="sf-notes" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes / Mix</label><input type="text" id="sf-notes" placeholder="e.g. Critical Care formula" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
           <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Save Entry</button></div>
         </form>
       </div>
@@ -340,9 +344,9 @@
         <p class="text-slate-500 dark:text-slate-400">Log abnormalities regarding ocular/nasal discharge, dermatological flakes, gait, or respiration.</p>
         
         <form onsubmit="handleHealthLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-1">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="hl-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label for="hl-date" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label><input type="date" id="hl-date" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
           <div>
-            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Category</label>
+            <label for="hl-category" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Category</label>
             <select id="hl-category" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
               <option value="Eyes / Nose">Eyes / Nose</option>
               <option value="Skin / Coat">Skin / Coat</option>
@@ -354,7 +358,7 @@
             </select>
           </div>
           <div>
-            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Severity / Status</label>
+            <label for="hl-severity" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Severity / Status</label>
             <select id="hl-severity" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
               <option value="Mild / Monitoring">Mild / Monitoring</option>
               <option value="Moderate">Moderate</option>
@@ -362,7 +366,7 @@
               <option value="Resolved">Resolved</option>
             </select>
           </div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Observation</label><input type="text" id="hl-notes" required placeholder="e.g. Mild flaking near left ear" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label for="hl-notes" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Observation</label><input type="text" id="hl-notes" required placeholder="e.g. Mild flaking near left ear" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
           <div class="flex items-end"><button type="submit" class="w-full py-2 px-4 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition">+ Log Symptom</button></div>
         </form>
       </div>
@@ -385,17 +389,17 @@
         <p class="text-slate-500 dark:text-slate-400">Track anti-parasite spot-on applications. Always follow your veterinary surgeon's exact prescription and weight-based dosage.</p>
         
         <form onsubmit="handleMiteLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date Administered</label><input type="date" id="m-date" onchange="autoCalculateMiteFollowup()" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label for="m-date" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date Administered</label><input type="date" id="m-date" onchange="autoCalculateMiteFollowup()" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
           <div>
-            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Product / Prescription</label>
+            <label for="m-product" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Product / Prescription</label>
             <select id="m-product" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium">
               <option value="Xeno 50 (Small Animal Spot-On)">Xeno 50 (Small Animal)</option>
               <option value="Vet Ivermectin Prescription">Vet Ivermectin Prescription</option>
               <option value="Other Prescribed Treatment">Other Prescribed Treatment</option>
             </select>
           </div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Dose / Pipette</label><input type="text" id="m-dose" required placeholder="e.g. Per vet instructions" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Follow-up Due (+12 Days)</label><input type="date" id="m-next" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium text-sky-600 font-bold"></div>
+          <div><label for="m-dose" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Dose / Pipette</label><input type="text" id="m-dose" required placeholder="e.g. Per vet instructions" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label for="m-next" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Follow-up Due (+12 Days)</label><input type="date" id="m-next" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium text-sky-600 font-bold"></div>
           <div class="sm:col-span-4 pt-1"><button type="submit" class="w-full py-2.5 px-4 rounded-lg bg-sky-600 text-white font-semibold text-xs shadow-sm hover:bg-sky-700 transition">+ Log Treatment & Schedule Record</button></div>
         </form>
       </div>
@@ -518,6 +522,8 @@
         <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Vitamin C Daily Requirement</h3>
           <p class="text-slate-500 dark:text-slate-400">Estimated requirement (~10–20mg per kg daily).</p>
+          <!-- TODO(source): cite vet-reviewed reference for vitamin C range -->
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">General guidance, not yet vet-reviewed. Follow your vet's advice.</p>
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
             <strong id="calc-vitc-result" class="text-emerald-600 dark:text-emerald-400 text-sm block font-bold">--</strong>
           </div>
@@ -528,6 +534,8 @@
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
             <p><strong>Ratio:</strong> 1 part Oxbow Critical Care powder to 1.5 - 2 parts warm water.</p>
             <p class="text-slate-500">Administer approx 10ml - 15ml total per feed session across 4-6 daily feeds.</p>
+            <!-- TODO(source): cite Oxbow label / vet-reviewed reference for ratio and volumes -->
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">General guidance, not yet vet-reviewed. Your vet's instructions override these figures.</p>
           </div>
         </div>
       </div>
@@ -543,7 +551,7 @@
       <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Food Safety & Nutrition Directory</h3>
         <div class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="food-search-input" oninput="renderFoodDirectory()" placeholder="🔍 Search food (e.g. iceberg, parsley, bell pepper)..." class="flex-grow bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 font-medium">
+          <input type="text" id="food-search-input" aria-label="Search foods" oninput="renderFoodDirectory()" placeholder="🔍 Search food (e.g. iceberg, parsley, bell pepper)..." class="flex-grow bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 font-medium">
           <div class="flex gap-1.5 overflow-x-auto pb-1">
             <button onclick="setFoodFilter('ALL')" id="flt-ALL" class="px-3 py-2 rounded-lg font-bold bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shrink-0">All</button>
             <button onclick="setFoodFilter('SAFE')" id="flt-SAFE" class="px-3 py-2 rounded-lg font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shrink-0">✅ Safe</button>
@@ -557,6 +565,10 @@
     </div>
 
   </main>
+
+  <footer class="max-w-5xl mx-auto w-full px-3 sm:px-6 pb-4 text-center text-[11px] text-slate-500 dark:text-slate-400">
+    <button onclick="openPrivacyModal()" class="underline">Privacy notice</button>
+  </footer>
 
   <!-- Floating Quick-Action Bar -->
   <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 shadow-lg flex items-center gap-4 text-xs font-semibold">
@@ -607,21 +619,21 @@
       </div>
       <form onsubmit="handleProfileSubmit(event)" class="space-y-3 text-xs">
         <input type="hidden" id="p-id">
-        <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Name</label><input type="text" id="p-name" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+        <div><label for="p-name" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Name</label><input type="text" id="p-name" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
         <div class="grid grid-cols-2 gap-2">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Sex</label><select id="p-gender" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium"><option value="Boar (Male)">Boar (Male)</option><option value="Sow (Female)">Sow (Female)</option><option value="Neutered Boar">Neutered Boar</option><option value="Spayed Sow">Spayed Sow</option></select></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date of Birth</label><input type="date" id="p-dob" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium"></div>
+          <div><label for="p-gender" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Sex</label><select id="p-gender" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium"><option value="Boar (Male)">Boar (Male)</option><option value="Sow (Female)">Sow (Female)</option><option value="Neutered Boar">Neutered Boar</option><option value="Spayed Sow">Spayed Sow</option></select></div>
+          <div><label for="p-dob" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Date of Birth</label><input type="date" id="p-dob" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 font-medium"></div>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Breed</label><input type="text" id="p-breed" placeholder="e.g. American" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
-          <div><label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Baseline Weight (g)</label><input type="number" id="p-baseline" required value="1000" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label for="p-breed" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Breed</label><input type="text" id="p-breed" placeholder="e.g. American" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
+          <div><label for="p-baseline" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Baseline Weight (g)</label><input type="number" id="p-baseline" required value="1000" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium"></div>
         </div>
         <div>
-          <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Custom Warning Threshold (g loss)</label>
+          <label for="p-threshold" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Custom Warning Threshold (g loss)</label>
           <input type="number" id="p-threshold" required value="60" min="10" max="200" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium" placeholder="e.g. 50">
         </div>
         <div>
-          <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1 flex justify-between items-center">
+          <label for="p-vet" class="block font-semibold text-slate-600 dark:text-slate-400 mb-1 flex justify-between items-center">
             <span>Exotic Vet Practice</span>
             <button type="button" onclick="openExoticVetModal()" class="text-sky-600 dark:text-sky-400 font-semibold underline text-[10px]">What is this?</button>
           </label>
@@ -637,12 +649,12 @@
     <div class="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl p-5">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-base font-bold text-slate-900 dark:text-white">Cloud sync</h2>
-        <button onclick="closeAccountModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
+        <button onclick="closeAccountModal()" aria-label="Close" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
       </div>
       <div id="account-signed-out">
-        <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Sign in to keep your piggies in sync across all your devices.</p>
-        <input id="account-email" type="email" autocomplete="email" placeholder="Email" class="w-full mb-2 px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
-        <input id="account-password" type="password" autocomplete="current-password" placeholder="Password (min 8 characters)" class="w-full mb-3 px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Sign in to keep your piggies in sync across all your devices. <button onclick="openPrivacyModal()" class="underline">Privacy notice</button></p>
+        <input id="account-email" type="email" autocomplete="email" aria-label="Email" placeholder="Email" class="w-full mb-2 px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+        <input id="account-password" type="password" autocomplete="current-password" aria-label="Password" placeholder="Password (min 8 characters)" class="w-full mb-3 px-3 py-2 rounded-lg text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
         <div class="flex gap-2 mb-2">
           <button onclick="accountSignIn()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 transition">Sign in</button>
           <button onclick="accountSignUp()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition">Create account</button>
@@ -662,11 +674,27 @@
     </div>
   </div>
 
+  <!-- PRIVACY NOTICE MODAL (DRAFT: owner to confirm Supabase region and analytics details, ideally legal review) -->
+  <div id="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="privacy-title" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
+        <h3 id="privacy-title" class="text-sm font-bold text-slate-900 dark:text-white">Privacy notice</h3>
+        <button onclick="closePrivacyModal()" aria-label="Close" class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold">✕</button>
+      </div>
+      <p><strong>What we store.</strong> Your guinea pig profiles, weights, health, feeding and treatment logs. By default this stays in your browser's local storage on this device only. Clearing your browser data deletes it, so use Export to keep a backup.</p>
+      <p><strong>If you sign in.</strong> Your email address and the same data are stored with our hosting provider (Supabase) so they can sync across your devices. Only you can read your own data. Signing in is optional.</p>
+      <p><strong>Analytics.</strong> We use Vercel Analytics to count page visits. Fonts, icons and scripts are loaded from third-party CDNs, which means those providers can see your IP address when the page loads.</p>
+      <p><strong>Your choices.</strong> You can export your data at any time. To delete your cloud data and account, email the site owner. Deleting browser data removes the local copy.</p>
+      <p><strong>Not medical advice.</strong> Wheekly is an organizational tool and does not provide veterinary advice.</p>
+      <button onclick="closePrivacyModal()" class="w-full py-2 rounded-lg bg-emerald-600 text-white font-semibold">Close</button>
+    </div>
+  </div>
+
   <div id="exotic-vet-modal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-3 text-xs">
       <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Why an Exotic Veterinarian?</h3>
-        <button onclick="closeExoticVetModal()" class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold">✕</button>
+        <button onclick="closeExoticVetModal()" aria-label="Close" class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold">✕</button>
       </div>
       <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
         An <strong>exotic veterinary specialist</strong> possesses advanced clinical training in small mammal medicine (guinea pigs, rabbits, exotics) rather than standard canine/feline practice.
@@ -923,6 +951,8 @@
       }
     }
 
+    function openPrivacyModal() { document.getElementById('privacy-modal').classList.remove('hidden'); }
+    function closePrivacyModal() { document.getElementById('privacy-modal').classList.add('hidden'); }
     function openAccountModal() { document.getElementById('account-modal').classList.remove('hidden'); }
     function closeAccountModal() { document.getElementById('account-modal').classList.add('hidden'); }
 
@@ -1194,7 +1224,7 @@
         latestEl.textContent = '--';
         diffEl.textContent = '--';
         verdictEl.textContent = 'Ready for weigh-in';
-        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">No weights recorded yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">No weigh-ins yet. Add your first weigh-in with the form to set your trend line.</td></tr>`;
         updateChart([], []);
         return;
       }
