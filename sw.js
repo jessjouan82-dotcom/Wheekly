@@ -1,8 +1,8 @@
 // Wheekly service worker: lets the app open offline after the first visit.
 // Bump CACHE_VERSION to force clients to drop old cached files.
-const CACHE_VERSION = 'wheekly-v1';
+const CACHE_VERSION = 'wheekly-v2';
 
-const APP_SHELL = ['/', '/index.html', '/wheekly_logo.jpg', '/manifest.webmanifest'];
+const APP_SHELL = ['/', '/index.html', '/wheekly_logo.jpg', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
