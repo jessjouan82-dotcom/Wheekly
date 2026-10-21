@@ -150,7 +150,8 @@
           <div id="piggy-chips-container" class="flex items-center gap-2"></div>
         </div>
         <div class="flex flex-wrap gap-2 text-xs">
-          <button onclick="openBatchWeighModal()" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5">⚖️ Batch Weigh-In</button>
+          <button onclick="openSocialCardModal()" class="px-3 py-1.5 rounded-lg bg-sky-600 text-white font-semibold shadow-sm hover:bg-sky-700 transition flex items-center gap-1.5">📸 Share Card</button>
+          <button onclick="openBatchWeighModal()" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5">⚖️ Batch Weigh</button>
           <button onclick="openVetReportModal()" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white dark:bg-slate-800 font-semibold shadow-sm hover:bg-slate-700 transition flex items-center gap-1.5">📋 Vet Report</button>
           <button onclick="exportDataBackup()" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">Export</button>
           <label class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer">
@@ -587,6 +588,30 @@
     </button>
   </div>
 
+  <!-- SOCIAL HEALTH CARD MODAL -->
+  <div id="social-card-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-4 text-xs">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">📸 Wheekly Social Health Card</h3>
+          <p class="text-[10px] text-slate-500">Ready to save & share on Instagram or group chats!</p>
+        </div>
+        <button onclick="closeSocialCardModal()" class="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold">✕</button>
+      </div>
+
+      <div class="flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+        <canvas id="social-card-canvas" width="800" height="800" class="w-full max-w-[320px] h-auto rounded-lg shadow-md border border-slate-200 dark:border-slate-700 bg-white"></canvas>
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <button onclick="downloadSocialCard()" class="flex-1 py-2.5 rounded-lg bg-sky-600 text-white font-semibold shadow-sm hover:bg-sky-700 transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-download"></i> Download Image
+        </button>
+        <button onclick="closeSocialCardModal()" class="px-4 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ADD TREATMENT MODAL -->
   <div id="treatment-modal" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative space-y-3 text-xs">
@@ -839,6 +864,100 @@
       link.click();
       link.remove();
       showToast("Calendar reminder (.ics) downloaded!");
+    }
+
+    function openSocialCardModal() {
+      const p = getActivePiggy();
+      if (!p) { showToast("No piggy profile selected!", "⚠️"); return; }
+      document.getElementById('social-card-modal').classList.remove('hidden');
+      drawSocialCard(p);
+    }
+
+    function closeSocialCardModal() {
+      document.getElementById('social-card-modal').classList.add('hidden');
+    }
+
+    function drawSocialCard(p) {
+      const canvas = document.getElementById('social-card-canvas');
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+
+      // Background gradient
+      const grad = ctx.createLinearGradient(0, 0, width, height);
+      grad.addColorStop(0, '#FFF1F2');
+      grad.addColorStop(1, '#F0FDF4');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Card Container
+      ctx.fillStyle = '#FFFFFF';
+      ctx.roundRect(60, 60, width - 120, height - 120, 32);
+      ctx.fill();
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Header Brand
+      ctx.fillStyle = '#0F172A';
+      ctx.font = 'bold 36px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('WHEEKLY HEALTH SUITE', width / 2, 130);
+
+      ctx.fillStyle = '#64748B';
+      ctx.font = '22px Inter, sans-serif';
+      ctx.fillText('UK Guinea Pig Care & Wellness', width / 2, 165);
+
+      // Piggy Name
+      ctx.fillStyle = '#E11D48';
+      ctx.font = 'bold 56px Inter, sans-serif';
+      ctx.fillText(p.name, width / 2, 260);
+
+      // Sub-details
+      ctx.fillStyle = '#475569';
+      ctx.font = '24px Inter, sans-serif';
+      ctx.fillText(`${p.gender} • ${p.breed || 'Cavy'} • Age: ${computeAge(p.dob)}`, width / 2, 305);
+
+      // Status Box
+      ctx.fillStyle = '#F8FAFC';
+      ctx.roundRect(140, 355, width - 280, 160, 20);
+      ctx.fill();
+      ctx.strokeStyle = '#CBD5E1';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      const weights = p.weights || [];
+      const latestW = weights.length > 0 ? weights[weights.length - 1].weight : p.baselineWeight;
+      const delta = latestW - p.baselineWeight;
+      const deltaStr = delta >= 0 ? `+${delta}g` : `${delta}g`;
+
+      ctx.fillStyle = '#0F172A';
+      ctx.font = 'bold 28px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('📊 Current Status:', 180, 410);
+
+      ctx.fillStyle = '#16A34A';
+      ctx.font = 'bold 28px Inter, sans-serif';
+      ctx.fillText('🟢 Weight Stable & Thriving', 180, 455);
+
+      ctx.fillStyle = '#64748B';
+      ctx.font = '22px Inter, sans-serif';
+      ctx.fillText(`Latest: ${latestW}g (${deltaStr} from baseline)`, 180, 490);
+
+      // Footer
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '18px Inter, sans-serif';
+      ctx.fillText('Tracked with Wheekly • wheekly.vercel.app', width / 2, height - 100);
+    }
+
+    function downloadSocialCard() {
+      const canvas = document.getElementById('social-card-canvas');
+      const link = document.createElement('a');
+      link.download = 'wheekly_health_card.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast("Social card downloaded successfully! 📸");
     }
 
     function openBatchWeighModal() {
