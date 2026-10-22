@@ -728,6 +728,7 @@
           <button onclick="cloudSyncNow()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition">Sync now</button>
           <button onclick="accountSignOut()" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 transition">Sign out</button>
         </div>
+        <button id="restore-backup-btn" onclick="restoreSyncBackup()" class="hidden mt-2 w-full text-xs text-slate-500 dark:text-slate-400 underline">Restore the copy saved before the last sync</button>
       </div>
     </div>
   </div>
@@ -1123,6 +1124,7 @@
     function saveData() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
       localStorage.setItem(LOCAL_UPDATED_KEY, new Date().toISOString());
+      localStorage.setItem(DIRTY_KEY, Date.now() + ':' + (++saveCounter)); // unique per save, so a sync can tell if you edited while it ran
       scheduleCloudPush();
     }
 
@@ -1130,6 +1132,10 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsc2hjc2Jsdnlhbnl5ZGxzZ3V5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MzUyMzgsImV4cCI6MjEwODAxMTIzOH0.wb8x1PU_dRrdvythnwRp2NujQebH5KdSE8Jz0K3SrdE';
     const LOCAL_UPDATED_KEY = 'WHEEKLY_LOCAL_UPDATED';
     const SYNCED_USER_KEY = 'WHEEKLY_SYNCED_USER';
+    let saveCounter = 0;
+    const DIRTY_KEY = 'WHEEKLY_DIRTY';              // set = local edits not yet confirmed in the cloud
+    const CLOUD_BASE_KEY = 'WHEEKLY_CLOUD_BASE';    // cloud updated_at this device last synced with
+    const BACKUP_KEY = 'WHEEKLY_PRE_SYNC_BACKUP';   // copy of the data a sync was about to replace
 
     let sb = null;
     let cloudUser = null;
@@ -1161,6 +1167,7 @@
       const label = document.getElementById('account-btn-label');
       document.getElementById('account-signed-out').classList.toggle('hidden', !!cloudUser);
       document.getElementById('account-signed-in').classList.toggle('hidden', !cloudUser);
+      document.getElementById('restore-backup-btn').classList.toggle('hidden', !localStorage.getItem(BACKUP_KEY));
       if (cloudUser) {
         label.textContent = 'Synced';
         document.getElementById('account-user-email').textContent = cloudUser.email || '';
@@ -1213,6 +1220,7 @@
     async function accountSignOut() {
       await sb.auth.signOut();
       localStorage.removeItem(SYNCED_USER_KEY);
+      localStorage.removeItem(CLOUD_BASE_KEY);
       closeAccountModal();
       showToast("Signed out.");
     }
@@ -1224,50 +1232,188 @@
       pushTimer = setTimeout(pushToCloud, 1500);
     }
 
-    async function pushToCloud() {
-      if (!sb || !cloudUser) return;
-      setSyncStatus('Syncing...', 'syncing');
-      const updatedAt = localStorage.getItem(LOCAL_UPDATED_KEY) || new Date().toISOString();
-      const { error } = await sb.from('user_data').upsert({ user_id: cloudUser.id, data: appData, updated_at: updatedAt });
-      if (error) {
-        setSyncStatus('Sync error', 'error');
-      } else {
-        setSyncStatus('Synced', 'synced');
+    // <sync-merge>
+    // Combines two copies of the app data without losing records. Arrays of objects with an `id`
+    // are merged by id (so weights/logs added on either device are all kept); objects merge key by
+    // key; for any other clash the preferred side (`preferA`) wins. Deletions are not tracked, so an
+    // item deleted on one device can come back if the other device still has it.
+    function mergeValue(a, b, preferA) {
+      if (a === undefined) return b;
+      if (b === undefined) return a;
+      if (Array.isArray(a) && Array.isArray(b)) {
+        const keyed = x => x && typeof x === 'object' && x.id !== undefined;
+        if (a.every(keyed) && b.every(keyed)) {
+          const out = new Map();
+          b.forEach(x => out.set(x.id, x));
+          a.forEach(x => out.set(x.id, out.has(x.id) ? mergeValue(x, out.get(x.id), preferA) : x));
+          return [...out.values()];
+        }
+        return preferA ? a : b;
       }
+      const isObj = x => x && typeof x === 'object' && !Array.isArray(x);
+      if (isObj(a) && isObj(b)) {
+        const out = {};
+        new Set([...Object.keys(a), ...Object.keys(b)]).forEach(k => { out[k] = mergeValue(a[k], b[k], preferA); });
+        return out;
+      }
+      return preferA ? a : b;
+    }
+    // </sync-merge>
+
+    let syncBusy = false;
+    let syncAgain = false;
+    let lastSyncAt = 0;
+
+    function backupBeforeSync(reason, data) {
+      try { localStorage.setItem(BACKUP_KEY, JSON.stringify({ at: new Date().toISOString(), reason, data })); } catch (e) {}
+      renderAccountState();
     }
 
-    async function syncOnLogin() {
-      if (!sb || !cloudUser) return;
-      setSyncStatus('Syncing…', 'syncing');
-      const { data: row, error } = await sb.from('user_data').select('data, updated_at').eq('user_id', cloudUser.id).maybeSingle();
-      if (error) { setSyncStatus('Sync failed', 'error'); return; }
+    function restoreSyncBackup() {
+      let b = null;
+      try { b = JSON.parse(localStorage.getItem(BACKUP_KEY)); } catch (e) {}
+      if (!b || !b.data) { showToast("No backup found.", "⚠️"); return; }
+      if (!confirm(`Restore the copy saved ${new Date(b.at).toLocaleString()} (${b.reason})?\nYour current data is backed up first.`)) return;
+      backupBeforeSync('before restoring a backup', appData);
+      appData = b.data;
+      if (!appData.piggies) appData.piggies = [];
+      document.documentElement.classList.toggle('dark', !!appData.darkMode);
+      saveData();
+      renderApp();
+      showToast("Backup restored.", "♻️");
+    }
 
-      const localHas = appData.piggies && appData.piggies.length > 0;
-      const cloudHas = !!(row && row.data && row.data.piggies && row.data.piggies.length);
-
-      if (!cloudHas) {
-        if (localHas) await pushToCloud(); else setSyncStatus('Nothing to sync yet', 'synced');
-        return;
-      }
-
-      if (localHas && localStorage.getItem(SYNCED_USER_KEY) !== cloudUser.id &&
-          !confirm("This device and your account both have data.\nOK = use account data\nCancel = keep this device's data")) {
-        await pushToCloud();
-        return;
-      }
-
+    // Replace this device's data with the cloud copy.
+    function adoptCloud(row) {
       appData = row.data;
       if (!appData.piggies) appData.piggies = [];
       if (!appData.activePiggyId && appData.piggies.length > 0) appData.activePiggyId = appData.piggies[0].id;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
       localStorage.setItem(SYNCED_USER_KEY, cloudUser.id);
       localStorage.setItem(LOCAL_UPDATED_KEY, row.updated_at || new Date().toISOString());
+      localStorage.setItem(CLOUD_BASE_KEY, row.updated_at || '');
+      localStorage.removeItem(DIRTY_KEY);
       document.documentElement.classList.toggle('dark', !!appData.darkMode);
       renderApp();
-      setSyncStatus('Synced', 'synced');
     }
 
+    // Write this device's data to the cloud, but only if the cloud copy is still the one we last saw.
+    // Returns 'ok', 'conflict' (someone else wrote first) or 'error'.
+    async function pushLocal(baseRaw) {
+      const dirtyAtPush = localStorage.getItem(DIRTY_KEY);
+      const updatedAt = new Date().toISOString();
+      const res = baseRaw
+        ? await sb.from('user_data').update({ data: appData, updated_at: updatedAt }).eq('user_id', cloudUser.id).eq('updated_at', baseRaw).select('updated_at')
+        : await sb.from('user_data').insert({ user_id: cloudUser.id, data: appData, updated_at: updatedAt }).select('updated_at');
+      if (res.error && res.error.code === '23505') return 'conflict';
+      if (res.error) return 'error';
+      if (!res.data || res.data.length === 0) return 'conflict';
+      localStorage.setItem(SYNCED_USER_KEY, cloudUser.id);
+      localStorage.setItem(CLOUD_BASE_KEY, res.data[0].updated_at);
+      if (localStorage.getItem(DIRTY_KEY) === dirtyAtPush) localStorage.removeItem(DIRTY_KEY); // keep the flag if you edited mid-sync
+      return 'ok';
+    }
+
+    async function reconcile(attempt) {
+      const { data: row, error } = await sb.from('user_data').select('data, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+      if (error) { setSyncStatus('Sync failed', 'error'); return; }
+
+      const localHas = !!(appData.piggies && appData.piggies.length > 0);
+      const cloudHas = !!(row && row.data && row.data.piggies && row.data.piggies.length);
+      const cloudTime = row && row.updated_at ? new Date(row.updated_at).getTime() : 0;
+      const base = localStorage.getItem(CLOUD_BASE_KEY);
+      const dirtyAtStart = localStorage.getItem(DIRTY_KEY);
+      const dirty = dirtyAtStart !== null;
+      const editedMidSync = () => localStorage.getItem(DIRTY_KEY) !== dirtyAtStart;
+      const linked = localStorage.getItem(SYNCED_USER_KEY) === cloudUser.id;
+
+      const retryOrFail = async (result) => {
+        if (result === 'ok') { setSyncStatus('Synced', 'synced'); return; }
+        if (result === 'conflict' && attempt < 2) return reconcile(attempt + 1);
+        setSyncStatus(result === 'conflict' ? 'Sync conflict, try again' : 'Sync error', 'error');
+      };
+
+      // Nothing in the cloud yet: upload what this device has.
+      if (!cloudHas) {
+        if (!localHas) { setSyncStatus('Nothing to sync yet', 'synced'); return; }
+        return retryOrFail(await pushLocal(row ? row.updated_at : null));
+      }
+
+      // This device has no animals yet: just take the cloud copy.
+      if (!localHas) {
+        if (editedMidSync()) return; // you just added something: the next sync will merge it
+        adoptCloud(row); setSyncStatus('Synced', 'synced'); return;
+      }
+
+      // First time this device meets this account and both sides have data: ask, backing up the loser.
+      if (!linked) {
+        if (confirm("This device and your account both have data.\nOK = use account data\nCancel = keep this device's data")) {
+          backupBeforeSync('this device before linking your account', appData);
+          adoptCloud(row);
+          setSyncStatus('Synced', 'synced');
+        } else {
+          backupBeforeSync('your account copy before this device replaced it', row.data);
+          return retryOrFail(await pushLocal(row.updated_at));
+        }
+        return;
+      }
+
+      const cloudChanged = base ? new Date(base).getTime() !== cloudTime : null; // null = unknown (older app version)
+
+      if (cloudChanged === false) {
+        if (!dirty) { setSyncStatus('Synced', 'synced'); return; }
+        return retryOrFail(await pushLocal(row.updated_at));              // only we changed: safe to push
+      }
+      if (cloudChanged === true && !dirty) { // only the cloud changed
+        if (editedMidSync()) return;
+        adoptCloud(row); setSyncStatus('Synced', 'synced'); return;
+      }
+
+      // Both changed (or we can't tell): merge, keep a backup, then push the merged copy.
+      if (cloudChanged === null && JSON.stringify(appData) === JSON.stringify(row.data)) {
+        localStorage.setItem(CLOUD_BASE_KEY, row.updated_at);
+        if (!editedMidSync()) localStorage.removeItem(DIRTY_KEY);
+        setSyncStatus('Synced', 'synced');
+        return;
+      }
+      backupBeforeSync('this device before merging with your account', appData);
+      const localUpdated = new Date(localStorage.getItem(LOCAL_UPDATED_KEY) || 0).getTime();
+      appData = mergeValue(appData, row.data, localUpdated >= cloudTime);
+      if (!appData.activePiggyId && appData.piggies.length > 0) appData.activePiggyId = appData.piggies[0].id;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      localStorage.setItem(LOCAL_UPDATED_KEY, new Date().toISOString());
+      renderApp();
+      const result = await pushLocal(row.updated_at);
+      if (result === 'ok') showToast("Combined changes from this device and your account.", "🔀");
+      return retryOrFail(result);
+    }
+
+    async function syncOnLogin() {
+      if (!sb || !cloudUser) return;
+      if (syncBusy) { syncAgain = true; return; }
+      syncBusy = true;
+      setSyncStatus('Syncing…', 'syncing');
+      try { await reconcile(0); }
+      catch (e) { setSyncStatus('Sync error', 'error'); }
+      finally {
+        syncBusy = false;
+        lastSyncAt = Date.now();
+        if (syncAgain) { syncAgain = false; syncOnLogin(); }
+      }
+    }
+
+    // Every push goes through reconcile, which checks the cloud first so it never blindly overwrites it.
+    function pushToCloud() { return syncOnLogin(); }
     function cloudSyncNow() { syncOnLogin(); }
+
+    // Pick up changes from other devices when you return to the app or regain connection.
+    function backgroundSync(force) {
+      if (!sb || !cloudUser) return;
+      if (!force && Date.now() - lastSyncAt < 30000) return;
+      syncOnLogin();
+    }
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') backgroundSync(false); });
+    window.addEventListener('online', () => backgroundSync(true));
 
     function toggleDarkMode() {
       appData.darkMode = !appData.darkMode;
