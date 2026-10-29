@@ -516,13 +516,12 @@
       
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Vitamin C Daily Requirement</h3>
-          <p class="text-slate-500 dark:text-slate-400">Estimated requirement (~10–20mg per kg daily).</p>
-          <!-- TODO(source): cite vet-reviewed reference for vitamin C range -->
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">General guidance, not yet vet-reviewed. Follow your vet's advice.</p>
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-            <strong id="calc-vitc-result" class="text-emerald-600 dark:text-emerald-400 text-sm block font-bold">--</strong>
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">🍋 Daily Vitamin C</h3>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+            <p><strong>About 1 tablespoon</strong> of fresh, vitamin C-fortified guinea pig pellets daily, plus vitamin C-rich greens such as bell pepper.</p>
+            <p class="text-slate-500">Check the pellet date. Vitamin C degrades with age.</p>
           </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">General guidance. Ask your vet if your guinea pig is ill, pregnant or underweight.</p>
         </div>
         <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 interactive-card">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white">🥣 Critical Care Mixing Guide</h3>
@@ -1459,7 +1458,6 @@
         renderStasisTab();
         renderHealthLogs();
         renderMiteLogs();
-        renderCalculators();
         renderGrooming();
         renderActiveTreatments();
       }
@@ -1581,13 +1579,6 @@
       saveData();
       renderHero();
       showToast("Avatar fit updated");
-    }
-
-    function renderCalculators() {
-      const p = getActivePiggy();
-      if (!p) return;
-      const weightKg = p.baselineWeight / 1000;
-      document.getElementById('calc-vitc-result').textContent = `${Math.round(weightKg * 10)}mg - ${Math.round(weightKg * 20)}mg daily`;
     }
 
     function logGrooming(type) {
