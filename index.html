@@ -244,7 +244,6 @@
           <div>
             <h3 class="text-sm font-bold text-rose-700 dark:text-rose-400">Critical Care & Hydration Home Protocol</h3>
             <p class="text-slate-600 dark:text-slate-300 mt-1">Administer approx 10ml–15ml total per feeding session across frequent daily feeds (following veterinary guidance). Avoid aspiration by feeding slowly.</p>
-            <!-- TODO(source): cite vet-reviewed reference for feed volumes before removing the note below -->
             <p class="text-[11px] text-rose-700 dark:text-rose-300 mt-1.5 font-semibold">Your vet's instructions always override these figures. They are general guidance and have not yet been vet-reviewed.</p>
           </div>
           <button onclick="toggleStasisEmergencyActive()" id="stasis-toggle-btn" class="px-3.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold shadow-sm hover:bg-rose-700 transition shrink-0">Activate Mode</button>
@@ -529,7 +528,6 @@
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
             <p><strong>Ratio:</strong> 1 part Oxbow Critical Care powder to 1.5 - 2 parts warm water.</p>
             <p class="text-slate-500">Administer approx 10ml - 15ml total per feed session across 4-6 daily feeds.</p>
-            <!-- TODO(source): cite Oxbow label / vet-reviewed reference for ratio and volumes -->
             <p class="text-[11px] text-slate-500 dark:text-slate-400">General guidance, not yet vet-reviewed. Your vet's instructions override these figures.</p>
           </div>
         </div>
@@ -561,8 +559,9 @@
 
   </main>
 
-  <footer class="max-w-5xl mx-auto w-full px-3 sm:px-6 pb-4 text-center text-[11px] text-slate-500 dark:text-slate-400">
-    <button onclick="openPrivacyModal()" class="underline">Privacy notice</button>
+  <footer class="max-w-5xl mx-auto w-full px-3 sm:px-6 pb-4 text-center text-[11px] text-slate-500 dark:text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <div>&copy; 2026 Jessica Flynn</div>
+    <div><button onclick="openPrivacyModal()" class="underline">Privacy notice</button></div>
   </footer>
 
   <!-- Floating Quick-Action Bar -->
@@ -732,7 +731,7 @@
     </div>
   </div>
 
-  <!-- PRIVACY NOTICE MODAL (DRAFT: owner to confirm Supabase region and analytics details, ideally legal review) -->
+  <!-- PRIVACY NOTICE MODAL -->
   <div id="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="privacy-title" class="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
       <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
@@ -1123,7 +1122,7 @@
     function saveData() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
       localStorage.setItem(LOCAL_UPDATED_KEY, new Date().toISOString());
-      localStorage.setItem(DIRTY_KEY, Date.now() + ':' + (++saveCounter)); // unique per save, so a sync can tell if you edited while it ran
+      localStorage.setItem(DIRTY_KEY, Date.now() + ':' + (++saveCounter));
       scheduleCloudPush();
     }
 
@@ -1132,9 +1131,9 @@
     const LOCAL_UPDATED_KEY = 'WHEEKLY_LOCAL_UPDATED';
     const SYNCED_USER_KEY = 'WHEEKLY_SYNCED_USER';
     let saveCounter = 0;
-    const DIRTY_KEY = 'WHEEKLY_DIRTY';              // set = local edits not yet confirmed in the cloud
-    const CLOUD_BASE_KEY = 'WHEEKLY_CLOUD_BASE';    // cloud updated_at this device last synced with
-    const BACKUP_KEY = 'WHEEKLY_PRE_SYNC_BACKUP';   // copy of the data a sync was about to replace
+    const DIRTY_KEY = 'WHEEKLY_DIRTY';
+    const CLOUD_BASE_KEY = 'WHEEKLY_CLOUD_BASE';
+    const BACKUP_KEY = 'WHEEKLY_PRE_SYNC_BACKUP';
 
     let sb = null;
     let cloudUser = null;
@@ -1231,11 +1230,6 @@
       pushTimer = setTimeout(pushToCloud, 1500);
     }
 
-    // <sync-merge>
-    // Combines two copies of the app data without losing records. Arrays of objects with an `id`
-    // are merged by id (so weights/logs added on either device are all kept); objects merge key by
-    // key; for any other clash the preferred side (`preferA`) wins. Deletions are not tracked, so an
-    // item deleted on one device can come back if the other device still has it.
     function mergeValue(a, b, preferA) {
       if (a === undefined) return b;
       if (b === undefined) return a;
@@ -1257,7 +1251,6 @@
       }
       return preferA ? a : b;
     }
-    // </sync-merge>
 
     let syncBusy = false;
     let syncAgain = false;
@@ -1282,7 +1275,6 @@
       showToast("Backup restored.", "♻️");
     }
 
-    // Replace this device's data with the cloud copy.
     function adoptCloud(row) {
       appData = row.data;
       if (!appData.piggies) appData.piggies = [];
@@ -1296,8 +1288,6 @@
       renderApp();
     }
 
-    // Write this device's data to the cloud, but only if the cloud copy is still the one we last saw.
-    // Returns 'ok', 'conflict' (someone else wrote first) or 'error'.
     async function pushLocal(baseRaw) {
       const dirtyAtPush = localStorage.getItem(DIRTY_KEY);
       const updatedAt = new Date().toISOString();
@@ -1309,7 +1299,7 @@
       if (!res.data || res.data.length === 0) return 'conflict';
       localStorage.setItem(SYNCED_USER_KEY, cloudUser.id);
       localStorage.setItem(CLOUD_BASE_KEY, res.data[0].updated_at);
-      if (localStorage.getItem(DIRTY_KEY) === dirtyAtPush) localStorage.removeItem(DIRTY_KEY); // keep the flag if you edited mid-sync
+      if (localStorage.getItem(DIRTY_KEY) === dirtyAtPush) localStorage.removeItem(DIRTY_KEY);
       return 'ok';
     }
 
@@ -1332,19 +1322,16 @@
         setSyncStatus(result === 'conflict' ? 'Sync conflict, try again' : 'Sync error', 'error');
       };
 
-      // Nothing in the cloud yet: upload what this device has.
       if (!cloudHas) {
         if (!localHas) { setSyncStatus('Nothing to sync yet', 'synced'); return; }
         return retryOrFail(await pushLocal(row ? row.updated_at : null));
       }
 
-      // This device has no animals yet: just take the cloud copy.
       if (!localHas) {
-        if (editedMidSync()) return; // you just added something: the next sync will merge it
+        if (editedMidSync()) return;
         adoptCloud(row); setSyncStatus('Synced', 'synced'); return;
       }
 
-      // First time this device meets this account and both sides have data: ask, backing up the loser.
       if (!linked) {
         if (confirm("This device and your account both have data.\nOK = use account data\nCancel = keep this device's data")) {
           backupBeforeSync('this device before linking your account', appData);
@@ -1357,18 +1344,17 @@
         return;
       }
 
-      const cloudChanged = base ? new Date(base).getTime() !== cloudTime : null; // null = unknown (older app version)
+      const cloudChanged = base ? new Date(base).getTime() !== cloudTime : null;
 
       if (cloudChanged === false) {
         if (!dirty) { setSyncStatus('Synced', 'synced'); return; }
-        return retryOrFail(await pushLocal(row.updated_at));              // only we changed: safe to push
+        return retryOrFail(await pushLocal(row.updated_at));
       }
-      if (cloudChanged === true && !dirty) { // only the cloud changed
+      if (cloudChanged === true && !dirty) {
         if (editedMidSync()) return;
         adoptCloud(row); setSyncStatus('Synced', 'synced'); return;
       }
 
-      // Both changed (or we can't tell): merge, keep a backup, then push the merged copy.
       if (cloudChanged === null && JSON.stringify(appData) === JSON.stringify(row.data)) {
         localStorage.setItem(CLOUD_BASE_KEY, row.updated_at);
         if (!editedMidSync()) localStorage.removeItem(DIRTY_KEY);
@@ -1401,11 +1387,9 @@
       }
     }
 
-    // Every push goes through reconcile, which checks the cloud first so it never blindly overwrites it.
     function pushToCloud() { return syncOnLogin(); }
     function cloudSyncNow() { syncOnLogin(); }
 
-    // Pick up changes from other devices when you return to the app or regain connection.
     function backgroundSync(force) {
       if (!sb || !cloudUser) return;
       if (!force && Date.now() - lastSyncAt < 30000) return;
@@ -1466,9 +1450,6 @@
     const WEIGHT_TREND_WINDOW_DAYS = 7;
     const WEIGHIN_DUE_DAYS = 7;
 
-    // level: 0 ok, 1 watch, 2 critical. Checks the drop against baseline AND against the
-    // heaviest weigh-in in the 7 days before the latest one, so a sudden slide is flagged
-    // even when the animal is still above its (possibly outdated) baseline.
     function getWeightStatus(p) {
       const w = [...(p.weights || [])].sort((a,b) => new Date(a.date) - new Date(b.date));
       if (w.length === 0) return { level: 0, reason: '' };
@@ -1504,7 +1485,6 @@
       return Math.floor((Date.now() - last) / 86400000);
     }
 
-    // Short, plain-text reasons a piggy needs attention; drives chip badges and the household strip.
     function getPiggyAttention(p) {
       const items = [];
       if (p.stasisActive) items.push('stasis protocol active');
@@ -1727,7 +1707,6 @@
       return logs.length ? new Date(new Date(logs[0].time).getTime() + STASIS_FEED_INTERVAL_MS) : new Date();
     }
 
-    // Schedules one notification for the active piggy's next feed. Re-run after every feed/render.
     function scheduleStasisReminder() {
       if (stasisReminderTimer) { clearTimeout(stasisReminderTimer); stasisReminderTimer = null; }
       const p = getActivePiggy();
@@ -1735,7 +1714,7 @@
       const on = !!(p && p.stasisActive && p.stasisReminders && 'Notification' in window && Notification.permission === 'granted');
       if (btn) btn.textContent = on ? '🔔 Reminders on (tap to turn off)' : '🔔 Remind me when due';
       if (!on) return;
-      if (!(p.stasisLogs || []).length) return; // nothing logged yet: the banner already says "Due Now"
+      if (!(p.stasisLogs || []).length) return;
       const dueMs = getNextStasisDue(p).getTime();
       if (dueMs === lastStasisNotifiedDue) return;
       const delay = Math.max(dueMs - Date.now(), 0);
